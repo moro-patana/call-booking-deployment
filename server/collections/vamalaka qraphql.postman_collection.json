@@ -1,0 +1,630 @@
+{
+	"info": {
+		"_postman_id": "7b9847fe-91db-44b1-ba54-fc00e82cd60a",
+		"name": "vamalaka qraphql",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "login user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation{login(username:\"student\" , password:\"onjaonja\"){id, username,token}}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "http://{{hostUrl}}:4000/graphql",
+					"protocol": "http",
+					"host": [
+						"{{hostUrl}}"
+					],
+					"port": "4000",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "register user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation{register(registerInput:{username:\"student\", password:\"onjaonja\", confirmPassword:\"onjaonja\",email:\"ja@me.com\", role:\"seller\"}){id,createdAt,email,username, token}}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "http://{{hostUrl}}:4000/graphql",
+					"protocol": "http",
+					"host": [
+						"{{hostUrl}}"
+					],
+					"port": "4000",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create ad",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{userToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation{createAd(\n    title:\"Organic Chicken\",\n    body:\"skiny\",\n    photos:[{url:\"avatar-chickens-1633085776960-413926159.jpg\", info:\"dead chickens hanging\", isPrimary:true}, {url:\"avatar-chicken2-1633085885138-767874516.jpg\", isPrimary: false, info:\"running chicken\"}],\n    categoryId:\"6156ecd8297ff1001e76a295\"\n    )\n \n {id,title,photos{url,info,isPrimary},currency,price,amountOfProduct}}\n\n # categoryId must be passed - create category first and assign ",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "http://{{hostUrl}}:4000/graphql",
+					"protocol": "http",
+					"host": [
+						"{{hostUrl}}"
+					],
+					"port": "4000",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "query ads all",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{userToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query{ads{id,title,body,category{title,id}, user{username, email, id, photos{url,isPrimary}},photos{url,isPrimary,info}}}\n#user information can be expanded as requiered address, firstName etc",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "http://{{hostUrl}}:4000/graphql",
+					"protocol": "http",
+					"host": [
+						"{{hostUrl}}"
+					],
+					"port": "4000",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "query ad getad by id",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{userToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query{getad(id:\"61287ebec63fa9002a17b04a\"){id,title,body,category{title,id}, user{username, email, id}}}\n#user information can be expanded as requiered address, firstName etc",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "http://{{hostUrl}}:4000/graphql",
+					"protocol": "http",
+					"host": [
+						"{{hostUrl}}"
+					],
+					"port": "4000",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "query getUserAds",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{userToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query{getUserAds(userId: \"611a2fdb48c3c9001e106f36\"){id,title,body,category{title}, user{username, email}}}\n\n#user information can be expanded as requiered address, firstName etc",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "http://{{hostUrl}}:4000/graphql",
+					"protocol": "http",
+					"host": [
+						"{{hostUrl}}"
+					],
+					"port": "4000",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "query getCategoryAds",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{userToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query{getCategoryAds(categoryId: \"611b76fd70611a0029d822a8\"){id,title,body,category{title}, user{username, email}}}\n\n#user information can be expanded as requiered address, firstName etc",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "http://{{hostUrl}}:4000/graphql",
+					"protocol": "http",
+					"host": [
+						"{{hostUrl}}"
+					],
+					"port": "4000",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "query getUserByUsername",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{userToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query{getUserByUsername(username:\"student\"){ username, id, firstName}}\n",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "http://{{hostUrl}}:4000/graphql",
+					"protocol": "http",
+					"host": [
+						"{{hostUrl}}"
+					],
+					"port": "4000",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "query getUserById",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{userToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query{getUserById(id:\"611a2fdb48c3c9001e106f36\"){ username, id}}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "http://{{hostUrl}}:4000/graphql",
+					"protocol": "http",
+					"host": [
+						"{{hostUrl}}"
+					],
+					"port": "4000",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "query categories",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{userToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query{categories{title, id, description}}\n",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "http://{{hostUrl}}:4000/graphql",
+					"protocol": "http",
+					"host": [
+						"{{hostUrl}}"
+					],
+					"port": "4000",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "query users",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{userToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query{users{id,username,firstName,lastName}}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "http://{{hostUrl}}:4000/graphql",
+					"protocol": "http",
+					"host": [
+						"{{hostUrl}}"
+					],
+					"port": "4000",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete ad",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{userToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation{deletead(id:\"\"){title}}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "http://{{hostUrl}}:4000/graphql",
+					"protocol": "http",
+					"host": [
+						"{{hostUrl}}"
+					],
+					"port": "4000",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update ad",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{userToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "# mutation{updatead(id:\"60f671cc21ae53002949994e\",amountOfProduct:1.777,photos:[{url:\"i4\", info:\"info of first\"}, {url:\"idPrime\", isPrimary: true}]){id,title,photos{url,info,isPrimary},currency,price,amountOfProduct,username}}\n\n# mutation{updatead(title:\"black pep2\",id:\"611271eb28474a002a5091bb\",categoryId:\"611277911f7dc100298bcd54\"){id,title,photos{url,info,isPrimary},currency,price,amountOfProduct,username,category{title}}}\n\nmutation{updatead(id:\"6156e9f3297ff1001e76a285\", categoryId:\"6156ecd8297ff1001e76a295\"){id,title,photos{url,info,isPrimary},currency,price,amountOfProduct,username,category{title}}}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "http://{{hostUrl}}:4000/graphql",
+					"protocol": "http",
+					"host": [
+						"{{hostUrl}}"
+					],
+					"port": "4000",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{userToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation{updateUser( photos:[{url:\"avatar-vladimir-1633086305661-675495904.jpg\", info:\"sad\", isPrimary: true}, {url:\"avatar-vladimir-serious-1633086436991-415163632.jpg\", info:\"serious\", isPrimary: false}]){id,email,username, role, photos{url, info, isPrimary}, firstName,lastName,address,city,state,country,phone,bio}}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "http://{{hostUrl}}:4000/graphql",
+					"protocol": "http",
+					"host": [
+						"{{hostUrl}}"
+					],
+					"port": "4000",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create category",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{userToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation{createCategory(title:\"food\", description:\"more\"){title, id}}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "http://{{hostUrl}}:4000/graphql",
+					"protocol": "http",
+					"host": [
+						"{{hostUrl}}"
+					],
+					"port": "4000",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update category",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{userToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation{updatedeCategory(title:\"Bicycles\", description:\"electric\",id:\"61163102a698ec0029023431\"){title, id}}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "http://{{hostUrl}}:4000/graphql",
+					"protocol": "http",
+					"host": [
+						"{{hostUrl}}"
+					],
+					"port": "4000",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete category",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{userToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation{deleteCategory(id:\"61163102a698ec0029023431\"){title}}",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "http://{{hostUrl}}:4000/graphql",
+					"protocol": "http",
+					"host": [
+						"{{hostUrl}}"
+					],
+					"port": "4000",
+					"path": [
+						"graphql"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get photo",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer jjjjj",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "http://{{hostUrl}}:4000/uploads/dummy.jpg?height=500&message=clopedia&some=kajhdfkjhdk",
+					"protocol": "http",
+					"host": [
+						"{{hostUrl}}"
+					],
+					"port": "4000",
+					"path": [
+						"uploads",
+						"dummy.jpg"
+					],
+					"query": [
+						{
+							"key": "height",
+							"value": "500"
+						},
+						{
+							"key": "message",
+							"value": "clopedia"
+						},
+						{
+							"key": "some",
+							"value": "kajhdfkjhdk"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "upload photo",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer jjjjj",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "avatar",
+							"type": "file",
+							"src": "/home/junak/Downloads/vladimir-serious.jpg"
+						},
+						{
+							"key": "newd",
+							"value": "'aksjfhdkajshfkjahsdaksjf'",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "http://{{hostUrl}}:4000/upload",
+					"protocol": "http",
+					"host": [
+						"{{hostUrl}}"
+					],
+					"port": "4000",
+					"path": [
+						"upload"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
