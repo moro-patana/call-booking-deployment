@@ -11,9 +11,12 @@
     "@types/node": "^16.18.3",
     "@types/react": "^18.0.24",
     "@types/react-dom": "^18.0.8",
+    "cypress": "^10.11.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-redux": "^8.0.4",
     "react-scripts": "5.0.1",
+    "redux-devtools-extension": "^2.13.9",
     "typescript": "^4.8.4",
     "web-vitals": "^2.1.4"
   },
@@ -21,7 +24,11 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "storybook": "start-storybook -p 6006 -s public",
+    "build-storybook": "build-storybook -s public",
+    "cypress": "yarn start & yarn storybook & CYPRESS_BASE_URL=http://localhost:3000 cypress open",
+    "cypress:ci": "yarn start & yarn storybook & CYPRESS_BASE_URL=http://localhost:3000 cypress run"
   },
   "eslintConfig": {
     "extends": [
@@ -40,5 +47,15 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@storybook/addon-actions": "^6.2.9",
+    "@storybook/addon-essentials": "^6.2.9",
+    "@storybook/addon-links": "^6.2.9",
+    "@storybook/node-logger": "^6.2.9",
+    "@storybook/cli": "^6.5.13",
+    "@storybook/react": "^6.5.13",
+    "eslint-plugin-cypress": "^2.12.1",
+    "storybook-addon-redux-listener": "^0.1.7"
   }
 }
