@@ -1,24 +1,21 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "./App.css";
+import { TableContainer, Table, TableBody } from "@mui/material";
+import Hours from "./components/hours/index";
+import DaysOfWeek from "./components/daysOfWeek";
 
 function App() {
+  const selectedDate = new Date();
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <TableContainer sx={{ paddingTop: "30px" }}>
+        <Table>
+          <TableBody>
+            <Hours {...{ selectedDate }} />
+            <DaysOfWeek {...{ selectedDate }} />
+          </TableBody>
+        </Table>
+      </TableContainer>
     </div>
   );
 }
