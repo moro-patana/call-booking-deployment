@@ -4,8 +4,8 @@ import { eachHourOfInterval } from "date-fns";
 import styled from "styled-components";
 
 const Hours = ({ selectedDate }: { selectedDate: Date }) => {
-  const startHour = new Date().setHours(selectedDate.getHours() - 1);
-  const endHour = new Date().setHours(selectedDate.getHours() + 7);
+  const startHour = new Date().setHours(selectedDate.getHours() - 2);
+  const endHour = new Date().setHours(selectedDate.getHours() + 6);
   const availableHours = eachHourOfInterval({
     start: startHour,
     end: endHour,
