@@ -1,25 +1,17 @@
-var userRoles = require("../graphql/types/user").userRoles;
 const { getErrorForCode, ERROR_CODES } = require("./errorCodes");
 module.exports.validateRegisterInput = (
   username,
   email,
   password,
-  confirmPassword,
-  role
 ) => {
   console.log(
     username + ":uname",
     email + ":email",
     password + ":pass",
-    confirmPassword + ":cpass",
-    role + ":role"
   );
   const errors = {};
   if (username.trim() === "") {
     errors.username = getErrorForCode(ERROR_CODES.EU1);
-  }
-  if (!userRoles.some((possibleRole) => possibleRole === role)) {
-    errors.role = getErrorForCode(ERROR_CODES.EU4);
   }
   if (email.trim() === "") {
     errors.email = getErrorForCode(ERROR_CODES.EU5);
@@ -36,8 +28,6 @@ module.exports.validateRegisterInput = (
 
   if (!password || password.length < 8) {
     errors.password = getErrorForCode(ERROR_CODES.EU7);
-  } else if (password !== confirmPassword) {
-    errors.confirmPassword = getErrorForCode(ERROR_CODES.EU8);
   }
   console.log(
     "!password || password.length < 8",

@@ -8,11 +8,11 @@ const { graphqlHTTP } = require("express-graphql");
 const { mergeSchemas } = require("@graphql-tools/merge");
 
 const userSchema = require("./graphql/UserSchema").UserSchema;
-const roomSchema = require("./graphql/RoomSchema").RoomSchema;
-const bookingSchema = require("./graphql/BookingSchema").BookingSchema;
+// const roomSchema = require("./graphql/RoomSchema").RoomSchema;
+// const bookingSchema = require("./graphql/BookingSchema").BookingSchema;
 
 const mergedSchema = mergeSchemas({
-  schemas: [userSchema, roomSchema, bookingSchema],
+  schemas: [userSchema],
 });
 
 const cors = require("cors");
