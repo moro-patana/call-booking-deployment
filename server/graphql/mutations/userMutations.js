@@ -75,4 +75,42 @@ module.exports = {
       return userData;
     },
   },
+  login: {
+    type: userType.userType,
+    args: {
+      email: {
+        type: new GraphQLNonNull(GraphQLString),
+      },
+      password: {
+        type: new GraphQLNonNull(GraphQLString),
+      },
+    },
+    resolve: async (root, { email, password }) => {
+      const { errors, valid } = validateLoginInput(email, password);
+
+      const existingUser = await usersModel.findOne({ email });
+
+      if (!valid) {
+        throw new Error(errors);
+      }
+
+      if (!existingUser) {
+        const errNoUser = getErrorForCode(ERROR_CODES.EU12);
+        errors.general = errNoUser;
+        throw new Error(errNoUser);
+      }
+
+      const match = await bcrypt.compare(password, existingUser.password);
+
+      if (!match) {
+        const errNoUser = getErrorForCode(ERROR_CODES.EU13);
+        errors.general = errNoUser;
+        throw new Error(errNoUser);
+      }
+      const token = generateToken(existingUser);
+
+      const userData = { ...existingUser._doc, id: existingUser._id, token };
+      return userData;
+    },
+  },
 };
