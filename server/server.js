@@ -2,14 +2,9 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const { graphqlHTTP } = require("express-graphql");
-// const multer = require("multer");
-// const fs = require("fs");
-// const path = require("path");
 const { mergeSchemas } = require("@graphql-tools/merge");
 
 const userSchema = require("./graphql/UserSchema").UserSchema;
-// const roomSchema = require("./graphql/RoomSchema").RoomSchema;
-// const bookingSchema = require("./graphql/BookingSchema").BookingSchema;
 
 const mergedSchema = mergeSchemas({
   schemas: [userSchema],
@@ -20,7 +15,6 @@ const cors = require("cors");
 app.use(cors());
 app.options("*", cors());
 
-// TODO only for dev
 mongoose.set("debug", true);
 
 mongoose.connect(
@@ -36,10 +30,6 @@ app.set("port", process.env.port || 4000);
 app.listen(app.get("port"), () => {
   console.log("Node app is running at localhost:" + app.get("port"));
 });
-
-// TODO:
-
-// cleanup dummy img
 
 app.use(
   "/graphql",
