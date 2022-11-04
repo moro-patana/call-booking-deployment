@@ -75,14 +75,53 @@ module.exports = {
       console.log(args, "args");
       const user = checkAuth(context);
       const roomToRemove = await roomModel.findById(args.id);
-      console.log('user::::::', user);
-      console.log('roomToRemove::::::', roomToRemove);
+      
       if (!roomToRemove) {
         throw new Error(getErrorForCode(ERROR_CODES.EA2));
       }
 
       try {
           await roomToRemove.delete();
+      } catch (error) {
+        throw new Error(error);
+      }
+    },
+  },
+  updateRoom: {
+    type: roomType.roomType,
+    args: {
+      id: {
+        type: new GraphQLNonNull(GraphQLString),
+      },
+      name: {
+        type: GraphQLString,
+      },
+      description: {
+        type: GraphQLString,
+      },
+    },
+    resolve: async (root, args, context) => {
+      const user = checkAuth(context);
+      const roomToUpdate = await roomModel.findById(args.id);
+      if (!roomToUpdate) {
+        throw new Error(getErrorForCode(ERROR_CODES.EA2));
+      }
+      const updatedArgs = {
+        ...args,
+      };
+
+      try {
+        const updatedRoom = await roomModel
+        .findByIdAndUpdate(args.id, updatedArgs, {
+            new: true,
+        })
+        .populate("room")
+        .populate("user");
+
+        if (!updatedRoom) {
+            throw new Error(getErrorForCode(ERROR_CODES.EA2));
+        }
+        return updatedRoom;
       } catch (error) {
         throw new Error(error);
       }
