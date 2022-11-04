@@ -1,6 +1,5 @@
 import React from "react";
-import TableCell from "@mui/material/TableCell";
-import TableRow from "@mui/material/TableRow";
+import { TableCell, TableRow } from "@mui/material";
 import { endOfWeek, startOfWeek, format, eachDayOfInterval } from "date-fns";
 import styled from "styled-components";
 

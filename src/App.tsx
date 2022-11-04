@@ -1,17 +1,17 @@
 import React from "react";
 import "./App.css";
-import TableContainer from "@mui/material/TableContainer";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
+import { TableContainer, Table, TableBody } from "@mui/material";
+import Hours from "./components/hours/index";
 import DaysOfWeek from "./components/daysOfWeek";
 
 function App() {
   const selectedDate = new Date();
   return (
     <div className="App">
-      <TableContainer>
+      <TableContainer sx={{ paddingTop: "30px" }}>
         <Table>
           <TableBody>
+            <Hours {...{ selectedDate }} />
             <DaysOfWeek {...{ selectedDate }} />
           </TableBody>
         </Table>
