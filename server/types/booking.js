@@ -4,7 +4,7 @@ const GraphQLID = require("graphql").GraphQLID;
 const GraphQLString = require("graphql").GraphQLString;
 
 exports.bookingType = new GraphQLObjectType({
-  name: "bookings",
+  name: "booking",
   fields: () => {
     return {
       id: {
