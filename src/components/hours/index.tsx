@@ -1,16 +1,8 @@
 import React from "react";
 import { TableCell, TableRow } from "@mui/material";
-import { eachHourOfInterval } from "date-fns";
 import styled from "styled-components";
 
-const Hours = ({ selectedDate }: { selectedDate: Date }) => {
-  const startHour = new Date().setHours(selectedDate.getHours() - 2);
-  const endHour = new Date().setHours(selectedDate.getHours() + 6);
-  const availableHours = eachHourOfInterval({
-    start: startHour,
-    end: endHour,
-  });
-
+const Hours = ({ availableHours }: { availableHours: Date[] }) => {
   return (
     <>
       <TableRow
@@ -23,11 +15,21 @@ const Hours = ({ selectedDate }: { selectedDate: Date }) => {
           sx={{
             paddingBottom: 0,
             borderBottom: 0,
-            borderRight: "2px solid #9d9898",
+            borderRight: 0,
             paddingTop: "5px",
+            width: 0,
           }}
         />
-        {availableHours.map((hour) => (
+        <TableCell
+          sx={{
+            paddingBottom: 0,
+            borderBottom: 0,
+            borderRight: "2px solid #9d9898",
+            paddingTop: "5px",
+            width: 0,
+          }}
+        />
+        {availableHours.map((hour: Date) => (
           <TableCell
             key={hour.getHours()}
             sx={{
