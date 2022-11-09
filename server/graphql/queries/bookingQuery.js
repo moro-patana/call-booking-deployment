@@ -18,6 +18,7 @@ exports.BookingQuery = new GraphQLObjectType({
             const bookings = await BookingModel.find()
               .populate("user")
               .populate("booking")
+              .populate("room")
 
             if (!bookings) {
               throw new Error(getErrorForCode(ERROR_CODES.EA3));
@@ -40,9 +41,9 @@ exports.BookingQuery = new GraphQLObjectType({
             const bookings = await BookingModel.find({ user: userId })
               .populate("user")
               .populate("booking")
+              .populate("room");
 
-            console.log({ bookings });
-            if (!bookings) {
+              if (!bookings) {
               throw new Error(getErrorForCode(ERROR_CODES.EA3));
             }
             return bookings;
@@ -62,7 +63,8 @@ exports.BookingQuery = new GraphQLObjectType({
           try {
             const booking = await BookingModel.findById(id)
               .populate("user")
-              .populate("booking");
+              .populate("booking")
+              .populate("room");
             if (!booking) {
               throw new Error(getErrorForCode(ERROR_CODES.EA2));
             }

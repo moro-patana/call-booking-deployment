@@ -1,5 +1,7 @@
 const bookingType = require("../../types/booking");
+const { userType } = require("../../types/user");
 const bookingModel = require("../../models/booking");
+const roomModel = require("../../models/room");
 const GraphQLString = require("graphql").GraphQLString;
 const GraphQLNonNull = require("graphql").GraphQLNonNull;
 const GraphQLID = require("graphql").GraphQLID;
@@ -10,8 +12,7 @@ module.exports = {
   createBooking: {
     type: bookingType.bookingType,
     args: {
-      userId: { type: GraphQLID },
-      roomId: { type: GraphQLID },
+      roomId: { type: new GraphQLNonNull(GraphQLID) },
       label: { type: GraphQLString },
       startDate: { type: GraphQLString },
       endDate: { type: GraphQLString },
@@ -19,7 +20,6 @@ module.exports = {
     resolve: async (root, args, context) => {
       const user = checkAuth(context);
       const {
-        userId,
         roomId,
         label,
         startDate,
@@ -27,7 +27,7 @@ module.exports = {
       } = args;
 
       const uModel = new bookingModel({
-        userId,
+        user: user,
         roomId,
         label,
         startDate,
@@ -35,10 +35,11 @@ module.exports = {
       });
 
       const newBooking = await uModel.save();
+      const populatedBooking = newBooking.populate("booking").populate("room").populate("user");
       if (!newBooking) {
         throw new Error(getErrorForCode(ERROR_CODES.EA1));
       }
-      return newBooking.populate("room").populate("user");
+      return populatedBooking
     },
   },
   deleteBooking: {
@@ -49,7 +50,6 @@ module.exports = {
       },
     },
     resolve: async (root, args, context) => {
-      console.log(args, "args");
       const user = checkAuth(context);
       const bookingToRemove = await bookingModel.findById(args.id);
       
