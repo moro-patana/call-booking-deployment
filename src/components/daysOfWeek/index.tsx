@@ -3,7 +3,6 @@ import { TableCell, TableRow } from "@mui/material";
 import { endOfWeek, startOfWeek, format, eachDayOfInterval } from "date-fns";
 import Room from "../rooms";
 import { RoomPerHour } from "../rooms/index";
-import styled from "styled-components";
 
 const DaysOfWeek = ({
   selectedDate,
@@ -51,10 +50,6 @@ const DaysOfWeek = ({
               "&:last-child, td": { borderBottom: 0 },
               "&.active-row + .row": { borderTop: "4px solid black" },
               "&:nth-of-type(2)": { borderTop: 0 },
-              "&.active-row table": {
-                position: "relative",
-                left: "-14px",
-              },
               cursor: "pointer",
             }}
           >
@@ -94,6 +89,7 @@ const DaysOfWeek = ({
                 padding: 0,
                 paddingRight: "14px",
                 borderRight: "2px solid #9d9898",
+                minWidth: "100px",
               }}
             >
               <Room

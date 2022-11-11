@@ -12,9 +12,6 @@ const Room = ({
     <Table
       sx={{
         borderCollapse: "collapse",
-        maxWidth: "max-content",
-        position: isSelected ? "absolute" : "unset",
-        top: 0,
       }}
     >
       {rooms.map((room: { id: string; name: string; description: string }) => {
@@ -23,7 +20,6 @@ const Room = ({
           <TableBody
             key={id}
             sx={{
-              width: "100%",
               backgroundColor: "#c8c8c8",
               border: isSelected ? "1px solid #000000" : "2px solid #fff",
               borderRight: isSelected ? "1px solid #000000" : 0,
@@ -49,7 +45,7 @@ export const RoomPerHour = ({
 }) => {
   return (
     <>
-      <Table sx={{ borderRight: "2px solid #9d9898" }}>
+      <Table>
         {rooms.map(
           (room: { id: string; name: string; description: string }) => (
             <TableBody
