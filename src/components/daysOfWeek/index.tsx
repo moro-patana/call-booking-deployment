@@ -62,7 +62,7 @@ const DaysOfWeek = ({
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  padding: activeRow ? "0 25px 0 15px" : "0 20px",
+                  padding: activeRow ? "0 35px 0 15px" : "0 20px",
                 }}
               >
                 <div
@@ -90,6 +90,7 @@ const DaysOfWeek = ({
                 paddingRight: "14px",
                 borderRight: "2px solid #9d9898",
                 minWidth: "100px",
+                left: activeRow ? "-20px" : 0,
               }}
             >
               <Room
