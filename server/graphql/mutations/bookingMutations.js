@@ -38,7 +38,6 @@ module.exports = {
 
       const newBooking = await uModel.save();
       const populatedBooking = newBooking.populate("booking").populate("room").populate("user");
-      console.log('populatedBooking::::::', populatedBooking);
       if (!newBooking) {
         throw new Error(getErrorForCode(ERROR_CODES.EA1));
       }
