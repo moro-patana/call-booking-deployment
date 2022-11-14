@@ -38,6 +38,7 @@ module.exports = {
 
       const newBooking = await uModel.save();
       const populatedBooking = newBooking.populate("booking").populate("room").populate("user");
+      console.log('populatedBooking::::::', populatedBooking);
       if (!newBooking) {
         throw new Error(getErrorForCode(ERROR_CODES.EA1));
       }
@@ -60,7 +61,17 @@ module.exports = {
       }
 
       try {
+        if (user.id === bookingToRemove.user.id) {
           await bookingToRemove.delete();
+
+            return {
+              username: bookingToRemove.user.username,
+              id: bookingToRemove.id,
+              label: bookingToRemove.label,
+            };
+          } else {
+            throw new Error(getErrorForCode(ERROR_CODES.EG1));
+          }
       } catch (error) {
         throw new Error(error);
       }
