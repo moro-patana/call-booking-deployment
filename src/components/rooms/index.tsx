@@ -51,11 +51,22 @@ export const RoomPerHour = ({
             <TableBody
               key={room?.id}
               sx={{
+                position: "relative",
                 border: "1px solid #7a7878",
                 borderLeft: 0,
                 borderRight: 0,
                 "&:last-of-type": { borderBottom: 0 },
                 "&:first-of-type": { borderTop: 0 },
+                "&:not(:first-of-type):before": {
+                  content: "''",
+                  position: "absolute",
+                  top: "-2px",
+                  left: "-14px",
+                  display: "block",
+                  width: "14px",
+                  height: "1px",
+                  backgroundColor: "#9d9898",
+                },
               }}
             >
               <TableRow>
