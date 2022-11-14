@@ -8,15 +8,17 @@ const GraphQLID = require("graphql").GraphQLID;
 const checkAuth = require("../../utils/check-auth");
 const { getErrorForCode, ERROR_CODES } = require("../../utils/errorCodes");
 
+const argType = {
+  roomId: { type: new GraphQLNonNull(GraphQLID) },
+  label: { type: GraphQLString },
+  startDate: { type: GraphQLString },
+  endDate: { type: GraphQLString },
+}
+
 module.exports = {
   createBooking: {
     type: bookingType.bookingType,
-    args: {
-      roomId: { type: new GraphQLNonNull(GraphQLID) },
-      label: { type: GraphQLString },
-      startDate: { type: GraphQLString },
-      endDate: { type: GraphQLString },
-    },
+    args: argType,
     resolve: async (root, args, context) => {
       const user = checkAuth(context);
       const {
@@ -66,16 +68,7 @@ module.exports = {
   },
   updateBooking: {
     type: bookingType.bookingType,
-    args: {
-      id: {
-        type: new GraphQLNonNull(GraphQLString),
-      },
-      userId: { type: GraphQLID },
-      roomId: { type: GraphQLID },
-      label: { type: GraphQLString },
-      startDate: { type: GraphQLString },
-      endDate: { type: GraphQLString },
-    },
+    args: argType,
     resolve: async (root, args, context) => {
       const user = checkAuth(context);
       const bookingToUpdate = await bookingModel.findById(args.id);
@@ -92,6 +85,7 @@ module.exports = {
             new: true,
         })
         .populate("booking")
+        .populate("room")
         .populate("user");
 
         if (!updatedBooking) {
