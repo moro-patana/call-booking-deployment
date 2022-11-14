@@ -60,7 +60,17 @@ module.exports = {
       }
 
       try {
+        if (user.id === bookingToRemove.user.id) {
           await bookingToRemove.delete();
+
+            return {
+              username: bookingToRemove.user.username,
+              id: bookingToRemove.id,
+              label: bookingToRemove.label,
+            };
+          } else {
+            throw new Error(getErrorForCode(ERROR_CODES.EG1));
+          }
       } catch (error) {
         throw new Error(error);
       }
