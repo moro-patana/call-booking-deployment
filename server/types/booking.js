@@ -16,7 +16,7 @@ exports.bookingType = new GraphQLObjectType({
         type: userType,
       },
       roomId: {
-        type: new GraphQLNonNull(GraphQLID),
+        type: GraphQLID,
       },
       label: {
         type: GraphQLString,

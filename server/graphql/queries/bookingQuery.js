@@ -3,7 +3,7 @@ const GraphQLList = require("graphql").GraphQLList;
 const GraphQLNonNull = require("graphql").GraphQLNonNull;
 const GraphQLID = require("graphql").GraphQLID;
 const BookingModel = require("../../models/booking");
-const bookingType = require("../../types/booking").bookingType;
+const { bookingType } = require("../../types/booking");
 const { getErrorForCode, ERROR_CODES } = require("../../utils/errorCodes");
 
 // Query
@@ -14,16 +14,12 @@ exports.BookingQuery = new GraphQLObjectType({
       bookings: {
         type: new GraphQLList(bookingType),
         resolve: async () => {
+          const books = await BookingModel.find()
           try {
-            const bookings = await BookingModel.find()
-              .populate("user")
-              .populate("booking")
-              .populate("room")
-
-            if (!bookings) {
+            if (!books) {
               throw new Error(getErrorForCode(ERROR_CODES.EA3));
             }
-            return bookings;
+            return books;
           } catch (error) {
             throw new Error(error);
           }

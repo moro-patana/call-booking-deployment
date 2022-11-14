@@ -17,5 +17,5 @@ module.exports = (context) => {
     }
     throw new Error(getErrorForCode(ERROR_CODES.EU10));
   }
-  throw new Error(getErrorForCode(ERROR_CODES.EU11));
+  // throw new Error(getErrorForCode(ERROR_CODES.EU11));
 };
