@@ -72,7 +72,6 @@ module.exports = {
       },
     },
     resolve: async (root, args, context) => {
-      console.log(args, "args");
       const user = checkAuth(context);
       const roomToRemove = await roomModel.findById(args.id);
       
