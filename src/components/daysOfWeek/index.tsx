@@ -3,15 +3,20 @@ import { TableCell, TableRow } from "@mui/material";
 import { endOfWeek, startOfWeek, format, eachDayOfInterval } from "date-fns";
 import Room from "../rooms";
 import { RoomPerHour } from "../rooms/index";
+import { red } from "@mui/material/colors";
 
 const DaysOfWeek = ({
   selectedDate,
   rooms,
   availableHours,
+  bookings,
+  users,
 }: {
-  availableHours: any;
+  availableHours: Date[];
   selectedDate: Date;
   rooms: { id: string; name: string; description: string }[];
+  bookings: never[];
+  users: { id: string; email: string; password: string; username: string }[];
 }) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isActive, setIsActive] = useState(false);
@@ -50,11 +55,10 @@ const DaysOfWeek = ({
               "&:last-child, td": { borderBottom: 0 },
               "&.active-row + .row": { borderTop: "4px solid black" },
               "&:nth-of-type(2)": { borderTop: 0 },
-              cursor: "pointer",
             }}
           >
             <TableCell
-              sx={{ padding: 0, maxWidth: "123px" }}
+              sx={{ padding: 0, maxWidth: "123px", cursor: "pointer" }}
               onClick={() => onToggleRow(index)}
             >
               <div
@@ -98,24 +102,42 @@ const DaysOfWeek = ({
                 isSelected={activeRow}
               />
             </TableCell>
-            {availableHours.map((hour: any) => (
-              <TableCell
-                className={activeRow ? "active" : "row"}
-                sx={{
-                  padding: 0,
-                  position: "relative",
-                  "&.active tbody": {
+            {availableHours.map((hour: any) => {
+              return (
+                <TableCell
+                  className={activeRow ? "active" : "row"}
+                  sx={{
+                    padding: 0,
                     position: "relative",
-                  },
-                  "&:not(:last-of-type)": {
-                    borderRight: "2px solid #9d9898",
-                  },
-                }}
-                key={hour?.getHours()}
-              >
-                <RoomPerHour rooms={activeRow ? rooms : []} />
-              </TableCell>
-            ))}
+                    "&.active tbody": {
+                      position: "relative",
+                    },
+                    "&:not(:last-of-type)": {
+                      borderRight: "2px solid #9d9898",
+                    },
+                    "&::before": {
+                      content: "''",
+                      width: "2px",
+                      minHeight: "100%",
+                      zIndex: 2,
+                      position: "absolute",
+                      top: 0,
+                      left: "-2px",
+                      backgroundColor: "#9d9898",
+                    },
+                  }}
+                  key={hour?.getHours()}
+                >
+                  <RoomPerHour
+                    rooms={activeRow ? rooms : []}
+                    bookings={bookings}
+                    day={day}
+                    hour={hour?.getHours()}
+                    users={users}
+                  />
+                </TableCell>
+              );
+            })}
           </TableRow>
         );
       })}

@@ -1,8 +1,12 @@
-import { combineReducers, configureStore } from '@reduxjs/toolkit';
-
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import bookingsSlice from "./reducers/bookingsSlice";
+import roomsSlice from "./reducers/roomsSlice";
+import usersSlice from "./reducers/usersSlice";
 const rootReducer = combineReducers({
   // reducer state goes here imported from ./slices
-  // users;
+  bookings: bookingsSlice,
+  rooms: roomsSlice,
+  users: usersSlice,
 });
 
 // If needed: Get createBrowserHistory from history lib
@@ -14,4 +18,5 @@ const store = configureStore({
   //   getDefaultMiddleware().concat(routerMiddleware(history)),
 });
 
+export type RootState = ReturnType<typeof store.getState>;
 export default store;
