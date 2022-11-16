@@ -3,7 +3,6 @@ import { TableCell, TableRow } from "@mui/material";
 import { endOfWeek, startOfWeek, format, eachDayOfInterval } from "date-fns";
 import Room from "../rooms";
 import { RoomPerHour } from "../rooms/index";
-import { red } from "@mui/material/colors";
 
 const DaysOfWeek = ({
   selectedDate,

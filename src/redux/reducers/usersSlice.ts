@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 
 const initialState = {
@@ -11,7 +11,7 @@ export const usersSlice = createSlice({
   initialState,
   reducers: {
     users: (state) => {
-      state.value = state.value;
+      state.value = [...state.value];
     },
     setUsers: (state, action) => {
       state.value = action.payload;
@@ -21,6 +21,6 @@ export const usersSlice = createSlice({
 
 export const { users, setUsers } = usersSlice.actions;
 
-export const user = (state: RootState) => state.users.value;
+export const usersData = (state: RootState) => state?.users?.value;
 
 export default usersSlice.reducer;

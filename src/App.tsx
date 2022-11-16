@@ -1,22 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import "./App.css";
-import { RootState } from "./redux/store";
-import { eachMinuteOfInterval } from "date-fns/esm";
 import { TableContainer, Table, TableBody } from "@mui/material";
 import Hours from "./components/hours/index";
 import DaysOfWeek from "./components/daysOfWeek";
 import { getBookings, getRooms, getUsers, sendQuery } from "./graphqlHelper";
 import { eachHourOfInterval } from "date-fns";
-import { setBookings } from "./redux/reducers/bookingsSlice";
-import { setUsers } from "./redux/reducers/usersSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { setRooms } from "./redux/reducers/roomsSlice";
+import { bookingsData, setBookings } from "./redux/reducers/bookingsSlice";
+import { usersData, setUsers } from "./redux/reducers/usersSlice";
+import { roomsData, setRooms } from "./redux/reducers/roomsSlice";
+import { useAppDispatch, useAppSelector } from "./redux/hooks";
 
 function App() {
-  const dispatch = useDispatch();
-  const bookingsData = useSelector((state: RootState) => state?.bookings);
-  const roomsData = useSelector((state: RootState) => state?.rooms);
-  const users = useSelector((state: RootState) => state?.users);
+  const dispatch = useAppDispatch();
+  const bookings = useAppSelector(bookingsData);
+  const rooms = useAppSelector(roomsData);
+  const users = useAppSelector(usersData);
   const selectedDate = new Date();
   const startHour = new Date().setHours(selectedDate.getHours() - 2);
   const endHour = new Date().setHours(selectedDate.getHours() + 6);
@@ -44,6 +42,7 @@ function App() {
     fetchRooms();
     fetchBookings();
     fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -54,9 +53,9 @@ function App() {
             <Hours {...{ availableHours }} />
             <DaysOfWeek
               {...{ availableHours, selectedDate }}
-              rooms={roomsData?.value}
-              bookings={bookingsData?.value}
-              users={users?.value}
+              rooms={rooms || []}
+              bookings={bookings}
+              users={users}
             />
           </TableBody>
         </Table>

@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 
 const initialState = {
@@ -11,7 +11,7 @@ export const roomsSlice = createSlice({
   initialState,
   reducers: {
     rooms: (state) => {
-      state.value = state.value;
+      state.value = [...state.value];
     },
     setRooms: (state, action) => {
       state.value = action.payload;
@@ -21,6 +21,6 @@ export const roomsSlice = createSlice({
 
 export const { rooms, setRooms } = roomsSlice.actions;
 
-export const room = (state: RootState) => state.rooms.value;
+export const roomsData = (state: RootState) => state?.rooms?.value;
 
 export default roomsSlice.reducer;
