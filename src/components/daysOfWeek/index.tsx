@@ -3,16 +3,19 @@ import { TableCell, TableRow } from "@mui/material";
 import { endOfWeek, startOfWeek, format, eachDayOfInterval } from "date-fns";
 import Room from "../rooms";
 import { RoomPerHour } from "../rooms/index";
-import styled from "styled-components";
 
 const DaysOfWeek = ({
   selectedDate,
   rooms,
   availableHours,
+  bookings,
+  users,
 }: {
-  availableHours: any;
+  availableHours: Date[];
   selectedDate: Date;
   rooms: { id: string; name: string; description: string }[];
+  bookings: never[];
+  users: { id: string; email: string; password: string; username: string }[];
 }) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isActive, setIsActive] = useState(false);
@@ -51,15 +54,10 @@ const DaysOfWeek = ({
               "&:last-child, td": { borderBottom: 0 },
               "&.active-row + .row": { borderTop: "4px solid black" },
               "&:nth-of-type(2)": { borderTop: 0 },
-              "&.active-row table": {
-                position: "relative",
-                left: "-14px",
-              },
-              cursor: "pointer",
             }}
           >
             <TableCell
-              sx={{ padding: 0, maxWidth: "123px" }}
+              sx={{ padding: 0, maxWidth: "123px", cursor: "pointer" }}
               onClick={() => onToggleRow(index)}
             >
               <div
@@ -67,7 +65,7 @@ const DaysOfWeek = ({
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  padding: activeRow ? "0 25px 0 15px" : "0 20px",
+                  padding: activeRow ? "0 35px 0 15px" : "0 20px",
                 }}
               >
                 <div
@@ -94,6 +92,8 @@ const DaysOfWeek = ({
                 padding: 0,
                 paddingRight: "14px",
                 borderRight: "2px solid #9d9898",
+                minWidth: "100px",
+                left: activeRow ? "-20px" : 0,
               }}
             >
               <Room
@@ -101,24 +101,42 @@ const DaysOfWeek = ({
                 isSelected={activeRow}
               />
             </TableCell>
-            {availableHours.map((hour: any) => (
-              <TableCell
-                className={activeRow ? "active" : "row"}
-                sx={{
-                  padding: 0,
-                  position: "relative",
-                  "&.active tbody": {
+            {availableHours.map((hour: any) => {
+              return (
+                <TableCell
+                  className={activeRow ? "active" : "row"}
+                  sx={{
+                    padding: 0,
                     position: "relative",
-                  },
-                  "&:not(:last-of-type)": {
-                    borderRight: "2px solid #9d9898",
-                  },
-                }}
-                key={hour?.getHours()}
-              >
-                <RoomPerHour rooms={activeRow ? rooms : []} />
-              </TableCell>
-            ))}
+                    "&.active tbody": {
+                      position: "relative",
+                    },
+                    "&:not(:last-of-type)": {
+                      borderRight: "2px solid #9d9898",
+                    },
+                    "&::before": {
+                      content: "''",
+                      width: "2px",
+                      minHeight: "100%",
+                      zIndex: 2,
+                      position: "absolute",
+                      top: 0,
+                      left: "-2px",
+                      backgroundColor: "#9d9898",
+                    },
+                  }}
+                  key={hour?.getHours()}
+                >
+                  <RoomPerHour
+                    rooms={activeRow ? rooms : []}
+                    bookings={bookings}
+                    day={day}
+                    hour={hour?.getHours()}
+                    users={users}
+                  />
+                </TableCell>
+              );
+            })}
           </TableRow>
         );
       })}

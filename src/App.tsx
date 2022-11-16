@@ -1,13 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import "./App.css";
 import { TableContainer, Table, TableBody } from "@mui/material";
 import Hours from "./components/hours/index";
 import DaysOfWeek from "./components/daysOfWeek";
-import { getRooms, sendQuery } from "./graphqlHelper";
+import { getBookings, getRooms, getUsers, sendQuery } from "./graphqlHelper";
 import { eachHourOfInterval } from "date-fns";
+import { bookingsData, setBookings } from "./redux/reducers/bookingsSlice";
+import { usersData, setUsers } from "./redux/reducers/usersSlice";
+import { roomsData, setRooms } from "./redux/reducers/roomsSlice";
+import { useAppDispatch, useAppSelector } from "./redux/hooks";
 
 function App() {
-  const [rooms, setRooms] = useState([]);
+  const dispatch = useAppDispatch();
+  const bookings = useAppSelector(bookingsData);
+  const rooms = useAppSelector(roomsData);
+  const users = useAppSelector(usersData);
   const selectedDate = new Date();
   const startHour = new Date().setHours(selectedDate.getHours() - 2);
   const endHour = new Date().setHours(selectedDate.getHours() + 6);
@@ -18,11 +25,24 @@ function App() {
 
   const fetchRooms = async () => {
     const response = await sendQuery(getRooms());
-    setRooms(response?.data?.data?.rooms);
+    dispatch(setRooms(response?.data?.data?.rooms));
+  };
+
+  const fetchBookings = async () => {
+    const response = await sendQuery(getBookings());
+    dispatch(setBookings(response?.data?.data?.bookings));
+  };
+
+  const fetchUsers = async () => {
+    const response = await sendQuery(getUsers());
+    dispatch(setUsers(response?.data?.data?.users));
   };
 
   useEffect(() => {
     fetchRooms();
+    fetchBookings();
+    fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -31,7 +51,12 @@ function App() {
         <Table>
           <TableBody>
             <Hours {...{ availableHours }} />
-            <DaysOfWeek {...{ availableHours, selectedDate, rooms }} />
+            <DaysOfWeek
+              {...{ availableHours, selectedDate }}
+              rooms={rooms || []}
+              bookings={bookings}
+              users={users}
+            />
           </TableBody>
         </Table>
       </TableContainer>
