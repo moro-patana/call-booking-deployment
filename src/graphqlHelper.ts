@@ -64,7 +64,6 @@ export const registerMutation = (
 ) => `mutation{
   register(registerInput:{username:"${username}",password:"${password}",email:"${email}"})
     { id,
-      createdAt,
       email,
       username,
       token
