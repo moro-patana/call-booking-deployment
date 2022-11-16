@@ -3,6 +3,15 @@ import { TableCell, TableRow } from "@mui/material";
 import { endOfWeek, startOfWeek, format, eachDayOfInterval } from "date-fns";
 import Room from "../rooms";
 import { RoomPerHour } from "../rooms/index";
+import { BookingType, RoomType, UserType } from "../../utils/types";
+
+interface DaysOfWeekType {
+  availableHours: Date[];
+  selectedDate: Date;
+  rooms: RoomType[];
+  bookings: BookingType[];
+  users: UserType[];
+}
 
 const DaysOfWeek = ({
   selectedDate,
@@ -10,13 +19,7 @@ const DaysOfWeek = ({
   availableHours,
   bookings,
   users,
-}: {
-  availableHours: Date[];
-  selectedDate: Date;
-  rooms: { id: string; name: string; description: string }[];
-  bookings: never[];
-  users: { id: string; email: string; password: string; username: string }[];
-}) => {
+}: DaysOfWeekType) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isActive, setIsActive] = useState(false);
   const startDay = startOfWeek(selectedDate, { weekStartsOn: 1 });
