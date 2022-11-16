@@ -36,8 +36,7 @@ const Hours = ({ availableHours }: { availableHours: Date[] }) => {
               position: "relative",
               borderTop: 0,
               borderBottom: 0,
-              paddingTop: 0,
-              paddingBottom: 0,
+              padding: 0,
               "&:not(:last-of-type)": { borderRight: "2px solid #9d9898" },
             }}
           >

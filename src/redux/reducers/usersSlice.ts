@@ -1,14 +1,13 @@
-import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit'
-import { FETCH_STATUS } from '../../constants'
-import { sendQuery, registerMutation } from '../../graphqlHelper'
-import { AppDispatch, RootState } from '../store'
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { FETCH_STATUS } from "../../constants";
+import { registerMutation, sendQuery } from "../../graphqlHelper";
+import { AppDispatch, RootState } from "../store";
 
 type fetchUserRegisterError = {
   message: string
 }
 
 interface UserRegister {
-  id:string
   username: string
   password: string
   email: string
@@ -17,6 +16,11 @@ interface UserRegister {
 interface PayloadForm {
   register: UserRegister
 }
+
+const initialState: any = {
+  value: [],
+  status: "users",
+};
 
 export const fetchUserRegister = createAsyncThunk<
   PayloadForm,
@@ -50,35 +54,35 @@ export const fetchUserRegister = createAsyncThunk<
   return user
 })
 
-const initialState = {
-  user: { id: '', username: '', email: "", password: '' } as any,
-  status: '',
-}
-
-export const userSlice = createSlice({
-  name: 'counter',
+export const usersSlice = createSlice({
+  name: "users",
   initialState,
-  reducers: {},
+  reducers: {
+    users: (state) => {
+      state.value = [...state.value];
+    },
+    setUsers: (state, action) => {
+      state.status = FETCH_STATUS.IDLE
+      state.value = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(fetchUserRegister.pending, (state) => {
       state.status = FETCH_STATUS.LOADING
     })
     builder.addCase(fetchUserRegister.fulfilled, (state, { payload }) => {
-      state.user = payload?.register
+      state.value.push(payload.register)
       state.status = FETCH_STATUS.IDLE
     })
     builder.addCase(fetchUserRegister.rejected, (state) => {
       state.status = FETCH_STATUS.IDLE
     })
   },
-})
+});
 
-const selectUser = (state: RootState) => state.user;
+export const { users, setUsers } = usersSlice.actions;
 
-export const userSelector = createSelector(
-  selectUser,
-  (user) => user
-)
+export const usersData = (state: RootState) => state?.users?.value;
+export const status = (state: RootState) => state?.users?.status;
 
-
-export default userSlice.reducer
+export default usersSlice.reducer;

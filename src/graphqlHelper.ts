@@ -17,6 +17,30 @@ export const getRooms = () => {
   }`;
 };
 
+export const getBookings = () => {
+  return `{
+    bookings{
+      id,
+      user{id,
+        username,
+        email},
+      roomId,
+      label,
+      startDate
+      ,endDate}
+    }`;
+};
+
+export const getUsers = () => {
+  return `{
+    users{
+      id,
+      email,
+      password,
+      username}
+    }`;
+};
+
 export const sendAuthorizedQuery = (
   query: string,
   token: string
