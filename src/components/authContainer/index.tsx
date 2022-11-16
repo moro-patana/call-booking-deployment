@@ -22,7 +22,7 @@ const AuthContainer: FC<any> = ({heading, children }) => {
         width: "464px",
         height: "543px",
         position: "absolute",
-        top: "48%",
+        bottom: "-200px",
         right: "1%",
         zIndex: 999,
         boxShadow: 3,
