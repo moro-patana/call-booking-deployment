@@ -4,6 +4,7 @@ const bookingModel = require("../../models/booking");
 const roomModel = require("../../models/room");
 const GraphQLString = require("graphql").GraphQLString;
 const GraphQLNonNull = require("graphql").GraphQLNonNull;
+const GraphQLInputObjectType = require("graphql").GraphQLInputObjectType;
 const GraphQLID = require("graphql").GraphQLID;
 const checkAuth = require("../../utils/check-auth");
 const { getErrorForCode, ERROR_CODES } = require("../../utils/errorCodes");
@@ -78,7 +79,21 @@ module.exports = {
   },
   updateBooking: {
     type: bookingType.bookingType,
-    args: argType,
+    args: {
+      id: { type: new GraphQLNonNull(GraphQLString) },
+      roomId: { type: new GraphQLNonNull(GraphQLID) },
+      label: { type: GraphQLString },
+      startDate: { type: GraphQLString },
+      endDate: { type: GraphQLString },
+      user: { type: new GraphQLInputObjectType({
+        name: 'UserInput',
+        fields: () => ({
+          id:          { type: GraphQLID },
+          username: { type: GraphQLString },
+          email:    { type: GraphQLString }, 
+        })
+      }) }
+    },
     resolve: async (root, args, context) => {
       const user = checkAuth(context);
       const bookingToUpdate = await bookingModel.findById(args.id);
@@ -90,18 +105,22 @@ module.exports = {
       };
 
       try {
-        const updatedBooking = await bookingModel
-        .findByIdAndUpdate(args.id, updatedArgs, {
-            new: true,
-        })
-        .populate("booking")
-        .populate("room")
-        .populate("user");
-
-        if (!updatedBooking) {
-            throw new Error(getErrorForCode(ERROR_CODES.EA2));
+        if (user.id === bookingToUpdate.user.id) {
+          const updatedBooking = await bookingModel
+          .findByIdAndUpdate(args.id, updatedArgs, {
+              new: true,
+          })
+          .populate("booking")
+          .populate("room")
+          .populate("user");
+  
+          if (!updatedBooking) {
+              throw new Error(getErrorForCode(ERROR_CODES.EA2));
+          }
+          return updatedBooking;
+        } else {
+          throw new Error(getErrorForCode(ERROR_CODES.EG1));
         }
-        return updatedBooking;
       } catch (error) {
         throw new Error(error);
       }
