@@ -1,16 +1,22 @@
-import React, { useEffect, useState } from "react";
-import "./App.css";
-import { TableContainer, Table, TableBody, Box } from "@mui/material";
-import Hours from "./components/hours/index";
-import DaysOfWeek from "./components/daysOfWeek";
-import { getBookings, getRooms, getUsers, sendQuery } from "./graphqlHelper";
-import { eachHourOfInterval } from "date-fns";
-import { bookingsData, setBookings } from "./redux/reducers/bookingsSlice";
-import { usersData, setUsers, fetchUserRegister, status } from "./redux/reducers/usersSlice";
-import { roomsData, setRooms } from "./redux/reducers/roomsSlice";
-import { useAppDispatch, useAppSelector } from "./redux/hooks";
-import Registration from "./components/registration";
-import AuthContainer from "./components/authContainer";
+import React, { useEffect, useState } from 'react';
+import './App.css';
+import { TableContainer, Table, TableBody, Box } from '@mui/material';
+import Hours from './components/hours/index';
+import DaysOfWeek from './components/daysOfWeek';
+import { getBookings, getRooms, getUsers, sendQuery } from './graphqlHelper';
+import { eachHourOfInterval } from 'date-fns';
+import { bookingsData, setBookings } from './redux/reducers/bookingsSlice';
+import {
+  usersData,
+  setUsers,
+  fetchUserRegister,
+  status,
+} from './redux/reducers/usersSlice';
+import { roomsData, setRooms } from './redux/reducers/roomsSlice';
+import { useAppDispatch, useAppSelector } from './redux/hooks';
+import Registration from './components/registration';
+import AuthContainer from './components/authContainer';
+import LoginPage from './pages/Login';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -26,49 +32,48 @@ function App() {
     end: endHour,
   });
 
-
-  const [isRegistered, setIsRegistered] = useState<boolean>(false)
+  const [isRegistered, setIsRegistered] = useState<boolean>(true);
   const [accountRegister, setAccountRegister] = React.useState({
     username: '',
     password: '',
     email: '',
-  })
+  });
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAccountRegister({
       ...accountRegister,
       username: e.target.value,
-    })
-  }
-  
+    });
+  };
+
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAccountRegister({
       ...accountRegister,
       email: e.target.value,
-    })
-  }
-  
+    });
+  };
+
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAccountRegister({
       ...accountRegister,
       password: e.target.value,
-    })
-  }
+    });
+  };
 
   const handleRegistrationSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e?.preventDefault()
+    e?.preventDefault();
     dispatch(
       fetchUserRegister({
         username: e.currentTarget.username.value,
         password: e.currentTarget.password.value,
         email: e.currentTarget.email.value,
       })
-    )
+    );
     setTimeout(() => {
-      setIsRegistered(true)
+      setIsRegistered(true);
     }, 2000);
-  }
-  
+  };
+
   const fetchRooms = async () => {
     const response = await sendQuery(getRooms());
     dispatch(setRooms(response?.data?.data?.rooms));
@@ -93,8 +98,9 @@ function App() {
 
   return (
     <div className='App'>
-      <AuthContainer heading={!isRegistered ? "Register" : "Log in"}>
-        {!isRegistered ? 
+      <LoginPage />
+      {!isRegistered ? (
+        <AuthContainer heading={'Register'}>
           <div>
             <Registration
               username={accountRegister.username}
@@ -105,11 +111,14 @@ function App() {
               passwordChange={handlePasswordChange}
               onSubmit={handleRegistrationSubmit}
             />
-          <Box sx={{ textAlign: 'center', marginTop: "24px" }}>Already have an account? Login here</Box>
+            <Box sx={{ textAlign: 'center', marginTop: '24px' }}>
+              Already have an account? Login here
+            </Box>
           </div>
-        : <div>{registrationStatus === "loading" ? "Loading...": "Log in"}</div>
-        }
-      </AuthContainer>
+        </AuthContainer>
+      ) : (
+        <LoginPage />
+      )}
       <TableContainer sx={{ paddingTop: '30px', zIndex: -1 }}>
         <Table>
           <TableBody>
