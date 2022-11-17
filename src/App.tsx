@@ -116,7 +116,7 @@ function App() {
             <Hours {...{ availableHours }} />
             <DaysOfWeek
               {...{ availableHours, selectedDate }}
-              rooms={rooms || []}
+              rooms={rooms}
               bookings={bookings}
               users={users}
             />
