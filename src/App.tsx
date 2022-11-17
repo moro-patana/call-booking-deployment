@@ -11,6 +11,7 @@ import { roomsData, setRooms } from "./redux/reducers/roomsSlice";
 import { useAppDispatch, useAppSelector } from "./redux/hooks";
 import Registration from "./components/registration";
 import AuthContainer from "./components/authContainer";
+import ExpendableMenu from "./components/menu";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -93,7 +94,7 @@ function App() {
 
   return (
     <div className='App'>
-      <AuthContainer heading={!isRegistered ? "Register" : "Log in"}>
+      {/* <AuthContainer heading={!isRegistered ? "Register" : "Log in"}>
         {!isRegistered ? 
           <div>
             <Registration
@@ -109,7 +110,8 @@ function App() {
           </div>
         : <div>{registrationStatus === "loading" ? "Loading...": "Log in"}</div>
         }
-      </AuthContainer>
+      </AuthContainer> */}
+      <ExpendableMenu />
       <TableContainer sx={{ paddingTop: '30px', zIndex: -1 }}>
         <Table>
           <TableBody>
