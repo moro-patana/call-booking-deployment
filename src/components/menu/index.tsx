@@ -1,11 +1,24 @@
-import * as React from 'react';
+import React, { FC, useState } from 'react';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import iconMenu from "./menu-icon.png"
+import iconMenu from "./icons/menu-icon.png"
+import upMenu from "./icons/up.svg"
+import downMenu from "./icons/down.svg"
+import logout from "./icons/logout.svg"
+import { endOfWeek, startOfWeek } from "date-fns";
+import { covertTONormalDate } from '../../utils/dateUtils';
 
-const ExpendableMenu = () => {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+const iconStyle = { padding: 0, height: "24px" }
+
+const ExpendableMenu: FC<any> = ({ logoutBtn }) => {
+  const selectedDate = new Date();
+  const startDay = startOfWeek(selectedDate, { weekStartsOn: 1 });
+  const endDay = endOfWeek(selectedDate, { weekStartsOn: 1 });
+  const [ curentDay, setCurrentDay ] = useState<any>(startDay)
+  const [ endingDay, setEndingDay ] = useState<any>(endDay)
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -14,6 +27,20 @@ const ExpendableMenu = () => {
     setAnchorEl(null);
   };
 
+  const handleUpArrow = () => {
+    const startDay = new Date(curentDay.setDate(curentDay.getDate() - 7))
+    const endDay = new Date(endingDay.setDate(endingDay.getDate() - 7))
+    setCurrentDay(startDay)
+    setEndingDay(endDay)
+  }
+  
+  const handleDownArrow = () => {
+    const startDay = new Date(curentDay.setDate(curentDay.getDate() + 7))
+    const endDay = new Date(endingDay.setDate(endingDay.getDate() + 7))
+    setCurrentDay(startDay)
+    setEndingDay(endDay)
+  }
+  
   return (
     <div style={{
         textAlign: "end",
@@ -49,12 +76,38 @@ const ExpendableMenu = () => {
           vertical: 'top',
           horizontal: 'left',
         }}
-        sx={{ top: "786px",
-          left: "1193px" }}
+        sx={{
+          margin: "5px",
+          top: "-8px",
+          left: "3px"
+        }}
       >
-        <MenuItem onClick={handleClose}>Profile</MenuItem>
-        <MenuItem onClick={handleClose}>My account</MenuItem>
-        <MenuItem onClick={handleClose}>Logout</MenuItem>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            width: "320px",
+            gap:"14px"
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <Button sx={iconStyle} onClick={handleUpArrow}><img src={upMenu} alt="Up" /></Button>
+              <Button sx={iconStyle} onClick={handleDownArrow}><img src={downMenu} alt="Down" /></Button>
+            </div>
+            <Button
+              style={{ fontSize: "20px", color: "#000" }}
+            >
+              {covertTONormalDate(curentDay)} - {covertTONormalDate(endingDay)}
+            </Button>
+          </div>
+          <MenuItem
+            onClick={logoutBtn}
+            sx={{ alignSelf: "end" }}
+          >
+            <img src={logout} alt="Log out" />
+          </MenuItem>
+        </div>
       </Menu>
     </div>
   );
