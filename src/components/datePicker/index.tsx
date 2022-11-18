@@ -32,6 +32,7 @@ const DatePicker = ({
             inputFormat="EEEE, MMMM dd"
             value={value}
             onChange={handleChange}
+            className="date-picker"
             renderInput={(params) => <TextField {...params} />}
           />
         </Wrapper>
@@ -51,7 +52,7 @@ const DatePicker = ({
             }}
             sx={timeStyle}
           />
-          {" - "}
+          <span>-</span>
           <TextField
             className="time-picker"
             id="endTime"
@@ -74,12 +75,25 @@ const DatePicker = ({
 
 const Wrapper = styled("div")`
   fieldset {
-    border: 0;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+    border-color: transparent;
+    border: 0
     margin: 0;
   }
-  label,
+  label,i,
   legend {
     display: none;
+  }
+  span {
+    margin: 0 8px;
+    @-moz-document url-prefix() {
+   & {
+     display: none
+   }
+  }
   }
   input {
     position: relative;
@@ -99,21 +113,36 @@ const Wrapper = styled("div")`
   }
   &.time-picker-wrapper {
     margin-top: 0 !important;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    @-moz-document url-prefix() {
+    & {
+      max-width: 110px;
+    }}
   }
   &.date-picker-wrapper {
     position: relative;
+    max-width: 185px;
+    margin-right: 8px;
+    .date-picker div {
+      padding-right: 0;
+    }
     input {
-      max-width: 175px;
+      max-width: 180px;
     }
     button {
       position: absolute;
       left: 0;
+      top: -2px;
       width: 100%;
-      max-width: 175px;
       border-radius: 0;
-      padding: 16px 0;
+      padding: 11.5px 0;
       svg {
         display: none;
+      }
+      &:focus, &:focus-within{
+          border-bottom: 2px solid #1D76D2;
       }
     }
   }

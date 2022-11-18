@@ -9,7 +9,6 @@ import { bookingsData, setBookings } from "./redux/reducers/bookingsSlice";
 import { usersData, setUsers } from "./redux/reducers/usersSlice";
 import { roomsData, setRooms } from "./redux/reducers/roomsSlice";
 import { useAppDispatch, useAppSelector } from "./redux/hooks";
-import BookingModal from "./components/bookingModal";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -23,12 +22,6 @@ function App() {
     start: startHour,
     end: endHour,
   });
-
-  const repeatData = [
-    { name: "Does not repeat", id: "1" },
-    { name: "Daily", id: "2" },
-    { name: "Weekly", id: "3" },
-  ];
 
   const fetchRooms = async () => {
     const response = await sendQuery(getRooms());
@@ -54,7 +47,6 @@ function App() {
 
   return (
     <div className="App">
-      <BookingModal rooms={rooms} repeatData={repeatData} handleClose={() => null} />
       <TableContainer sx={{ paddingTop: "30px" }}>
         <Table>
           <TableBody>

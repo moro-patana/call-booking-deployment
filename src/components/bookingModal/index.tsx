@@ -7,13 +7,17 @@ import DatePicker from "../datePicker";
 import { RoomType } from "../../utils/types";
 
 const BookingModal = ({
-  handleClose,
   rooms,
   repeatData,
+  open,
+  handleClose,
+  position,
 }: {
-  handleClose: any;
   rooms: RoomType[];
   repeatData: { name: string; id: string }[];
+  open: boolean;
+  handleClose: any;
+  position: any;
 }) => {
   const [value, setValue] = useState(new Date());
 
@@ -24,10 +28,16 @@ const BookingModal = ({
   return (
     <div>
       <Modal
-        hideBackdrop
-        open={true}
+        open={open}
         onClose={handleClose}
-        sx={{ display: "flex", flexDirection: "column" }}
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          "& > .MuiBackdrop-root": {
+            backgroundColor: "transparent",
+            cursor: "pointer",
+          },
+        }}
       >
         <Box
           sx={{
@@ -40,6 +50,9 @@ const BookingModal = ({
             boxShadow: "0px 0px 6px #c8c8c8",
             display: "flex",
             flexDirection: "column",
+            position: "absolute",
+            left: position.x > 70 ? "70%" : `${position.x}%`,
+            top: position.y > 518 ? 518 : position.y > 18 ? position.y : 18,
           }}
         >
           <Typography
@@ -60,6 +73,7 @@ const BookingModal = ({
             style={{
               marginBottom: "14px",
               display: "flex",
+              alignItems: "center",
             }}
           >
             <AccessTimeIcon />
@@ -102,7 +116,7 @@ const Wrapper = styled("div")`
     button {
       padding: 9px 7px;
       color: #6200ee;
-      fontsize: 14px;
+      font-size: 14px;
     }
   }
 `;
