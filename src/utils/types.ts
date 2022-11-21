@@ -1,3 +1,5 @@
+import React from "react";
+
 export interface RoomType {
   id: string;
   name: string;
@@ -17,4 +19,14 @@ export interface UserType {
   email: string;
   password: string;
   username: string;
+}
+
+export interface UserType {
+  username: string
+  email: string
+  password: string
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
+  usernameChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  emailChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  passwordChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
