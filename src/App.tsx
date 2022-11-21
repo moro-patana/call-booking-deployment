@@ -9,21 +9,22 @@ import { bookingsData, setBookings } from './redux/reducers/bookingsSlice';
 import {
   usersData,
   setUsers,
-  fetchUserRegister,
   status,
+  selectUser,
 } from './redux/reducers/usersSlice';
 import { roomsData, setRooms } from './redux/reducers/roomsSlice';
 import { useAppDispatch, useAppSelector } from './redux/hooks';
-import Registration from './components/registration';
-import AuthContainer from './components/authContainer';
-import LoginPage from './pages/Login';
+import { LoginPage, RegisterPage } from './pages';
+import ExpendableMenu from './components/menu';
+import { useCookies } from 'react-cookie';
 
 function App() {
   const dispatch = useAppDispatch();
   const bookings = useAppSelector(bookingsData);
   const rooms = useAppSelector(roomsData);
   const users = useAppSelector(usersData);
-  const registrationStatus = useAppSelector(status);
+  const user = useAppSelector(selectUser);
+  const userStatus = useAppSelector(status);
   const selectedDate = new Date();
   const startHour = new Date().setHours(selectedDate.getHours() - 2);
   const endHour = new Date().setHours(selectedDate.getHours() + 6);
@@ -32,48 +33,10 @@ function App() {
     end: endHour,
   });
 
-  const [isRegistered, setIsRegistered] = useState<boolean>(true);
-  const [accountRegister, setAccountRegister] = React.useState({
-    username: '',
-    password: '',
-    email: '',
-  });
-
-  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAccountRegister({
-      ...accountRegister,
-      username: e.target.value,
-    });
-  };
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAccountRegister({
-      ...accountRegister,
-      email: e.target.value,
-    });
-  };
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAccountRegister({
-      ...accountRegister,
-      password: e.target.value,
-    });
-  };
-
-  const handleRegistrationSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e?.preventDefault();
-    dispatch(
-      fetchUserRegister({
-        username: e.currentTarget.username.value,
-        password: e.currentTarget.password.value,
-        email: e.currentTarget.email.value,
-      })
-    );
-    setTimeout(() => {
-      setIsRegistered(true);
-    }, 2000);
-  };
-
+  const [isRegistered, setIsRegistered] = useState(true);
+  const [ isLoggedIn, setIsLoggedIn ] = useState(false);
+  const [ cookies, setCookies, removeCookies ] = useCookies(["auth-token"])
+  
   const fetchRooms = async () => {
     const response = await sendQuery(getRooms());
     dispatch(setRooms(response?.data?.data?.rooms));
@@ -93,32 +56,22 @@ function App() {
     fetchRooms();
     fetchBookings();
     fetchUsers();
+    isLoggedIn && setCookies("auth-token", user.token)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user]);
 
   return (
     <div className='App'>
-      <LoginPage />
-      {!isRegistered ? (
-        <AuthContainer heading={'Register'}>
-          <div>
-            <Registration
-              username={accountRegister.username}
-              email={accountRegister.email}
-              password={accountRegister.password}
-              usernameChange={handleUsernameChange}
-              emailChange={handleEmailChange}
-              passwordChange={handlePasswordChange}
-              onSubmit={handleRegistrationSubmit}
+      {!isRegistered 
+        ? <RegisterPage setIsRegistered={setIsRegistered} /> 
+        : !cookies['auth-token']
+          ? <LoginPage
+              setIsRegistered={setIsRegistered}
+              setIsLoggedIn={setIsLoggedIn}
+              status={userStatus}
             />
-            <Box sx={{ textAlign: 'center', marginTop: '24px' }}>
-              Already have an account? Login here
-            </Box>
-          </div>
-        </AuthContainer>
-      ) : (
-        <LoginPage />
-      )}
+          : <ExpendableMenu />
+      }
       <TableContainer sx={{ paddingTop: '30px', zIndex: -1 }}>
         <Table>
           <TableBody>
