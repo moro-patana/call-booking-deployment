@@ -4,6 +4,7 @@ import { Stack } from "@mui/system";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import styled from "styled-components";
+import { timeConverter } from "../../utils/dateUtils";
 
 const timeStyle = {
   border: 0,
@@ -12,11 +13,19 @@ const timeStyle = {
 
 const DatePicker = ({
   value,
+  date,
   handleChange,
 }: {
-  value: any;
+  value: Date;
+  date: Date;
   handleChange: any;
 }) => {
+  const selectedHour = timeConverter(date?.getHours());
+
+  const getSelectedTimeMinutes = (params: number) => {
+    return timeConverter(new Date(date?.setMinutes(params)).getMinutes());
+  };
+
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Stack
@@ -43,7 +52,7 @@ const DatePicker = ({
             id="startTime"
             label="startTime"
             type="time"
-            defaultValue="07:30"
+            defaultValue={`${selectedHour}:${getSelectedTimeMinutes(0)}`}
             InputLabelProps={{
               shrink: true,
             }}
@@ -58,7 +67,9 @@ const DatePicker = ({
             id="endTime"
             label="endTime"
             type="time"
-            defaultValue="07:30"
+            defaultValue={`${selectedHour}:${getSelectedTimeMinutes(
+              date?.getMinutes() + 15
+            )}`}
             InputLabelProps={{
               shrink: true,
             }}
@@ -113,7 +124,8 @@ const Wrapper = styled("div")`
   }
   &.time-picker-wrapper {
     margin-top: 0 !important;
-    display: flex;
+    display: flex;import { timeConverter } from '../../utils/dateUtils';
+
     align-items: center;
     flex-wrap: wrap;
     @-moz-document url-prefix() {

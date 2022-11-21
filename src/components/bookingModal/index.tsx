@@ -6,22 +6,32 @@ import SelectInput from "../Select";
 import DatePicker from "../datePicker";
 import { RoomType } from "../../utils/types";
 
+interface propTypes {
+  rooms: RoomType[];
+  repeatData: { name: string; id: string }[];
+  open: boolean;
+  handleClose: any;
+  position: { x: number; y: number };
+  day: Date;
+  date: Date;
+  selectedRoom: string;
+  setSelectedRoom: (value: string) => void;
+}
+
 const BookingModal = ({
   rooms,
   repeatData,
   open,
   handleClose,
   position,
-}: {
-  rooms: RoomType[];
-  repeatData: { name: string; id: string }[];
-  open: boolean;
-  handleClose: any;
-  position: any;
-}) => {
-  const [value, setValue] = useState(new Date());
+  day,
+  date,
+  selectedRoom,
+  setSelectedRoom,
+}: propTypes) => {
+  const [value, setValue] = useState(day);
 
-  const handleChange = (newValue: any) => {
+  const handleChange = (newValue: Date) => {
     setValue(newValue);
   };
 
@@ -77,18 +87,20 @@ const BookingModal = ({
             }}
           >
             <AccessTimeIcon />
-            <DatePicker {...{ value, handleChange }} />
+            <DatePicker {...{ value, handleChange, date }} />
           </DatePickerWrapper>
           <SelectInput
-            handleChange={handleChange}
+            handleChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+              setSelectedRoom(event.target.value)
+            }
             data={rooms}
-            value={rooms[0]?.name}
+            value={selectedRoom}
             note="There are available rooms"
           />
           <SelectInput
             handleChange={handleChange}
             data={repeatData}
-            value={repeatData[0].name}
+            value={repeatData[0].id}
             note="Select repeat options"
           />
           <Wrapper className="button-wrapper">
