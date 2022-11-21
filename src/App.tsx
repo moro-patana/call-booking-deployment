@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-import { TableContainer, Table, TableBody, Box } from '@mui/material';
+import { TableContainer, Table, TableBody } from '@mui/material';
 import Hours from './components/hours/index';
 import DaysOfWeek from './components/daysOfWeek';
 import { getBookings, getRooms, getUsers, sendQuery } from './graphqlHelper';
@@ -35,7 +35,7 @@ function App() {
 
   const [isRegistered, setIsRegistered] = useState(true);
   const [ isLoggedIn, setIsLoggedIn ] = useState(false);
-  const [ cookies, setCookies, removeCookies ] = useCookies(["auth-token"])
+  const [ cookies, setCookies ] = useCookies(["auth-token"])
   
   const fetchRooms = async () => {
     const response = await sendQuery(getRooms());

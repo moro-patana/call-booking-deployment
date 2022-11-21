@@ -7,7 +7,13 @@ import { useAppDispatch } from '../redux/hooks';
 import SpinnerIcon from '../components/spinner';
 import { useSelector } from 'react-redux';
 
-const LoginPage: FC<any> = ({ setIsRegistered, setIsLoggedIn, status }) => {
+interface LoginPageType {
+  setIsRegistered: (value: boolean) => void
+  setIsLoggedIn: (value: boolean) => void | boolean
+  status: string
+}
+
+const LoginPage: FC<LoginPageType> = ({ setIsRegistered, setIsLoggedIn, status }) => {
   const dispatch = useAppDispatch();
   const error = useSelector(userErrorLogin)
   const [ login, setLogin ] = useState({
@@ -15,12 +21,12 @@ const LoginPage: FC<any> = ({ setIsRegistered, setIsLoggedIn, status }) => {
     password: ""
   });
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
     dispatch(
       fetchUserLogin({
-        email: e.currentTarget.email.value,
-        password: e.currentTarget.password.value,
+        email: event.currentTarget.email.value,
+        password: event.currentTarget.password.value,
       })
     )
     setIsLoggedIn(true);
@@ -53,12 +59,12 @@ const LoginPage: FC<any> = ({ setIsRegistered, setIsLoggedIn, status }) => {
                 emailErr={errorMessages.email}
                 passwordErr={errorMessages.password}
                 emailChange={
-                  (e: React.ChangeEvent<HTMLInputElement>) => 
-                    setLogin({...login, email: e.target.value})
+                  (event: React.ChangeEvent<HTMLInputElement>) => 
+                    setLogin({...login, email: event.target.value})
                 }
                 passwordChange={
-                  (e: React.ChangeEvent<HTMLInputElement>) => 
-                    setLogin({...login, password: e.target.value})
+                  (event: React.ChangeEvent<HTMLInputElement>) => 
+                    setLogin({...login, password: event.target.value})
                 }
                 onSubmit={handleSubmit}
               />

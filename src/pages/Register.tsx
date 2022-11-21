@@ -5,41 +5,45 @@ import Registration from '../components/registration';
 import { fetchUserRegister } from '../redux/reducers/usersSlice';
 import { useAppDispatch } from '../redux/hooks';
 
-const RegisterPage: FC<any> = ({ setIsRegistered }) => {
+interface RegisterPageType {
+  setIsRegistered: (value: boolean) => void
+}
+
+const RegisterPage: FC<RegisterPageType> = ({ setIsRegistered }) => {
   const dispatch = useAppDispatch();
   const [accountRegister, setAccountRegister] = useState({
     username: '',
     password: '',
     email: '',
   });
-  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAccountRegister({
       ...accountRegister,
-      username: e.target.value,
+      username: event.target.value,
     });
   };
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAccountRegister({
       ...accountRegister,
-      email: e.target.value,
+      email: event.target.value,
     });
   };
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAccountRegister({
       ...accountRegister,
-      password: e.target.value,
+      password: event.target.value,
     });
   };
 
-  const handleRegistrationSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e?.preventDefault();
+  const handleRegistrationSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event?.preventDefault();
     dispatch(
       fetchUserRegister({
-        username: e.currentTarget.username.value,
-        password: e.currentTarget.password.value,
-        email: e.currentTarget.email.value,
+        username: event.currentTarget.usernamev.value,
+        password: event.currentTarget.password.value,
+        email: event.currentTarget.email.value,
       })
     );
     setTimeout(() => {

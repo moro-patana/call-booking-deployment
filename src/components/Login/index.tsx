@@ -7,8 +7,8 @@ interface LoginType {
   emailErr: string
   passwordErr: string
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
-  emailChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  passwordChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  emailChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  passwordChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 const Login: FC<LoginType> = ({

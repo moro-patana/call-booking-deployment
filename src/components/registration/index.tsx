@@ -11,9 +11,9 @@ export interface UserType {
   email: string
   password: string
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
-  usernameChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  emailChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  passwordChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  usernameChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  emailChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  passwordChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 const Registration: FC<UserType> = ({
