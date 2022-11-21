@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { TableCell, TableRow } from "@mui/material";
 import { endOfWeek, startOfWeek, format, eachDayOfInterval } from "date-fns";
 import Room from "../rooms";
-import { BookingType, RoomType, UserType } from "../../utils/types";
+import { BookingType, RoomType, UserBookingType } from "../../utils/types";
 import RoomPerHour from "../roomPerHour";
 
 interface DaysOfWeekType {
@@ -10,7 +10,7 @@ interface DaysOfWeekType {
   selectedDate: Date;
   rooms: RoomType[];
   bookings: BookingType[];
-  users: UserType[];
+  users: UserBookingType[];
 }
 
 const DaysOfWeek = ({

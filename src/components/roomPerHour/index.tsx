@@ -1,7 +1,7 @@
 import { Table, TableBody, TableCell, TableRow } from "@mui/material";
 import { eachMinuteOfInterval } from "date-fns";
 import { dateStringConverter, timeConverter } from "../../utils/dateUtils";
-import { BookingType, RoomType, UserType } from "../../utils/types";
+import { BookingType, RoomType, UserBookingType } from "../../utils/types";
 import BookingModal from "../bookingModal";
 import TooltipContent, { HtmlTooltip } from "../tooltip";
 import { useState } from "react";
@@ -11,7 +11,7 @@ interface RoomPerHoursType {
   bookings: BookingType[];
   day: Date;
   date: Date;
-  users: UserType[];
+  users: UserBookingType[];
 }
 
 const RoomPerHour = ({
@@ -90,7 +90,7 @@ const RoomPerHour = ({
           });
 
           const user = users.find(
-            (user: UserType) => user?.id === bookingItem?.user?.id
+            (user: UserBookingType) => user?.id === bookingItem?.user?.id
           );
 
           const minutes = dateStringConverter(

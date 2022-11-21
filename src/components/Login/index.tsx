@@ -1,5 +1,25 @@
 import { Box, Button, Grid, TextField } from '@mui/material';
-const Login = () => {
+import { FC } from 'react';
+
+interface LoginType {
+  email: string
+  password: string
+  emailErr: string
+  passwordErr: string
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
+  emailChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  passwordChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+}
+
+const Login: FC<LoginType> = ({
+  email,
+  password,
+  emailErr,
+  passwordErr,
+  onSubmit,
+  emailChange,
+  passwordChange
+}) => {
   return (
     <Box
       component='form'
@@ -9,6 +29,7 @@ const Login = () => {
         flexDirection: 'column',
         alignItems: 'flex-end',
       }}
+      onSubmit={onSubmit}
     >
       <Grid container spacing='19px'>
         <Grid item xs={12}>
@@ -19,6 +40,10 @@ const Login = () => {
             name='email'
             type='email'
             sx={{ marginBottom: '10px' }}
+            value={email}
+            onChange={emailChange}
+            helperText={emailErr}
+            required
           />
           <label htmlFor='email'>Enter you email</label>
         </Grid>
@@ -30,11 +55,18 @@ const Login = () => {
             type='password'
             id='password'
             sx={{ marginBottom: '10px' }}
+            value={password}
+            onChange={passwordChange}
+            helperText={passwordErr}
+            required
           />
           <label htmlFor='password'>Enter your password</label>
         </Grid>
       </Grid>
-      <Button sx={{ color: '#6200ee', marginTop: '15px' }} type='submit'>
+      <Button
+        sx={{ color: '#6200ee', marginTop: '15px' }}
+        type='submit'
+      >
         Login
       </Button>
     </Box>

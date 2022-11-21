@@ -69,9 +69,9 @@ export const registerMutation = (
       token
     }}`;
 
-export const loginMutation = (username: string, password: string) => {
+export const loginMutation = (email: string, password: string) => {
   return `mutation{
-    login(username:"${username}",
+    login(email:"${email}",
     password:"${password}",
     ){
       id,
