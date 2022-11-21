@@ -4,21 +4,21 @@ import styled from "styled-components";
 import { RoomType } from "../../utils/types";
 
 const SelectInput = ({
-  handleChange,
   data,
   value,
   note,
+  handleChange,
 }: {
-  handleChange: any;
   data: RoomType[] | { name: string; id: string }[];
   value: string;
   note: string;
+  handleChange: any;
 }) => {
   return (
     <InputWrapper>
       <Select value={value} onChange={handleChange} sx={{ width: "100%" }}>
         {data?.map((item) => (
-          <MenuItem key={item?.id} value={item?.name}>
+          <MenuItem key={item?.id} value={item?.id}>
             {item?.name}
           </MenuItem>
         ))}

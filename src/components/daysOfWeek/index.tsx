@@ -21,7 +21,7 @@ const DaysOfWeek = ({
   users,
 }: DaysOfWeekType) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const [isActive, setIsActive] = useState(false);
+  const [isActive, setIsActive] = useState<boolean>(false);
   const startDay = startOfWeek(selectedDate, { weekStartsOn: 1 });
   const endDay = endOfWeek(selectedDate, { weekStartsOn: 1 });
   const weekDays = eachDayOfInterval({ start: startDay, end: endDay });
@@ -104,7 +104,7 @@ const DaysOfWeek = ({
                 isSelected={activeRow}
               />
             </TableCell>
-            {availableHours.map((hour: any) => {
+            {availableHours.map((date: Date) => {
               return (
                 <TableCell
                   className={activeRow ? "active" : "row"}
@@ -128,13 +128,13 @@ const DaysOfWeek = ({
                       backgroundColor: "#9d9898",
                     },
                   }}
-                  key={hour?.getHours()}
+                  key={date?.getHours()}
                 >
                   <RoomPerHour
                     rooms={activeRow ? rooms : []}
                     bookings={bookings}
                     day={day}
-                    hour={hour?.getHours()}
+                    date={date}
                     users={users}
                   />
                 </TableCell>

@@ -10,7 +10,7 @@ interface RoomPerHoursType {
   rooms: RoomType[];
   bookings: BookingType[];
   day: Date;
-  hour: number;
+  date: Date;
   users: UserType[];
 }
 
@@ -18,23 +18,29 @@ const RoomPerHour = ({
   rooms,
   bookings,
   day,
-  hour,
+  date,
   users,
 }: RoomPerHoursType) => {
   const viewPort = window.innerWidth;
   const [cellId, setCellId] = useState("");
   const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
+  const [selectedRoom, setSelectedRoom] = useState("");
 
-  const openModal = (e: any) => {
-    const classList = e.target.classList;
+  const openModal = (event: any) => {
+    const classList = event.target.classList;
     if (classList.contains("booking-cell")) {
       setModalPosition({
-        x: Math.round(((e.pageX - 206) / viewPort) * 100),
-        y: e.pageY - 204,
+        x: Math.round(((event.pageX - 206) / viewPort) * 100),
+        y: event.pageY - 204,
       });
 
-      setCellId(e.target.id);
+      setCellId(event.target.id);
+      setSelectedRoom(event.target.id);
     }
+  };
+
+  const percentageCalculator = (params: number) => {
+    return Math.floor((params / 60) * 100);
   };
 
   const repeatData = [
@@ -42,6 +48,12 @@ const RoomPerHour = ({
     { name: "Daily", id: "2" },
     { name: "Weekly", id: "3" },
   ];
+
+  const getTime = (date: Date) => {
+    return `${timeConverter(date?.getHours())}:${timeConverter(
+      date?.getMinutes()
+    )}`;
+  };
 
   return (
     <>
@@ -52,72 +64,45 @@ const RoomPerHour = ({
           );
 
           const bookingItem = bookingPerRoom.find(
-            (date: { startDate: string }) => {
-              const startTimeChecker = date.startDate !== "now";
+            (booking: { startDate: string }) => {
+              const bookingDay = dateStringConverter(booking?.startDate).getDate();
 
-              const bookingDay = startTimeChecker
-                ? dateStringConverter(date.startDate).getDate()
-                : new Date().getDate();
+              const bookingStartTime = dateStringConverter(
+                booking?.startDate
+              ).getHours();
 
-              const bookingStartTime = startTimeChecker
-                ? dateStringConverter(date.startDate).getHours()
-                : new Date().getHours();
-              return bookingDay === day.getDate() && bookingStartTime === hour;
+              return (
+                bookingDay === day?.getDate() &&
+                bookingStartTime === date?.getHours()
+              );
             }
           );
 
-          const minutes = dateStringConverter(
-            bookingItem?.startDate
-          ).getMinutes();
-
           const startDate =
-            bookingItem && bookingItem?.startDate !== "now"
-              ? dateStringConverter(bookingItem.startDate)
-              : new Date();
+            bookingItem && dateStringConverter(bookingItem.startDate);
 
           const endDate =
             bookingItem && dateStringConverter(bookingItem.endDate);
 
           const arrayOfDates = eachMinuteOfInterval({
             start: startDate,
-            end:
-              endDate !== "Invalid Date"
-                ? endDate
-                : new Date(new Date().setMinutes(new Date().getMinutes() + 30)),
+            end: endDate,
           });
 
-          const width = Math.floor((arrayOfDates.length / 60) * 100);
-
-          const position = Math.round(Math.floor((minutes / 60) * 100));
-
           const user = users.find(
-            (user: UserType) => user.id === bookingItem?.user?.id
+            (user: UserType) => user?.id === bookingItem?.user?.id
           );
+
+          const minutes = dateStringConverter(
+            bookingItem?.startDate
+          ).getMinutes();
 
           const booking = {
             ...bookingItem,
-            position,
-            width,
+            position: percentageCalculator(minutes),
+            width: percentageCalculator(arrayOfDates.length),
             user: user?.username,
           };
-
-          const startTime =
-            bookingItem &&
-            timeConverter(startDate?.getHours()) &&
-            timeConverter(startDate?.getMinutes())
-              ? `${timeConverter(startDate?.getHours())}:${timeConverter(
-                  startDate?.getMinutes()
-                )}`
-              : "Not defined";
-
-          const endTime =
-            bookingItem &&
-            timeConverter(endDate.getHours()) &&
-            timeConverter(endDate.getMinutes())
-              ? `${timeConverter(endDate.getHours())}:${timeConverter(
-                  endDate.getMinutes()
-                )}`
-              : "Not defined";
 
           return (
             <TableBody
@@ -159,6 +144,10 @@ const RoomPerHour = ({
                     open={room?.id === cellId}
                     repeatData={repeatData}
                     handleClose={() => setCellId("")}
+                    day={day}
+                    date={date}
+                    selectedRoom={selectedRoom}
+                    setSelectedRoom={setSelectedRoom}
                   />
 
                   {booking && (
@@ -166,8 +155,8 @@ const RoomPerHour = ({
                       title={
                         <TooltipContent
                           room={room?.name}
-                          startTime={startTime}
-                          endTime={endTime}
+                          startTime={getTime(startDate)}
+                          endTime={getTime(endDate)}
                           user={booking?.user}
                           description={booking?.label}
                         />

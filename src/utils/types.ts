@@ -4,17 +4,18 @@ export interface RoomType {
   description: string;
 }
 
-export interface BookingType {
-  endDate: string;
-  id: string;
-  label: string;
-  roomId: string;
-  startDate: string;
-}
-
 export interface UserType {
   id: string;
   email: string;
   password: string;
   username: string;
+}
+
+export interface BookingType {
+  id: string;
+  label: string;
+  roomId: string;
+  startDate: string | Date;
+  endDate: string | Date;
+  user: UserType;
 }
