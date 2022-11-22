@@ -34,7 +34,7 @@ const LoginPage: FC<LoginPageType> = ({ setIsRegistered, setIsLoggedIn, status }
 
   const emailErrorMessage =
     error?.message?.toString()
-      ? 'Username is not found.'
+      ? 'Email is not found.'
       : ''
 
   const passwordErrorMessage =
@@ -88,7 +88,3 @@ const LoginPage: FC<LoginPageType> = ({ setIsRegistered, setIsLoggedIn, status }
 };
 
 export default LoginPage;
-
-const Bar = styled("div")`
-
-`
