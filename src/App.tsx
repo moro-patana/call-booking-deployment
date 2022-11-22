@@ -35,7 +35,7 @@ function App() {
 
   const [isRegistered, setIsRegistered] = useState(true);
   const [ isLoggedIn, setIsLoggedIn ] = useState(false);
-  const [ cookies, setCookies ] = useCookies(["auth-token"])
+  const [ cookies, setCookies, removeCookie ] = useCookies(["auth-token"])
   
   const fetchRooms = async () => {
     const response = await sendQuery(getRooms());
@@ -50,6 +50,11 @@ function App() {
   const fetchUsers = async () => {
     const response = await sendQuery(getUsers());
     dispatch(setUsers(response?.data?.data?.users));
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    removeCookie("auth-token")
   };
 
   useEffect(() => {
@@ -70,9 +75,13 @@ function App() {
               setIsLoggedIn={setIsLoggedIn}
               status={userStatus}
             />
-          : <ExpendableMenu />
+          : <ExpendableMenu logoutBtn={handleLogout} />
       }
-      <TableContainer sx={{ paddingTop: '30px', zIndex: -1 }}>
+      <TableContainer sx={{
+        paddingTop: '30px',
+        zIndex: -1,
+        pointerEvents: `${!isLoggedIn && "none"}` 
+      }}>
         <Table>
           <TableBody>
             <Hours {...{ availableHours }} />
