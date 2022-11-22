@@ -40,7 +40,10 @@ function App() {
 
   const [isRegistered, setIsRegistered] = useState(true);
   const [ isLoggedIn, setIsLoggedIn ] = useState(false);
-  const [ cookies, setCookies, removeCookie ] = useCookies(["auth-token"])
+  const [ cookies, setCookies ] = useCookies(["auth-token"])
+
+  const [ currentDay, setCurrentDay ] = useState<any>(startDay)
+  const [ endingDay, setEndingDay ] = useState<any>(endDay)
   const [ week, setWeek ] = useState(weekDays)
   
   const fetchRooms = async () => {
@@ -56,16 +59,6 @@ function App() {
   const fetchUsers = async () => {
     const response = await sendQuery(getUsers());
     dispatch(setUsers(response?.data?.data?.users));
-  };
-
-  const handleSelectWeek = () => {
-    console.log("handleSelectWeek");
-    
-  };
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    removeCookie("auth-token")
   };
 
   useEffect(() => {
@@ -86,15 +79,19 @@ function App() {
               setIsLoggedIn={setIsLoggedIn}
               status={userStatus}
             />
-          : <ExpendableMenu 
-              logoutBtn={handleLogout}
-              selectWeek={handleSelectWeek}
+          : <ExpendableMenu
+              currentDay={currentDay}
+              endingDay={endingDay}
+              setCurrentDay={setCurrentDay}
+              setEndingDay={setEndingDay}
+              setWeek={setWeek}
+              setIsLoggedIn={setIsLoggedIn}
             />
       }
       <TableContainer sx={{
         paddingTop: '30px',
         zIndex: -1,
-        pointerEvents: `${!isLoggedIn && "none"}` 
+        pointerEvents: `${!cookies['auth-token'] && "none"}` 
       }}>
         <Table>
           <TableBody>

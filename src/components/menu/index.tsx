@@ -6,25 +6,33 @@ import iconMenu from "./icons/menu-icon.png"
 import upMenu from "./icons/up.svg"
 import downMenu from "./icons/down.svg"
 import logout from "./icons/logout.svg"
-import { endOfWeek, startOfWeek } from "date-fns";
+import { eachDayOfInterval } from "date-fns";
 import { covertTONormalDate } from '../../utils/dateUtils';
+import { useCookies } from 'react-cookie';
 
 const iconStyle = { padding: 0, height: "24px" }
 
 interface MenuType {
-  logoutBtn: (value: any) => void
-  selectWeek: (value: any) => void
+  currentDay: Date
+  endingDay: Date
+  setCurrentDay: (value: Date) => void 
+  setEndingDay: (value: Date) => void
+  setWeek: (value: Date[]) => void
+  setIsLoggedIn: (value: boolean) => void
 }
 
-const ExpendableMenu: FC<MenuType> = ({ logoutBtn, selectWeek }) => {
-  const selectedDate = new Date();
-  const startDay = startOfWeek(selectedDate, { weekStartsOn: 1 });
-  const endDay = endOfWeek(selectedDate, { weekStartsOn: 1 });
-  const [ curentDay, setCurrentDay ] = useState<any>(startDay)
-  const [ endingDay, setEndingDay ] = useState<any>(endDay)
-
+const ExpendableMenu: FC<MenuType> = ({
+  currentDay,
+  endingDay,
+  setCurrentDay,
+  setEndingDay,
+  setWeek,
+  setIsLoggedIn
+}) => {
+  const [ cookies, setCookies, removeCookie ] = useCookies(["auth-token"])
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -33,19 +41,30 @@ const ExpendableMenu: FC<MenuType> = ({ logoutBtn, selectWeek }) => {
   };
 
   const handleUpArrow = () => {
-    const startDay = new Date(curentDay.setDate(curentDay.getDate() - 7))
+    const startDay = new Date(currentDay.setDate(currentDay.getDate() - 7))
     const endDay = new Date(endingDay.setDate(endingDay.getDate() - 7))
     setCurrentDay(startDay)
     setEndingDay(endDay)
   }
   
   const handleDownArrow = () => {
-    const startDay = new Date(curentDay.setDate(curentDay.getDate() + 7))
+    const startDay = new Date(currentDay.setDate(currentDay.getDate() + 7))
     const endDay = new Date(endingDay.setDate(endingDay.getDate() + 7))
     setCurrentDay(startDay)
     setEndingDay(endDay)
   }
   
+  const handleSelectWeek = () => {
+    const days = eachDayOfInterval({ start: currentDay, end: endingDay })
+    setWeek(days);
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    removeCookie("auth-token")
+  };
+
   return (
     <div style={{
         textAlign: "end",
@@ -102,13 +121,13 @@ const ExpendableMenu: FC<MenuType> = ({ logoutBtn, selectWeek }) => {
             </div>
             <Button
               style={{ fontSize: "20px", color: "#000" }}
-              onClick={selectWeek}
+              onClick={handleSelectWeek}
             >
-              {covertTONormalDate(curentDay)} - {covertTONormalDate(endingDay)}
+              {covertTONormalDate(currentDay)} - {covertTONormalDate(endingDay)}
             </Button>
           </div>
           <MenuItem
-            onClick={logoutBtn}
+            onClick={handleLogout}
             sx={{ alignSelf: "end" }}
           >
             <img src={logout} alt="Log out" />
