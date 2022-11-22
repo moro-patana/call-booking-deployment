@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { TableCell, TableRow } from "@mui/material";
-import { endOfWeek, startOfWeek, format, eachDayOfInterval } from "date-fns";
+import { format } from "date-fns";
 import Room from "../rooms";
 import { BookingType, RoomType, UserBookingType } from "../../utils/types";
 import RoomPerHour from "../roomPerHour";
@@ -24,10 +24,6 @@ const DaysOfWeek = ({
 }: DaysOfWeekType) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isActive, setIsActive] = useState<boolean>(false);
-  // const startDay = startOfWeek(selectedDate, { weekStartsOn: 1 });
-  // const endDay = endOfWeek(selectedDate, { weekStartsOn: 1 });
-  // const weekDays = eachDayOfInterval({ start: startDay, end: endDay });
-
   const someRooms = [...rooms].slice(0, 3);
 
   const onToggleRow = (index: number) => {
