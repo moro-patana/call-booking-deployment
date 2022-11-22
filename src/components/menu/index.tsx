@@ -11,7 +11,12 @@ import { covertTONormalDate } from '../../utils/dateUtils';
 
 const iconStyle = { padding: 0, height: "24px" }
 
-const ExpendableMenu: FC<any> = ({ logoutBtn }) => {
+interface MenuType {
+  logoutBtn: (value: any) => void
+  selectWeek: (value: any) => void
+}
+
+const ExpendableMenu: FC<MenuType> = ({ logoutBtn, selectWeek }) => {
   const selectedDate = new Date();
   const startDay = startOfWeek(selectedDate, { weekStartsOn: 1 });
   const endDay = endOfWeek(selectedDate, { weekStartsOn: 1 });
@@ -97,6 +102,7 @@ const ExpendableMenu: FC<any> = ({ logoutBtn }) => {
             </div>
             <Button
               style={{ fontSize: "20px", color: "#000" }}
+              onClick={selectWeek}
             >
               {covertTONormalDate(curentDay)} - {covertTONormalDate(endingDay)}
             </Button>

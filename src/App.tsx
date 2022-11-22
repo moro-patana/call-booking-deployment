@@ -4,7 +4,7 @@ import { TableContainer, Table, TableBody } from '@mui/material';
 import Hours from './components/hours/index';
 import DaysOfWeek from './components/daysOfWeek';
 import { getBookings, getRooms, getUsers, sendQuery } from './graphqlHelper';
-import { eachHourOfInterval } from 'date-fns';
+import { eachDayOfInterval, eachHourOfInterval, endOfWeek, startOfWeek } from 'date-fns';
 import { bookingsData, setBookings } from './redux/reducers/bookingsSlice';
 import {
   usersData,
@@ -25,7 +25,12 @@ function App() {
   const users = useAppSelector(usersData);
   const user = useAppSelector(selectUser);
   const userStatus = useAppSelector(status);
+  
   const selectedDate = new Date();
+  const startDay = startOfWeek(selectedDate, { weekStartsOn: 1 });
+  const endDay = endOfWeek(selectedDate, { weekStartsOn: 1 });
+  const weekDays = eachDayOfInterval({ start: startDay, end: endDay });
+
   const startHour = new Date().setHours(selectedDate.getHours() - 2);
   const endHour = new Date().setHours(selectedDate.getHours() + 6);
   const availableHours = eachHourOfInterval({
@@ -36,6 +41,7 @@ function App() {
   const [isRegistered, setIsRegistered] = useState(true);
   const [ isLoggedIn, setIsLoggedIn ] = useState(false);
   const [ cookies, setCookies, removeCookie ] = useCookies(["auth-token"])
+  const [ week, setWeek ] = useState(weekDays)
   
   const fetchRooms = async () => {
     const response = await sendQuery(getRooms());
@@ -50,6 +56,11 @@ function App() {
   const fetchUsers = async () => {
     const response = await sendQuery(getUsers());
     dispatch(setUsers(response?.data?.data?.users));
+  };
+
+  const handleSelectWeek = () => {
+    console.log("handleSelectWeek");
+    
   };
 
   const handleLogout = () => {
@@ -75,7 +86,10 @@ function App() {
               setIsLoggedIn={setIsLoggedIn}
               status={userStatus}
             />
-          : <ExpendableMenu logoutBtn={handleLogout} />
+          : <ExpendableMenu 
+              logoutBtn={handleLogout}
+              selectWeek={handleSelectWeek}
+            />
       }
       <TableContainer sx={{
         paddingTop: '30px',
@@ -90,6 +104,7 @@ function App() {
               rooms={rooms}
               bookings={bookings}
               users={users}
+              weekDays={week}
             />
           </TableBody>
         </Table>

@@ -11,6 +11,7 @@ interface DaysOfWeekType {
   rooms: RoomType[];
   bookings: BookingType[];
   users: UserBookingType[];
+  weekDays: any[];
 }
 
 const DaysOfWeek = ({
@@ -19,12 +20,13 @@ const DaysOfWeek = ({
   availableHours,
   bookings,
   users,
+  weekDays
 }: DaysOfWeekType) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isActive, setIsActive] = useState<boolean>(false);
-  const startDay = startOfWeek(selectedDate, { weekStartsOn: 1 });
-  const endDay = endOfWeek(selectedDate, { weekStartsOn: 1 });
-  const weekDays = eachDayOfInterval({ start: startDay, end: endDay });
+  // const startDay = startOfWeek(selectedDate, { weekStartsOn: 1 });
+  // const endDay = endOfWeek(selectedDate, { weekStartsOn: 1 });
+  // const weekDays = eachDayOfInterval({ start: startDay, end: endDay });
 
   const someRooms = [...rooms].slice(0, 3);
 
