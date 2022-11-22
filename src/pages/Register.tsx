@@ -41,7 +41,7 @@ const RegisterPage: FC<RegisterPageType> = ({ setIsRegistered }) => {
     event?.preventDefault();
     dispatch(
       fetchUserRegister({
-        username: event.currentTarget.usernamev.value,
+        username: event.currentTarget.username.value,
         password: event.currentTarget.password.value,
         email: event.currentTarget.email.value,
       })
