@@ -1,11 +1,7 @@
-import { FC, useState } from 'react';
-import { Box, Button, Divider, styled } from '@mui/material';
-import AuthContainer from '../components/authContainer';
-import Login from '../components/Login';
-import { fetchUserLogin, userErrorLogin } from '../redux/reducers/usersSlice';
-import { useAppDispatch } from '../redux/hooks';
-import SpinnerIcon from '../components/spinner';
-import { useSelector } from 'react-redux';
+import { FC } from 'react';
+import { Box, Button, Divider } from '@mui/material';
+import { AuthContainer, Login, SpinnerIcon } from '../components';
+import useCustomHooks from '../customHooks';
 
 interface LoginPageType {
   setIsRegistered: (value: boolean) => void
@@ -13,39 +9,13 @@ interface LoginPageType {
   status: string
 }
 
-const LoginPage: FC<LoginPageType> = ({ setIsRegistered, setIsLoggedIn, status }) => {
-  const dispatch = useAppDispatch();
-  const error = useSelector(userErrorLogin)
-  const [ login, setLogin ] = useState({
-    email: "",
-    password: ""
-  });
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    dispatch(
-      fetchUserLogin({
-        email: event.currentTarget.email.value,
-        password: event.currentTarget.password.value,
-      })
-    )
-    setIsLoggedIn(true);
-  }
-
-  const emailErrorMessage =
-    error?.message?.toString()
-      ? 'Email is not found.'
-      : ''
-
-  const passwordErrorMessage =
-    error?.message?.toString()
-      ? 'Password is incorrect. Try again!'
-      : ''
-
-  const errorMessages = {
-    email: emailErrorMessage,
-    password: passwordErrorMessage,
-  }
+const LoginPage: FC<LoginPageType> = ({ setIsRegistered, status }) => {
+  const {
+    handleLoginSubmit,
+    errorMessages,
+    login,
+    setLogin
+  } = useCustomHooks()
 
   return (
     <AuthContainer heading={'Login to book'}>
@@ -66,7 +36,7 @@ const LoginPage: FC<LoginPageType> = ({ setIsRegistered, setIsLoggedIn, status }
                   (event: React.ChangeEvent<HTMLInputElement>) => 
                     setLogin({...login, password: event.target.value})
                 }
-                onSubmit={handleSubmit}
+                onSubmit={handleLoginSubmit}
               />
               <Box sx={{ textAlign: 'center', marginTop: '40px' }}>
                 <Divider light />
