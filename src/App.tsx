@@ -26,7 +26,7 @@ function App() {
 
   return (
     <div className='App'>
-      {!isRegistered 
+      {!isRegistered
         ? <RegisterPage setIsRegistered={setIsRegistered} /> 
         : !cookies['auth-token']
           ? <LoginPage
@@ -46,7 +46,7 @@ function App() {
       <TableContainer sx={{
         paddingTop: '30px',
         zIndex: -1,
-        pointerEvents: `${!cookies['auth-token'] && "none"}` 
+        pointerEvents: `${!cookies['auth-token'] && "none"}`,
       }}>
         <Table>
           <TableBody>

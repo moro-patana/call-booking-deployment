@@ -1,23 +1,34 @@
-import { FC, useState } from 'react';
+import React, { FC } from 'react';
 import { Box, Button, Divider } from '@mui/material';
-import { fetchUserRegister } from '../redux/reducers/usersSlice';
-import { useAppDispatch } from '../redux/hooks';
 import { AuthContainer, Registration } from '../components';
 import useCustomHooks from '../customHooks';
+import { useAppDispatch } from '../redux/hooks';
+import { fetchUserRegister } from '../redux/reducers/usersSlice';
 
 interface RegisterPageType {
   setIsRegistered: (value: boolean) => void
 }
 
 const RegisterPage: FC<RegisterPageType> = ({ setIsRegistered }) => {
+  const dispatch = useAppDispatch();
   const {
     accountRegister,
     handleEmailChange,
     handlePasswordChange,
     handleUsernameChange,
-    handleRegistrationSubmit
   } = useCustomHooks();
 
+  const handleRegistrationSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event?.preventDefault();
+    dispatch(
+      fetchUserRegister({
+        username: event.currentTarget.username.value,
+        password: event.currentTarget.password.value,
+        email: event.currentTarget.email.value,
+      })
+    );
+    setIsRegistered(true);
+  };
   return (
     <AuthContainer heading={'Register'}>
       <div>

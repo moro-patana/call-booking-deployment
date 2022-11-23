@@ -42,6 +42,7 @@ const Registration: FC<UserType> = ({
             sx={{ marginBottom: '10px' }}
             value={username}
             onChange={usernameChange}
+            required
           />
           <label htmlFor='username'>Enter your username</label>
         </Grid>
@@ -55,6 +56,7 @@ const Registration: FC<UserType> = ({
             sx={{ marginBottom: '10px' }}
             value={email}
             onChange={emailChange}
+            required
           />
           <label htmlFor='email'>Enter you email</label>
         </Grid>
@@ -68,12 +70,16 @@ const Registration: FC<UserType> = ({
             sx={{ marginBottom: '10px' }}
             value={password}
             onChange={passwordChange}
+            required
           />
           <label htmlFor='password'>Enter your password</label>
         </Grid>
       </Grid>
       <Button
-        sx={{ color: password ? "#883ff2" : '#787878', marginLeft: "334px" }}
+        sx={{
+          color: password ? "#883ff2" : '#787878',
+          marginLeft: "334px",
+        }}
         type="submit"
       >
         Register

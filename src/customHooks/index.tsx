@@ -8,7 +8,6 @@ import { bookingsData, setBookings } from "../redux/reducers/bookingsSlice";
 import { roomsData, setRooms } from "../redux/reducers/roomsSlice";
 import {
   fetchUserLogin,
-  fetchUserRegister,
   selectUser,
   setUsers,
   status,
@@ -37,7 +36,7 @@ const useCustomHooks = () => {
     end: endHour,
   });
 
-  const [isRegistered, setIsRegistered] = useState(true);
+  const [ isRegistered, setIsRegistered ] = useState(true);
   const [ isLoggedIn, setIsLoggedIn ] = useState(false);
   const [accountRegister, setAccountRegister] = useState({
     username: '',
@@ -73,20 +72,6 @@ const useCustomHooks = () => {
       ...accountRegister,
       password: event.target.value,
     });
-  };
-
-  const handleRegistrationSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event?.preventDefault();
-    dispatch(
-      fetchUserRegister({
-        username: event.currentTarget.username.value,
-        password: event.currentTarget.password.value,
-        email: event.currentTarget.email.value,
-      })
-    );
-    setTimeout(() => {
-      setIsRegistered(true);
-    }, 2000);
   };
 
   // Login
@@ -149,7 +134,6 @@ const useCustomHooks = () => {
     handleEmailChange,
     handlePasswordChange,
     handleUsernameChange,
-    handleRegistrationSubmit,
     handleLoginSubmit,
     errorMessages,
     login,
