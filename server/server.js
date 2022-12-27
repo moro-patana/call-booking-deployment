@@ -1,8 +1,12 @@
+require('dotenv').config();
+
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const { graphqlHTTP } = require("express-graphql");
 const { mergeSchemas } = require("@graphql-tools/merge");
+
+const DATABASE_URL = process.env.DATABASE_URL;
 
 const userSchema = require("./graphql/UserSchema").UserSchema;
 const roomSchema = require("./graphql/RoomSchema").RoomSchema;
@@ -20,13 +24,18 @@ app.options("*", cors());
 mongoose.set("debug", true);
 
 mongoose.connect(
-  "mongodb://mongo/myappdb",
-  { useUnifiedTopology: true },
+  DATABASE_URL, {useUnifiedTopology: true, useNewUrlParser: true},
   (err) => {
-    if (err) throw err;
-    console.log("connected to Auuuuuummmooooooo");
+    if (err){
+      console.error('Connection to DB failed');
+    } else{
+        console.log('Connection to DB was successful');
+    }
   }
 );
+
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, "MongoDB connection failed"));
 
 app.set("port", process.env.port || 4000);
 app.listen(app.get("port"), () => {
