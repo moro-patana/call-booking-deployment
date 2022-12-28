@@ -1,10 +1,18 @@
 # Call booths
-This is an internal web app at Onja that allows everyone book a room for a meeting or something else.
+This is an Onja internal web app to allow Onja's team memeber to book a meeting room.
 
-# Project setup
+# Tech Stack
 
-## Technologies
-- Node + 12
+## Project requirements
+- Node v.12+
+- Npm v.6+
+- Yarn
+- docker
+- docker compose plugin
+
+
+## Technologies used
+- Node
 - GraphQL
 - React
 - material UI
@@ -13,34 +21,38 @@ This is an internal web app at Onja that allows everyone book a room for a meeti
 - docker
 - Redux
 
-Install `yarn` using `npm`:
+Tips: Install `yarn` using `npm`:
 - ` npm install -g yarn`
 
-# Clone the project [https://github.com/onja-org/call-booking](https://github.com/onja-org/call-booking)
+# Quick Set up:
+
+### 1. Clone the project [https://github.com/onja-org/call-booking](https://github.com/onja-org/call-booking)
 
 ## Backend
 `cd server`
 
-### 1. `npm install`
+### 2a. `npm install`
 
-### 2. Run docker
+### 2b. Connect DB
+Copy .env.example and remove the .example extension
+Fill in the DB connection variable with your DB connection string.
+
+### 2c. Run docker
 Based on the docker compose version installed on the machine, the command can be either
 - `docker-compose up --build`
 - `docker compose up --build`
 
 Open [http://localhost:4000/graphql](http://localhost:4000/graphql) to view it in the browser.
 
-### 3. `npm run start.dev`
-Run this to see the [http://localhost:4000](http://localhost:4000)
 
 ## Frontend
 
-### 1. `yarn install`
-### 2. `yarn  start`
+### 3a. `yarn install`
+### 3b. `yarn  start`
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-# Other useful configurations
 
+# Other useful configurations
 ### `yarn run build`
 
 Builds the app for production to the `build` folder.

@@ -17,12 +17,10 @@ const mergedSchema = mergeSchemas({
 });
 
 const cors = require("cors");
-
 app.use(cors());
 app.options("*", cors());
 
 mongoose.set("debug", true);
-
 mongoose.connect(
   DATABASE_URL, {useUnifiedTopology: true, useNewUrlParser: true},
   (err) => {
@@ -54,10 +52,6 @@ app.use(
   })
 );
 
-app.get("/", (req, res) => {
-  res.send("hello wood ! ");
-});
-
 function logErrors(err, req, res, next) {
   console.error(err.stack);
   next(err);
@@ -70,6 +64,7 @@ function clientErrorHandler(err, req, res, next) {
     next(err);
   }
 }
+
 function errorHandler(err, req, res, next) {
   res.status(500);
   res.render("error", { error: err });
