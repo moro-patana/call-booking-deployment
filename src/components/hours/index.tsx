@@ -1,17 +1,9 @@
-import React from "react";
 import { TableCell, TableRow } from "@mui/material";
-import styled from "styled-components";
 
 const Hours = ({ availableHours }: { availableHours: Date[] }) => {
   return (
     <>
-      <TableRow
-        sx={{
-          padding: 0,
-          borderTop: 0,
-        }}
-      >
-        <TableCell
+      <TableCell
           sx={{
             paddingBottom: 0,
             borderBottom: 0,
@@ -29,30 +21,45 @@ const Hours = ({ availableHours }: { availableHours: Date[] }) => {
             width: 0,
           }}
         />
-        {availableHours.map((hour: Date) => (
+    {availableHours.map((hour: Date) => (
+      <TableRow
+        key={hour.getHours()}
+        sx={{
+          padding: 0,
+          borderTop: 0,
+        }}
+      >
           <TableCell
-            key={hour.getHours()}
             sx={{
               position: "relative",
+              borderRight: 0,
               borderTop: 0,
-              borderBottom: 0,
               padding: 0,
-              "&:not(:last-of-type)": { borderRight: "2px solid #9d9898" },
+              "&:not(:last-of-type)": { borderTop: "2px solid #9d9898" },
             }}
           >
-            <Span>{hour.getHours()}:00</Span>
+            <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "start",
+                  padding: "0 20px",
+                }}
+              >
+                <span
+                  style={{
+                    opacity: 0.6,
+                    fontSize: "16px",
+                  }}
+                >
+                  {hour.getHours()}:00
+                </span>
+              </div>
           </TableCell>
-        ))}
       </TableRow>
+    ))}
     </>
   );
 };
-
-const Span = styled("span")`
-  position: absolute;
-  top: -25px;
-  left: -18.5px;
-  font-size: 14px;
-`;
 
 export default Hours;

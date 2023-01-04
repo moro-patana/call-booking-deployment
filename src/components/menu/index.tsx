@@ -2,13 +2,12 @@ import React, { FC, useState } from 'react';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import iconMenu from "./icons/menu-icon.png"
-import upMenu from "./icons/up.svg"
-import downMenu from "./icons/down.svg"
-import logout from "./icons/logout.svg"
+import MenuIcon from "../../icons/menu-icon.png"
+import ArrowUpIcon from "../../icons/up.svg"
+import ArrowDownIcon from "../../icons/down.svg"
+import LogoutIcon from "../../icons/logout.svg"
 import { eachDayOfInterval } from "date-fns";
 import { covertTONormalDate } from '../../utils/dateUtils';
-import { useCookies } from 'react-cookie';
 
 const iconStyle = { padding: 0, height: "24px" }
 
@@ -18,7 +17,6 @@ interface MenuType {
   setCurrentDay: (value: Date) => void 
   setEndingDay: (value: Date) => void
   setWeek: (value: Date[]) => void
-  setIsLoggedIn: (value: boolean) => void
 }
 
 const ExpendableMenu: FC<MenuType> = ({
@@ -27,9 +25,7 @@ const ExpendableMenu: FC<MenuType> = ({
   setCurrentDay,
   setEndingDay,
   setWeek,
-  setIsLoggedIn
 }) => {
-  const [ cookies, setCookies, removeCookie ] = useCookies(["auth-token"])
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
@@ -61,8 +57,8 @@ const ExpendableMenu: FC<MenuType> = ({
   };
 
   const handleLogout = () => {
-    setIsLoggedIn(false);
-    removeCookie("auth-token")
+    // The logout should be handle with redux
+    console.log('logout')
   };
 
   return (
@@ -84,7 +80,7 @@ const ExpendableMenu: FC<MenuType> = ({
         onClick={handleClick}
         sx={{ borderColor: "#9d9898", padding: "0px" }}
       >
-        <img src={iconMenu} alt="Menu" />
+        <img src={MenuIcon} alt="Menu" />
       </Button>
       <Menu
         id="demo-positioned-menu"
@@ -116,8 +112,8 @@ const ExpendableMenu: FC<MenuType> = ({
         >
           <div style={{ display: "flex", alignItems: "center" }}>
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <Button sx={iconStyle} onClick={handleUpArrow}><img src={upMenu} alt="Up" /></Button>
-              <Button sx={iconStyle} onClick={handleDownArrow}><img src={downMenu} alt="Down" /></Button>
+              <Button sx={iconStyle} onClick={handleUpArrow}><img src={ArrowUpIcon} alt="Up" /></Button>
+              <Button sx={iconStyle} onClick={handleDownArrow}><img src={ArrowDownIcon} alt="Down" /></Button>
             </div>
             <Button
               style={{ fontSize: "20px", color: "#000" }}
@@ -130,7 +126,7 @@ const ExpendableMenu: FC<MenuType> = ({
             onClick={handleLogout}
             sx={{ alignSelf: "end" }}
           >
-            <img src={logout} alt="Log out" />
+            <img src={LogoutIcon} alt="Log out" />
           </MenuItem>
         </div>
       </Menu>

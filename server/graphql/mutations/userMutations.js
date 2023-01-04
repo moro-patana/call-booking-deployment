@@ -1,5 +1,5 @@
-const userType = require("../../types/user");
-const usersModel = require("../../models/user");
+const userType = require("../types/user");
+const usersModel = require("../models/user");
 const JWT_SECRET = require("../../config").JWT_SECRET;
 const GraphQLNonNull = require("graphql").GraphQLNonNull;
 const GraphQLString = require("graphql").GraphQLString;

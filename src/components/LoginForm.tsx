@@ -4,18 +4,18 @@ import { FC } from 'react';
 interface LoginType {
   email: string
   password: string
-  emailErr: string
-  passwordErr: string
+  // emailErr: string
+  // passwordErr: string
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
   emailChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   passwordChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-const Login: FC<LoginType> = ({
+const LoginForm: FC<LoginType> = ({
   email,
   password,
-  emailErr,
-  passwordErr,
+  // emailErr,
+  // passwordErr,
   onSubmit,
   emailChange,
   passwordChange
@@ -42,7 +42,7 @@ const Login: FC<LoginType> = ({
             sx={{ marginBottom: '10px' }}
             value={email}
             onChange={emailChange}
-            helperText={emailErr}
+            // helperText={emailErr}
             required
           />
           <label htmlFor='email'>Enter you email</label>
@@ -57,7 +57,7 @@ const Login: FC<LoginType> = ({
             sx={{ marginBottom: '10px' }}
             value={password}
             onChange={passwordChange}
-            helperText={passwordErr}
+            // helperText={passwordErr}
             required
           />
           <label htmlFor='password'>Enter your password</label>
@@ -73,4 +73,4 @@ const Login: FC<LoginType> = ({
   );
 };
 
-export default Login;
+export default LoginForm;

@@ -9,7 +9,7 @@ export const sendQuery = (query: any): Promise<any> => {
 
 export const getRooms = () => {
   return `{
-      rooms{
+    getRooms{
       id,
       name,
       description
@@ -17,18 +17,21 @@ export const getRooms = () => {
   }`;
 };
 
-export const getBookings = () => {
+export const getBookingsByUser = () => {
   return `{
-    bookings{
+    getBookingsByUser{
       id,
-      user{id,
+      user {
+        id,
         username,
-        email},
+        email
+      },
       roomId,
       label,
-      startDate
-      ,endDate}
-    }`;
+      startDate,
+      endDate
+    }
+  }`;
 };
 
 export const getUsers = () => {
@@ -37,8 +40,9 @@ export const getUsers = () => {
       id,
       email,
       password,
-      username}
-    }`;
+      username
+    }
+  }`;
 };
 
 export const sendAuthorizedQuery = (
@@ -59,10 +63,10 @@ export const sendAuthorizedQuery = (
 
 export const registerMutation = (
   username: string,
+  email: string,
   password: string,
-  email: string
-) => `mutation{
-  register(registerInput:{username:"${username}",password:"${password}",email:"${email}"})
+) => `mutation {
+  register(registerInput:{username:"${username}", email:"${email}", password:"${password}"})
     { id,
       email,
       username,
@@ -71,8 +75,8 @@ export const registerMutation = (
 
 export const loginMutation = (email: string, password: string) => {
   return `mutation{
-    login(email:"${email}",
-    password:"${password}",
+    login(email: "${email}",
+    password: "${password}",
     ){
       id,
       email,

@@ -2,8 +2,7 @@ const GraphQLObjectType = require("graphql").GraphQLObjectType;
 const GraphQLNonNull = require("graphql").GraphQLNonNull;
 const GraphQLID = require("graphql").GraphQLID;
 const GraphQLString = require("graphql").GraphQLString;
-const { userType } = require("./user");
-const { roomType } = require("./room");
+const GraphQLList = require("graphql").GraphQLList;
 
 exports.bookingType = new GraphQLObjectType({
   name: "booking",
@@ -12,8 +11,8 @@ exports.bookingType = new GraphQLObjectType({
       id: {
         type: new GraphQLNonNull(GraphQLID),
       },
-      user: {
-        type: userType,
+      partecipants: {
+        type: GraphQLList(GraphQLID),
       },
       roomId: {
         type: GraphQLID,

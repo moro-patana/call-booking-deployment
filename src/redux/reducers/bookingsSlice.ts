@@ -2,25 +2,21 @@ import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 
 const initialState = {
-  value: [],
-  status: "bookings",
+  bookings: []
 };
 
 export const bookingsSlice = createSlice({
   name: "bookings",
   initialState,
   reducers: {
-    bookings: (state) => {
-      state.value = [...state.value];
-    },
-    setBookings: (state, action) => {
-      state.value = action.payload;
+    getBookingsByUserAction: (state, action) => {
+      state.bookings = action.payload;
     },
   },
 });
 
-export const { bookings, setBookings } = bookingsSlice.actions;
+export const { getBookingsByUserAction } = bookingsSlice.actions;
 
-export const bookingsData = (state: RootState) => state?.bookings?.value;
+export const bookingsData = (state: RootState) => state?.bookings?.bookings;
 
 export default bookingsSlice.reducer;

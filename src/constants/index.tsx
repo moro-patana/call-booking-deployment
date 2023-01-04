@@ -1,4 +1,6 @@
 export enum FETCH_STATUS {
-    LOADING = 'loading',
+    PENDING = 'pending',
     IDLE = 'idle',
+    SUCCESSED = 'succeeded',
+    FAILED = 'failed'
 }

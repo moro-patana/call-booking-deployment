@@ -31,17 +31,21 @@ Tips: Install `yarn` using `npm`:
 ## Backend
 `cd server`
 
-### 2a. `npm install`
-
-### 2b. Connect DB
+### 2a. Connect DB
 Copy .env.example and remove the .example extension
 Fill in the DB connection variable with your DB connection string.
 
-### 2c. Run docker
+## Development
+### 2b. 1. `npm install`
+### 2b. 2. `npm run start.dev`
+
+## Production
+### 2b. 1. Build with docker
 Based on the docker compose version installed on the machine, the command can be either
-- `docker-compose up --build`
+- `docker-compose  up --build`
 - `docker compose up --build`
 
+d
 Open [http://localhost:4000/graphql](http://localhost:4000/graphql) to view it in the browser.
 
 

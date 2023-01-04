@@ -1,11 +1,10 @@
-const bookingType = require("../../types/booking");
-const { userType } = require("../../types/user");
-const bookingModel = require("../../models/booking");
-const roomModel = require("../../models/room");
+const bookingType = require("../types/booking");
+const bookingModel = require("../models/booking");
 const GraphQLString = require("graphql").GraphQLString;
 const GraphQLNonNull = require("graphql").GraphQLNonNull;
 const GraphQLInputObjectType = require("graphql").GraphQLInputObjectType;
 const GraphQLID = require("graphql").GraphQLID;
+const GraphQLList = require("graphql").GraphQLList;
 const checkAuth = require("../../utils/check-auth");
 const { getErrorForCode, ERROR_CODES } = require("../../utils/errorCodes");
 
@@ -14,6 +13,7 @@ const argType = {
   label: { type: GraphQLString },
   startDate: { type: GraphQLString },
   endDate: { type: GraphQLString },
+  partecipants: { type: GraphQLList(GraphQLID) }
 }
 
 module.exports = {
@@ -21,16 +21,17 @@ module.exports = {
     type: bookingType.bookingType,
     args: argType,
     resolve: async (root, args, context) => {
-      const user = checkAuth(context);
+      // const user = checkAuth(context);
       const {
         roomId,
         label,
         startDate,
         endDate,
+        partecipants
       } = args;
 
       const uModel = new bookingModel({
-        user: user,
+        partecipants,
         roomId,
         label,
         startDate,

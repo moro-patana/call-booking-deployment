@@ -1,29 +1,17 @@
 import { eachDayOfInterval, eachHourOfInterval, endOfWeek, startOfWeek } from "date-fns";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import { useSelector } from "react-redux";
-import { getBookings, getRooms, getUsers, sendQuery } from "../graphqlHelper";
+import { getBookingsByUser, getRooms, sendQuery, sendAuthorizedQuery } from "../graphqlHelper";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { bookingsData, setBookings } from "../redux/reducers/bookingsSlice";
-import { roomsData, setRooms } from "../redux/reducers/roomsSlice";
-import {
-  fetchUserLogin,
-  selectUser,
-  setUsers,
-  status,
-  userErrorLogin,
-  usersData
-} from "../redux/reducers/usersSlice";
+import { bookingsData, getBookingsByUserAction } from "../redux/reducers/bookingsSlice";
+import { roomsData, getRoomsAction } from "../redux/reducers/roomsSlice";
 
 const useCustomHooks = () => {
   const dispatch = useAppDispatch();
-  const error = useSelector(userErrorLogin)
-  const bookings = useAppSelector(bookingsData);
   const rooms = useAppSelector(roomsData);
-  const users = useAppSelector(usersData);
-  const user = useAppSelector(selectUser);
-  const userStatus = useAppSelector(status);
-  
+  const { users, currentUser } = useAppSelector(state => state.users);
+  const userBookings = useAppSelector(bookingsData);
+    
   const selectedDate = new Date();
   const startDay = startOfWeek(selectedDate, { weekStartsOn: 1 });
   const endDay = endOfWeek(selectedDate, { weekStartsOn: 1 });
@@ -36,119 +24,51 @@ const useCustomHooks = () => {
     end: endHour,
   });
 
-  const [ isRegistered, setIsRegistered ] = useState(true);
-  const [ isLoggedIn, setIsLoggedIn ] = useState(false);
-  const [accountRegister, setAccountRegister] = useState({
-    username: '',
-    password: '',
-    email: '',
-  });
-  const [ login, setLogin ] = useState({
-    email: "",
-    password: ""
-  });
-
   const [ cookies, setCookies ] = useCookies(["auth-token"])
   const [ currentDay, setCurrentDay ] = useState<any>(startDay)
   const [ endingDay, setEndingDay ] = useState<any>(endDay)
   const [ week, setWeek ] = useState(weekDays)
 
-  const handleUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAccountRegister({
-      ...accountRegister,
-      username: event.target.value,
-    });
-  };
-
-  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAccountRegister({
-      ...accountRegister,
-      email: event.target.value,
-    });
-  };
-
-  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAccountRegister({
-      ...accountRegister,
-      password: event.target.value,
-    });
-  };
-
-  // Login
-  const handleLoginSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    dispatch(
-      fetchUserLogin({
-        email: event.currentTarget.email.value,
-        password: event.currentTarget.password.value,
-      })
-    )
-    setIsLoggedIn(true);
-  }
-
-  const emailErrorMessage =
-    error?.message?.toString()
-      ? 'Email is not found.'
-      : ''
-
-  const passwordErrorMessage =
-    error?.message?.toString()
-      ? 'Password is incorrect. Try again!'
-      : ''
-
-  const errorMessages = {
-    email: emailErrorMessage,
-    password: passwordErrorMessage,
-  }
-
   const fetchRooms = async () => {
-    const response = await sendQuery(getRooms());
-    dispatch(setRooms(response?.data?.data?.rooms));
+    try {
+      const response = await sendAuthorizedQuery(getRooms(), cookies["auth-token"]);
+      dispatch(getRoomsAction(response?.data?.data?.getRooms));
+    } catch (err) {
+      console.log('getRooms err', err)
+    }
   };
 
-  const fetchBookings = async () => {
-    const response = await sendQuery(getBookings());
-    dispatch(setBookings(response?.data?.data?.bookings));
+  const fetchBookingsByUser = async () => {
+    try {
+      const response = await sendQuery(getBookingsByUser());
+      dispatch(getBookingsByUserAction(response?.data?.data?.bookings));
+    } catch (err) {
+      console.log('geBookingUser err', err)
+    }
   };
 
-  const fetchUsers = async () => {
-    const response = await sendQuery(getUsers());
-    dispatch(setUsers(response?.data?.data?.users));
-  };
+  // TODO: test if is working, when is time to implment this feature
+  // const fetchAllUsers = async () => {
+  //   const response = await sendQuery(getUsers());
+  //   dispatch(fetchUsers(response?.data?.data?.users));
+  // };
 
   useEffect(() => {
-    fetchRooms();
-    fetchBookings();
-    fetchUsers();
-    isLoggedIn && setCookies("auth-token", user.token)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+    currentUser && currentUser.token && setCookies("auth-token", currentUser.token)
+    currentUser.isLogin && fetchRooms();
+    currentUser.isLogin && fetchBookingsByUser();
+  }, [currentUser]);
 
   return {
     dispatch,
-    isRegistered,
-    isLoggedIn,
-    accountRegister,
-    setIsLoggedIn,
-    setIsRegistered,
-    handleEmailChange,
-    handlePasswordChange,
-    handleUsernameChange,
-    handleLoginSubmit,
-    errorMessages,
-    login,
-    setLogin,
     selectedDate,
-    bookings,
+    userBookings,
     rooms,
-    users,
-    user,
-    userStatus,
     availableHours,
     cookies,
     currentDay,
-    endingDay,
     setCurrentDay,
+    endingDay,
     setEndingDay,
     week,
     setWeek

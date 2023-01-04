@@ -2,25 +2,21 @@ import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 
 const initialState = {
-  value: [],
-  status: "rooms",
+  rooms: [],
 };
 
 export const roomsSlice = createSlice({
   name: "rooms",
   initialState,
   reducers: {
-    rooms: (state) => {
-      state.value = [...state.value];
-    },
-    setRooms: (state, action) => {
-      state.value = action.payload;
+    getRoomsAction: (state, action) => {
+      state.rooms = action.payload;
     },
   },
 });
 
-export const { rooms, setRooms } = roomsSlice.actions;
+export const { getRoomsAction } = roomsSlice.actions;
 
-export const roomsData = (state: RootState) => state?.rooms?.value;
+export const roomsData = (state: RootState) => state?.rooms?.rooms;
 
 export default roomsSlice.reducer;

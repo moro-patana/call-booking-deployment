@@ -8,7 +8,7 @@ import { useState } from "react";
 
 interface RoomPerHoursType {
   rooms: RoomType[];
-  bookings: BookingType[];
+  bookings: BookingType[] | [];
   day: Date;
   date: Date;
   users: UserBookingType[];

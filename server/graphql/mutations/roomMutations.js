@@ -1,5 +1,5 @@
-const roomType = require("../../types/room");
-const roomModel = require("../../models/room");
+const roomType = require("../types/room");
+const roomModel = require("../models/room");
 const GraphQLString = require("graphql").GraphQLString;
 const GraphQLNonNull = require("graphql").GraphQLNonNull;
 const checkAuth = require("../../utils/check-auth");
@@ -17,53 +17,52 @@ module.exports = {
       },
     },
     resolve: async (root, args, context) => {
-      const user = checkAuth(context);
       const {
         name,
         description,
       } = args;
 
-      const uModel = new roomModel({
+      const newRoomModel = new roomModel({
         name,
         description,
       });
 
-      const newRoom = await uModel.save();
+      const newRoom = await newRoomModel.save();
       if (!newRoom) {
         throw new Error(getErrorForCode(ERROR_CODES.EA1));
       }
       return newRoom.populate("room").populate("user");
     },
   },
-  rooms: {
-    type: roomType.roomType,
-    args: {
-      name: {
-        type: GraphQLString,
-      },
-      description: {
-        type: GraphQLString,
-      },
-    },
-    resolve: async (root, args, context) => {
-      const user = checkAuth(context);
-      const {
-        name,
-        description,
-      } = args;
+  // What does this code do? Isn't the same as the getRooms query?
+  // rooms: {
+  //   type: roomType.roomType,
+  //   args: {
+  //     name: {
+  //       type: GraphQLString,
+  //     },
+  //     description: {
+  //       type: GraphQLString,
+  //     },
+  //   },
+  //   resolve: async (root, args, context) => {
+  //     const {
+  //       name,
+  //       description,
+  //     } = args;
 
-      const uModel = new roomModel([{
-        name,
-        description,
-      }]);
+  //     const newRoomModel = new roomModel([{
+  //       name,
+  //       description,
+  //     }]);
 
-      const newRoom = await uModel.get();
-      if (!newRoom) {
-        throw new Error(getErrorForCode(ERROR_CODES.EA1));
-      }
-      return newRoom.populate("room").populate("user");
-    },
-  },
+  //     const newRoom = await newRoomModel.get();
+  //     if (!newRoom) {
+  //       throw new Error(getErrorForCode(ERROR_CODES.EA1));
+  //     }
+  //     return newRoom.populate("room").populate("user");
+  //   },
+  // },
   deleteRoom: {
     type: roomType.roomType,
     args: {
@@ -72,7 +71,6 @@ module.exports = {
       },
     },
     resolve: async (root, args, context) => {
-      const user = checkAuth(context);
       const roomToRemove = await roomModel.findById(args.id);
       
       if (!roomToRemove) {
@@ -100,7 +98,6 @@ module.exports = {
       },
     },
     resolve: async (root, args, context) => {
-      const user = checkAuth(context);
       const roomToUpdate = await roomModel.findById(args.id);
       if (!roomToUpdate) {
         throw new Error(getErrorForCode(ERROR_CODES.EA2));
