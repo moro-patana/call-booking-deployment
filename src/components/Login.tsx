@@ -6,14 +6,15 @@ import SpinnerIcon from './spinner'
 import { useAppDispatch } from '../redux/hooks';
 import { userLoggedIn, fetchCurrentUser } from '../redux/reducers/usersSlice';
 import { loginMutation, sendQuery } from "../graphqlHelper";
+import { useNavigate } from 'react-router-dom';
 
 
 interface LoginComponentType {
-  setIsSignupVisible: (value: boolean) => void
   status: string
 }
 
-const LoginComponent: FC<LoginComponentType> = ({ setIsSignupVisible, status }) => {
+const LoginComponent: FC<LoginComponentType> = ({ status }) => {
+  const navigate = useNavigate()
   const dispatch = useAppDispatch();
   const [ login, setLogin ] = useState({
     email: "",
@@ -27,7 +28,7 @@ const LoginComponent: FC<LoginComponentType> = ({ setIsSignupVisible, status }) 
       dispatch(fetchCurrentUser(res.data.data))
 
       dispatch(userLoggedIn(true))
-      setIsSignupVisible(false)
+      navigate("/my-booking");
     } catch(err) {
       console.log('error while register', err)
     }
@@ -35,37 +36,37 @@ const LoginComponent: FC<LoginComponentType> = ({ setIsSignupVisible, status }) 
 
   return (
     <AuthContainer heading={'Login to book'}>
-        {status === "loading"
-          ? <SpinnerIcon action={"Login"} />
-          : <div> 
-              <LoginForm
-                email={login.email}
-                password={login.password}
-                // emailErr={errorMessages.email}
-                // passwordErr={errorMessages.password}
-                emailChange={
-                  (event: React.ChangeEvent<HTMLInputElement>) => 
-                    setLogin({...login, email: event.target.value})
-                }
-                passwordChange={
-                  (event: React.ChangeEvent<HTMLInputElement>) => 
-                    setLogin({...login, password: event.target.value})
-                }
-                onSubmit={handleLoginSubmit}
-              />
-              <Box sx={{ textAlign: 'center', marginTop: '40px' }}>
-                <Divider light />
-                <div style={{ marginTop: '40px' }}>
-                  Don't have an account? 
-                  <Button
-                    sx={{ color: "#000", textDecoration: "underline" }}
-                    onClick={() => setIsSignupVisible(true)}
-                  >
-                    Register here
-                  </Button>
-                </div>
-              </Box>
-            </div>
+      {status === "loading"
+        ? <SpinnerIcon action={"Login"} />
+        : <div> 
+            <LoginForm
+              email={login.email}
+              password={login.password}
+              // emailErr={errorMessages.email}
+              // passwordErr={errorMessages.password}
+              emailChange={
+                (event: React.ChangeEvent<HTMLInputElement>) => 
+                  setLogin({...login, email: event.target.value})
+              }
+              passwordChange={
+                (event: React.ChangeEvent<HTMLInputElement>) => 
+                  setLogin({...login, password: event.target.value})
+              }
+              onSubmit={handleLoginSubmit}
+            />
+            <Box sx={{ textAlign: 'center', marginTop: '40px' }}>
+              <Divider light />
+              <div style={{ marginTop: '40px' }}>
+                Don't have an account? 
+                <Button
+                  sx={{ color: "#000", textDecoration: "underline" }}
+                  onClick={() => navigate("/signup")}
+                >
+                  Register here
+                </Button>
+              </div>
+            </Box>
+          </div>
         }
     </AuthContainer>
   );

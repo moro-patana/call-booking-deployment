@@ -1,17 +1,15 @@
-import React, { FC, useState } from 'react';
+import React, { useState } from 'react';
 import { Box, Button, Divider } from '@mui/material';
 import Registration from './registration';
 import AuthContainer from './authContainer'
 import { useAppDispatch } from '../redux/hooks';
 import { userRegistered } from '../redux/reducers/usersSlice';
 import { registerMutation, sendQuery } from "../graphqlHelper";
+import { useNavigate } from 'react-router-dom';
 
 
-interface RegisterComponentType {
-  setIsSignupVisible: (value: boolean) => void
-}
-
-const RegisterComponent: FC<RegisterComponentType> = ({ setIsSignupVisible }) => {
+const RegisterComponent = () => {
+  const navigate = useNavigate()
   const dispatch = useAppDispatch();
   const [accountRegister, setAccountRegister] = useState({
     username: '',
@@ -47,7 +45,7 @@ const RegisterComponent: FC<RegisterComponentType> = ({ setIsSignupVisible }) =>
 
     dispatch(userRegistered(res.data.data))
     dispatch(userRegistered(true))
-    setIsSignupVisible(false)
+    navigate("/login");
     } catch(err) {
       console.log('error while register', err)
     }
@@ -70,7 +68,7 @@ const RegisterComponent: FC<RegisterComponentType> = ({ setIsSignupVisible }) =>
             Already have an account?
             <Button
               sx={{ color: "#000", textDecoration: "underline" }}
-              onClick={() => setIsSignupVisible(false)}
+              onClick={() => navigate("/login")}
             >
               Login here
             </Button>
