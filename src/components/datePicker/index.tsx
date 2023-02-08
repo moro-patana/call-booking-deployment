@@ -4,7 +4,7 @@ import { Stack } from "@mui/system";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import styled from "styled-components";
-import { timeConverter } from "../../utils/dateUtils";
+import { getSelectedTimeMinutes, timeConverter } from "../../utils/dateUtils";
 
 const timeStyle = {
   border: 0,
@@ -15,16 +15,19 @@ const DatePicker = ({
   value,
   date,
   handleChange,
+  startTimeOnChange,
+  endTimeOnChange,
+  startTime,
+  endTime
 }: {
-  value: Date;
+  value: Date | undefined;
   date: Date;
   handleChange: any;
+  startTimeOnChange: any;
+  endTimeOnChange: any;
+  startTime: any;
+  endTime: any;
 }) => {
-  const selectedHour = timeConverter(date?.getHours());
-
-  const getSelectedTimeMinutes = (params: number) => {
-    return timeConverter(new Date(date?.setMinutes(params)).getMinutes());
-  };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -52,7 +55,8 @@ const DatePicker = ({
             id="startTime"
             label="startTime"
             type="time"
-            defaultValue={`${selectedHour}:${getSelectedTimeMinutes(0)}`}
+            onChange={startTimeOnChange}
+            value={startTime}
             InputLabelProps={{
               shrink: true,
             }}
@@ -67,9 +71,8 @@ const DatePicker = ({
             id="endTime"
             label="endTime"
             type="time"
-            defaultValue={`${selectedHour}:${getSelectedTimeMinutes(
-              date?.getMinutes() + 15
-            )}`}
+            onChange={endTimeOnChange}
+            value={endTime}
             InputLabelProps={{
               shrink: true,
             }}

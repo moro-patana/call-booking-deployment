@@ -146,8 +146,11 @@ const RoomPerHour = ({
                     handleClose={() => setCellId("")}
                     day={day}
                     date={date}
+                    startDate={new Date()}
+                    endDate={new Date()}
                     selectedRoom={selectedRoom}
                     setSelectedRoom={setSelectedRoom}
+                    
                   />
 
                   {booking && (
