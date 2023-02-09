@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import styled from "styled-components";
@@ -67,9 +67,10 @@ const BookingModal = ({
     setRepeatEvent(event.target.value)
   };
 
-  const handleClickonBooking = () => {
+  const handleClickOnBooking = useCallback(() => {
     const newStartDate = newDateGenerator(start, startTime)
     const newEndDate = newDateGenerator(end, endTime)
+    const findSelectedRoom = rooms.find((room: any) => room.id === roomId);
 
     // const newBooking = {
     //   roomId: `${roomId}`,
@@ -78,14 +79,16 @@ const BookingModal = ({
     //   endDate: `${newEndDate}`
     // }
     const newBooking = {
-      title: `${label}`,
       start: newStartDate,
-      end: newEndDate
+      end: newEndDate,
+      title: `${label}`,
+      desc: findSelectedRoom?.name,
+      id: Date.now()
     }
     
     setBooking((prev: any) => [...prev, newBooking])
     handleClose();
-  }
+  }, [setBooking])
 
   return (
     <div>
@@ -167,7 +170,7 @@ const BookingModal = ({
           />
           <Wrapper className="button-wrapper">
             <Button onClick={handleClose}>Cancel</Button>
-            <Button onClick={handleClickonBooking}>Book</Button>
+            <Button onClick={handleClickOnBooking}>Book</Button>
           </Wrapper>
         </Box>
       </Modal>
