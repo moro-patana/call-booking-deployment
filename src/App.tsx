@@ -33,43 +33,43 @@ const localizer = dateFnsLocalizer({
 
 const rooms = [
   {
-    id: "63e254a436688e001edcc754",
+    id: 1675931028878,
     name: "West house",
     title: "West house",
     description: "A meeting room"
   },
   {
-    id: "63e254af36688e001edcc756",
+    id: 1675931036670,
     name: "Middle house",
     title: "Middle house",
     description: "A meeting room"
   },
   {
-    id: "63e486917c8ab40030e0df78",
+    id: 1675931040636,
     name: "Est house",
     title: "Est house",
     description: "A meeting room"
   },
   {
-    id: "63e486857c8ab40030e0df76",
+    id: 1675931042423,
     name: "Callbooth 4",
     title: "Callbooth 4",
     description: "A meeting room"
   },
   {
-    id: "63e486807c8ab40030e0df74",
+    id: 1675931043759,
     name: "Callbooth 3",
     title: "Callbooth 3",
     description: "A meeting room"
   },
   {
-    id: "63e4867b7c8ab40030e0df72",
+    id: 1675931045679,
     name: "Callbooth 2",
     title: "Callbooth 2",
     description: "A meeting room"
   },
   {
-    id: "63e254bb36688e001edcc758",
+    id: 1675931046938,
     name: "Callbooth 1",
     title: "Callbooth 1",
     description: "A meeting room"
@@ -100,23 +100,27 @@ function App() {
       end: new Date(),
       title: "Some title",
       desc: "Default event",
-      id: 1
+      id: 1,
+      roomId: "1"
     },
   ])
   const [ openBookingModal, setOpenBookingModal ] = useState(false)
-  const [ selectedRoom, setSelectedRoom ] = useState("Middle house")
+  const [slot, setSlot] = useState<any>(null)
+  const [ selectedRoom, setSelectedRoom ] = useState(slot && slot?.resourceId)
   const [ position, setPosition ] = useState({x: 0, y: 0})
   const [ startDate, setStartDate ] = useState(new Date())
   const [ endDate, setEndDate ] = useState(new Date())
 
   const handleSelectEvent = (slot: any) => {
-    const { box, start, end } = slot;
+    setSlot(slot)
+    const { box, start, end, resourceId } = slot;
     const screenWidth = window.screen.width;
     const xPercentage = Math.floor((box.x / screenWidth) * 100);
     setPosition({
       x: xPercentage,
       y: box.y,
     })
+    setSelectedRoom(resourceId)
     setOpenBookingModal(!openBookingModal)
     setStartDate(start)
     setEndDate(end);
@@ -129,8 +133,6 @@ function App() {
     }),
     []
   )
-
-  console.log('events::::::', events);
 
   return (
     <div>
@@ -150,6 +152,7 @@ function App() {
         selectable
         onSelectSlot={(e) => handleSelectEvent(e)}
         resources={rooms}
+        resourceIdAccessor={slot && slot?.resourceId}
         // showAllEvents
         scrollToTime={scrollToTime}
         views={[Views.WEEK, Views.DAY]}

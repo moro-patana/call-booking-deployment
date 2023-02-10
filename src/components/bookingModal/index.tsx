@@ -70,7 +70,7 @@ const BookingModal = ({
   const handleClickOnBooking = useCallback(() => {
     const newStartDate = newDateGenerator(start, startTime)
     const newEndDate = newDateGenerator(end, endTime)
-    const findSelectedRoom = rooms.find((room: any) => room.id === roomId);
+    const findSelectedRoom = rooms.find((room: RoomType) => room.id === Number(roomId));
 
     // const newBooking = {
     //   roomId: `${roomId}`,
@@ -83,7 +83,8 @@ const BookingModal = ({
       end: newEndDate,
       title: `${label}`,
       desc: findSelectedRoom?.name,
-      id: Date.now()
+      id: Date.now(),
+      roomId: findSelectedRoom?.id
     }
     
     setBooking((prev: any) => [...prev, newBooking])
@@ -159,6 +160,7 @@ const BookingModal = ({
               setRoomId(event.target.value)
             }}
             data={rooms}
+            defaultValue={selectedRoom}
             value={roomId}
             note="There are available rooms"
           />
