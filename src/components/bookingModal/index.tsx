@@ -6,7 +6,6 @@ import SelectInput from "../Select";
 import DatePicker from "../datePicker";
 import { RoomType } from "../../utils/types";
 import { getSelectedTimeMinutes, newDateGenerator, timeConverter } from "../../utils/dateUtils";
-import { previousDay } from "date-fns";
 
 interface propTypes {
   rooms: RoomType[];
@@ -42,7 +41,7 @@ const BookingModal = ({
   const selectedHour = timeConverter(start?.getHours());
   const [value, setValue] = useState(day);
   const [label, setLabel] = useState("");
-  const [ roomId, setRoomId ] = useState(rooms[0].id)
+  const [ roomId, setRoomId ] = useState(selectedRoom)
   const [repeatEvent, setRepeatEvent] = useState(repeatData[0].id)
   const [ startTime, setStartTime] = useState(
     `${selectedHour}:${getSelectedTimeMinutes(date, 0)}`
@@ -70,7 +69,6 @@ const BookingModal = ({
   const handleClickOnBooking = useCallback(() => {
     const newStartDate = newDateGenerator(start, startTime)
     const newEndDate = newDateGenerator(end, endTime)
-    const findSelectedRoom = rooms.find((room: RoomType) => room.id === Number(roomId));
 
     // const newBooking = {
     //   roomId: `${roomId}`,
@@ -81,15 +79,15 @@ const BookingModal = ({
     const newBooking = {
       start: newStartDate,
       end: newEndDate,
-      title: `${label}`,
-      desc: findSelectedRoom?.name,
+      title: label,
       id: Date.now(),
-      roomId: findSelectedRoom?.id
+      roomId: roomId,
+      resourceId: roomId
     }
-    
+
     setBooking((prev: any) => [...prev, newBooking])
     handleClose();
-  }, [setBooking])
+  }, [setBooking, label, roomId, startTime, endTime])
 
   return (
     <div>

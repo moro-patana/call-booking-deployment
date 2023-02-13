@@ -16,6 +16,7 @@ import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import BookingModal from "./components/bookingModal"
+import { dateStringConverter } from './utils/dateUtils';
 
 const DnDCalendar = withDragAndDrop(Calendar)
 
@@ -31,53 +32,9 @@ const localizer = dateFnsLocalizer({
   locales,
 })
 
-const rooms = [
-  {
-    id: 1675931028878,
-    name: "West house",
-    title: "West house",
-    description: "A meeting room"
-  },
-  {
-    id: 1675931036670,
-    name: "Middle house",
-    title: "Middle house",
-    description: "A meeting room"
-  },
-  {
-    id: 1675931040636,
-    name: "Est house",
-    title: "Est house",
-    description: "A meeting room"
-  },
-  {
-    id: 1675931042423,
-    name: "Callbooth 4",
-    title: "Callbooth 4",
-    description: "A meeting room"
-  },
-  {
-    id: 1675931043759,
-    name: "Callbooth 3",
-    title: "Callbooth 3",
-    description: "A meeting room"
-  },
-  {
-    id: 1675931045679,
-    name: "Callbooth 2",
-    title: "Callbooth 2",
-    description: "A meeting room"
-  },
-  {
-    id: 1675931046938,
-    name: "Callbooth 1",
-    title: "Callbooth 1",
-    description: "A meeting room"
-  }
-]
-
 function App() {
   const {
+    rooms,
     selectedDate,
     userBookings,
     availableHours,
@@ -90,20 +47,27 @@ function App() {
     setWeek
   } = useCustomHooks();
 
+  const resources = rooms.map((room:any) =>  {
+    return {
+      id: room?.id,
+      title: room?.name,
+      description: room?.description,
+    }
+  })
   const { users, currentUser } = useAppSelector(state => state.users);
   // refactor with react router and redux
   const [isSignupVisible, setIsSignupVisible] = useState(!currentUser.isRegister)
 
-  const [events, setEvents] = useState([
-    {
-      start: new Date(),
-      end: new Date(),
-      title: "Some title",
-      desc: "Default event",
-      id: 1,
-      roomId: "1"
-    },
-  ])
+  const [bookings, setBookings] = useState([])
+  
+  const events = userBookings.map((booking:any) => {
+    return {
+      ...booking,
+      startDate: dateStringConverter(booking?.startDate),
+      endDate: dateStringConverter(booking?.endDate)
+    }
+  })
+  
   const [ openBookingModal, setOpenBookingModal ] = useState(false)
   const [slot, setSlot] = useState<any>(null)
   const [ selectedRoom, setSelectedRoom ] = useState(slot && slot?.resourceId)
@@ -136,43 +100,58 @@ function App() {
 
   return (
     <div>
-      <ExpendableMenu
-        currentDay={currentDay}
-        endingDay={endingDay}
-        setCurrentDay={setCurrentDay}
-        setEndingDay={setEndingDay}
-        setWeek={setWeek}
-      />  
-      <Calendar
-        localizer={localizer}
-        events={events}
-        defaultDate={defaultDate}
-        defaultView={Views.DAY}
-        style={{ height: "100vh" }}
-        selectable
-        onSelectSlot={(e) => handleSelectEvent(e)}
-        resources={rooms}
-        resourceIdAccessor={slot && slot?.resourceId}
-        // showAllEvents
-        scrollToTime={scrollToTime}
-        views={[Views.WEEK, Views.DAY]}
-      />
-      {openBookingModal && (
-        <BookingModal
-          rooms={rooms}
-          repeatData={[{name: "Daily", id: "1"}]}
-          open={openBookingModal}
-          handleClose={() => setOpenBookingModal(false)}
-          position={position}
-          day={new Date()}
-          date={new Date()}
-          startDate={startDate}
-          endDate={endDate}
-          selectedRoom={selectedRoom}
-          setSelectedRoom={setSelectedRoom}
-          setBooking={setEvents}
+      {isSignupVisible && 
+        <RegisterComponent setIsSignupVisible={setIsSignupVisible} />
+      }
+
+      {!isSignupVisible && !currentUser.isLogin &&
+        <LoginComponent
+          setIsSignupVisible={setIsSignupVisible}
+          status={'notLoading'} // TODO: Implement properly via Redux state
         />
-      )}
+      }
+
+      {currentUser.isLogin && 
+        <>
+          <ExpendableMenu
+            currentDay={currentDay}
+            endingDay={endingDay}
+            setCurrentDay={setCurrentDay}
+            setEndingDay={setEndingDay}
+            setWeek={setWeek}
+          />  
+          <Calendar
+            localizer={localizer}
+            events={events}
+            defaultDate={defaultDate}
+            defaultView={Views.DAY}
+            style={{ height: "100vh" }}
+            selectable
+            onSelectSlot={(e) => handleSelectEvent(e)}
+            resources={resources}
+            resourceIdAccessor="id"
+            scrollToTime={scrollToTime}
+            views={[Views.WEEK, Views.DAY]}
+          />
+
+          {openBookingModal && (
+            <BookingModal
+              rooms={rooms}
+              repeatData={[{name: "Daily", id: "1"}]}
+              open={openBookingModal}
+              handleClose={() => setOpenBookingModal(false)}
+              position={position}
+              day={new Date()}
+              date={new Date()}
+              startDate={startDate}
+              endDate={endDate}
+              selectedRoom={selectedRoom}
+              setSelectedRoom={setSelectedRoom}
+              setBooking={setBookings}
+            />
+          )}
+      </>
+      }
     </div>
   );
 }
