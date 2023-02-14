@@ -1,7 +1,7 @@
 import React from "react";
 
 export interface RoomType {
-  id: string;
+  id: any;
   name: string;
   description: string;
 }

@@ -1,31 +1,95 @@
 import './App.css';
-import { TableContainer, Table, TableBody } from '@mui/material';
+import { useMemo, useState } from 'react';
 import LoginComponent from './components/Login';
 import RegisterComponent from './components/Register';
-import DaysOfWeek from './components/daysOfWeek'
-import Hours from './components/hours'
 import ExpendableMenu from './components/menu'
 import useCustomHooks from './customHooks';
 import { useAppSelector } from "../src/redux/hooks";
+import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar'
+import { format, parse, startOfWeek, getDay } from 'date-fns'
+import { enUS } from 'date-fns/locale'
+import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
+import BookingModal from "./components/bookingModal"
+import { dateStringConverter } from './utils/dateUtils';
 import { Route, Routes } from 'react-router-dom';
 
+const DnDCalendar = withDragAndDrop(Calendar)
+
+const locales = {
+  'en-US': enUS,
+}
+
+const localizer = dateFnsLocalizer({
+  format,
+  parse,
+  startOfWeek,
+  getDay,
+  locales,
+})
 
 function App() {
   const {
-    selectedDate,
-    userBookings,
     rooms,
-    availableHours,
-    cookies,
+    userBookings,
     currentDay,
     endingDay,
     setCurrentDay,
     setEndingDay,
-    week,
     setWeek
   } = useCustomHooks();
 
   const { users } = useAppSelector(state => state.users);
+
+  const resources = rooms.map((room:any) =>  {
+    return {
+      id: room?.id,
+      title: room?.name,
+      description: room?.description,
+    }
+  })
+
+  const [bookings, setBookings] = useState([])
+  
+  const events = userBookings.map((booking:any) => {
+    return {
+      ...booking,
+      startDate: dateStringConverter(booking?.startDate),
+      endDate: dateStringConverter(booking?.endDate)
+    }
+  })
+  
+  const [ openBookingModal, setOpenBookingModal ] = useState(false)
+  const [slot, setSlot] = useState<any>(null)
+  const [ selectedRoom, setSelectedRoom ] = useState(slot && slot?.resourceId)
+  const [ position, setPosition ] = useState({x: 0, y: 0})
+  const [ startDate, setStartDate ] = useState(new Date())
+  const [ endDate, setEndDate ] = useState(new Date())
+
+  const handleSelectEvent = (slot: any) => {
+    setSlot(slot)
+    const { box, start, end, resourceId } = slot;
+    const screenWidth = window.screen.width;
+    const xPercentage = Math.floor((box.x / screenWidth) * 100);
+    setPosition({
+      x: xPercentage,
+      y: box.y,
+    })
+    setSelectedRoom(resourceId)
+    setOpenBookingModal(!openBookingModal)
+    setStartDate(start)
+    setEndDate(end);
+  }
+
+  const { defaultDate, scrollToTime } = useMemo(
+    () => ({
+      defaultDate: new Date(),
+      scrollToTime: new Date(),
+    }),
+    []
+  )
+
   // refactor with react router and redux
   return (
     <Routes>
@@ -42,10 +106,6 @@ function App() {
         element={<RegisterComponent />}
       />
       <Route
-        path="/calendar"
-        element={<div>Calendar</div>}
-      />
-      <Route
         path="/my-booking"
         element={
           <>
@@ -58,29 +118,40 @@ function App() {
             />  
   
   
-            <TableContainer sx={{
-              paddingTop: '30px',
-              zIndex: -1,
-              pointerEvents: `${!cookies['auth-token'] && "none"}`,
-            }}>
-              <Table>
-                <TableBody>
-                  <DaysOfWeek
-                    {...{ availableHours, selectedDate }}
-                    rooms={rooms}
-                    bookings={userBookings}
-                    users={users} //TODO: check users implementation
-                    weekDays={week}
-                  />
-                  <Hours {...{ availableHours }} />
-                </TableBody>
-              </Table>
-            </TableContainer>
+            <Calendar
+              localizer={localizer}
+              events={events}
+              defaultDate={defaultDate}
+              defaultView={Views.DAY}
+              style={{ height: "100vh" }}
+              selectable
+              onSelectSlot={(e) => handleSelectEvent(e)}
+              resources={resources}
+              resourceIdAccessor="id"
+              scrollToTime={scrollToTime}
+              views={[Views.WEEK, Views.DAY]}
+          />
+
+          {openBookingModal && (
+            <BookingModal
+              rooms={rooms}
+              repeatData={[{name: "Daily", id: "1"}]}
+              open={openBookingModal}
+              handleClose={() => setOpenBookingModal(false)}
+              position={position}
+              day={new Date()}
+              date={new Date()}
+              startDate={startDate}
+              endDate={endDate}
+              selectedRoom={selectedRoom}
+              setSelectedRoom={setSelectedRoom}
+              setBooking={setBookings}
+            />
+          )}
           </>
         }
       />
-    </Routes>
-  );
+    </Routes>)
 }
 
 export default App;

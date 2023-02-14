@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import styled from "styled-components";
 import SelectInput from "../Select";
 import DatePicker from "../datePicker";
 import { RoomType } from "../../utils/types";
+import { getSelectedTimeMinutes, newDateGenerator, timeConverter } from "../../utils/dateUtils";
 
 interface propTypes {
   rooms: RoomType[];
@@ -14,8 +15,11 @@ interface propTypes {
   position: { x: number; y: number };
   day: Date;
   date: Date;
+  startDate: Date;
+  endDate: Date;
   selectedRoom: string;
   setSelectedRoom: (value: string) => void;
+  setBooking?: any
 }
 
 const BookingModal = ({
@@ -26,14 +30,64 @@ const BookingModal = ({
   position,
   day,
   date,
+  startDate,
+  endDate,
   selectedRoom,
   setSelectedRoom,
+  setBooking
 }: propTypes) => {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const selectedHour = timeConverter(start?.getHours());
   const [value, setValue] = useState(day);
+  const [label, setLabel] = useState("");
+  const [ roomId, setRoomId ] = useState(selectedRoom)
+  const [repeatEvent, setRepeatEvent] = useState(repeatData[0].id)
+  const [ startTime, setStartTime] = useState(
+    `${selectedHour}:${getSelectedTimeMinutes(date, 0)}`
+  );
+  const [ endTime, setEndTime] = useState(
+    `${selectedHour}:${getSelectedTimeMinutes(date, date?.getMinutes() + 15)}`
+  );
 
-  const handleChange = (newValue: Date) => {
-    setValue(newValue);
+  const handleStartTimeEvnt = (event: any) => {
+    setStartTime(event.target.value)
+  }
+
+  const handleEndTimeEvnt = (event: any) => {
+    setEndTime(event.target.value);
+  }
+
+  const handleChange = (value: Date) => {
+    setValue(value)
+  }
+
+  const handleRepeatEventChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRepeatEvent(event.target.value)
   };
+
+  const handleClickOnBooking = useCallback(() => {
+    const newStartDate = newDateGenerator(start, startTime)
+    const newEndDate = newDateGenerator(end, endTime)
+
+    // const newBooking = {
+    //   roomId: `${roomId}`,
+    //   label: `${label}`,
+    //   startDate: `${newStartDate}`,
+    //   endDate: `${newEndDate}`
+    // }
+    const newBooking = {
+      start: newStartDate,
+      end: newEndDate,
+      title: label,
+      id: Date.now(),
+      roomId: roomId,
+      resourceId: roomId
+    }
+
+    setBooking((prev: any) => [...prev, newBooking])
+    handleClose();
+  }, [setBooking, label, roomId, startTime, endTime])
 
   return (
     <div>
@@ -75,6 +129,7 @@ const BookingModal = ({
           <TextField
             label="label"
             sx={{ marginBottom: "16px" }}
+            onChange={(event) => setLabel(event.target.value)}
             InputLabelProps={{
               shrink: true,
             }}
@@ -87,25 +142,35 @@ const BookingModal = ({
             }}
           >
             <AccessTimeIcon />
-            <DatePicker {...{ value, handleChange, date }} />
+            <DatePicker
+              value={startDate}
+              handleChange={handleChange}
+              date={date}
+              startTime={startTime}
+              endTime={endTime}
+              startTimeOnChange={handleStartTimeEvnt}  
+              endTimeOnChange={handleEndTimeEvnt}  
+            />
           </DatePickerWrapper>
           <SelectInput
-            handleChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            handleChange={(event: React.ChangeEvent<HTMLInputElement>) => {
               setSelectedRoom(event.target.value)
-            }
+              setRoomId(event.target.value)
+            }}
             data={rooms}
-            value={selectedRoom}
+            defaultValue={selectedRoom}
+            value={roomId}
             note="There are available rooms"
           />
           <SelectInput
-            handleChange={handleChange}
+            handleChange={handleRepeatEventChange}
             data={repeatData}
-            value={repeatData[0].id}
+            value={repeatEvent}
             note="Select repeat options"
           />
           <Wrapper className="button-wrapper">
             <Button onClick={handleClose}>Cancel</Button>
-            <Button>Book</Button>
+            <Button onClick={handleClickOnBooking}>Book</Button>
           </Wrapper>
         </Box>
       </Modal>
