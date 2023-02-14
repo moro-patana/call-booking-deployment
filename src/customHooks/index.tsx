@@ -31,8 +31,8 @@ const useCustomHooks = () => {
 
   const fetchRooms = async () => {
     try {
-      const response = await sendAuthorizedQuery(getRooms(), cookies["auth-token"]);
-      dispatch(getRoomsAction(response?.data?.data?.getRooms));
+      const response = await sendQuery(getRooms());
+      dispatch(getRoomsAction(response?.data?.data?.rooms));
     } catch (err) {
       console.log('getRooms err', err)
     }

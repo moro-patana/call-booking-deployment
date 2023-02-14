@@ -51,7 +51,7 @@ function App() {
   })
 
   const [bookings, setBookings] = useState([])
-  
+
   const events = userBookings.map((booking:any) => {
     return {
       ...booking,
@@ -90,7 +90,6 @@ function App() {
     []
   )
 
-  // refactor with react router and redux
   return (
     <Routes>
       <Route
@@ -115,9 +114,7 @@ function App() {
               setCurrentDay={setCurrentDay}
               setEndingDay={setEndingDay}
               setWeek={setWeek}
-            />  
-  
-  
+            />
             <Calendar
               localizer={localizer}
               events={events}
@@ -130,24 +127,23 @@ function App() {
               resourceIdAccessor="id"
               scrollToTime={scrollToTime}
               views={[Views.WEEK, Views.DAY]}
-          />
-
-          {openBookingModal && (
-            <BookingModal
-              rooms={rooms}
-              repeatData={[{name: "Daily", id: "1"}]}
-              open={openBookingModal}
-              handleClose={() => setOpenBookingModal(false)}
-              position={position}
-              day={new Date()}
-              date={new Date()}
-              startDate={startDate}
-              endDate={endDate}
-              selectedRoom={selectedRoom}
-              setSelectedRoom={setSelectedRoom}
-              setBooking={setBookings}
             />
-          )}
+            {openBookingModal && (
+              <BookingModal
+                rooms={rooms}
+                repeatData={[{name: "Daily", id: "1"}]}
+                open={openBookingModal}
+                handleClose={() => setOpenBookingModal(false)}
+                position={position}
+                day={new Date()}
+                date={new Date()}
+                startDate={startDate}
+                endDate={endDate}
+                selectedRoom={selectedRoom}
+                setSelectedRoom={setSelectedRoom}
+                setBooking={setBookings}
+              />
+            )}
           </>
         }
       />
