@@ -1,5 +1,4 @@
 import './App.css';
-import { useState } from 'react';
 import { TableContainer, Table, TableBody } from '@mui/material';
 import LoginComponent from './components/Login';
 import RegisterComponent from './components/Register';
@@ -8,6 +7,7 @@ import Hours from './components/hours'
 import ExpendableMenu from './components/menu'
 import useCustomHooks from './customHooks';
 import { useAppSelector } from "../src/redux/hooks";
+import { Route, Routes } from 'react-router-dom';
 
 
 function App() {
@@ -25,55 +25,61 @@ function App() {
     setWeek
   } = useCustomHooks();
 
-  const { users, currentUser } = useAppSelector(state => state.users);
+  const { users } = useAppSelector(state => state.users);
   // refactor with react router and redux
-  const [isSignupVisible, setIsSignupVisible] = useState(!currentUser.isRegister)
   return (
-    <div className='App'>
-
-      {isSignupVisible && 
-        <RegisterComponent setIsSignupVisible={setIsSignupVisible} />
-      }
-
-      {!isSignupVisible && !currentUser.isLogin &&
-        <LoginComponent
-          setIsSignupVisible={setIsSignupVisible}
-          status={'notLoading'} // TODO: Implement properly via Redux state
-        />
-      }
-
-      {currentUser.isLogin && 
-        <>
-          <ExpendableMenu
-            currentDay={currentDay}
-            endingDay={endingDay}
-            setCurrentDay={setCurrentDay}
-            setEndingDay={setEndingDay}
-            setWeek={setWeek}
-          />  
-
-
-          <TableContainer sx={{
-            paddingTop: '30px',
-            zIndex: -1,
-            pointerEvents: `${!cookies['auth-token'] && "none"}`,
-          }}>
-            <Table>
-              <TableBody>
-                <DaysOfWeek
-                  {...{ availableHours, selectedDate }}
-                  rooms={rooms}
-                  bookings={userBookings}
-                  users={users} //TODO: check users implementation
-                  weekDays={week}
-                />
-                <Hours {...{ availableHours }} />
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </>
-      }
-    </div>
+    <Routes>
+      <Route
+        path="/login"
+        element={
+          <LoginComponent
+            status={'notLoading'} // TODO: Implement properly via Redux state
+          />
+        }
+      />
+      <Route
+        path="/signup"
+        element={<RegisterComponent />}
+      />
+      <Route
+        path="/calendar"
+        element={<div>Calendar</div>}
+      />
+      <Route
+        path="/my-booking"
+        element={
+          <>
+            <ExpendableMenu
+              currentDay={currentDay}
+              endingDay={endingDay}
+              setCurrentDay={setCurrentDay}
+              setEndingDay={setEndingDay}
+              setWeek={setWeek}
+            />  
+  
+  
+            <TableContainer sx={{
+              paddingTop: '30px',
+              zIndex: -1,
+              pointerEvents: `${!cookies['auth-token'] && "none"}`,
+            }}>
+              <Table>
+                <TableBody>
+                  <DaysOfWeek
+                    {...{ availableHours, selectedDate }}
+                    rooms={rooms}
+                    bookings={userBookings}
+                    users={users} //TODO: check users implementation
+                    weekDays={week}
+                  />
+                  <Hours {...{ availableHours }} />
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </>
+        }
+      />
+    </Routes>
   );
 }
 
