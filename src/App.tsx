@@ -1,22 +1,19 @@
 import './App.css';
 import { useMemo, useState } from 'react';
-import { TableContainer, Table, TableBody } from '@mui/material';
 import LoginComponent from './components/Login';
 import RegisterComponent from './components/Register';
-import DaysOfWeek from './components/daysOfWeek'
-import Hours from './components/hours'
 import ExpendableMenu from './components/menu'
 import useCustomHooks from './customHooks';
 import { useAppSelector } from "../src/redux/hooks";
 import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay } from 'date-fns'
-import moment from "moment";
-import locale, { enUS, af } from 'date-fns/locale'
+import { enUS } from 'date-fns/locale'
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import BookingModal from "./components/bookingModal"
 import { dateStringConverter } from './utils/dateUtils';
+import { Route, Routes } from 'react-router-dom';
 
 const DnDCalendar = withDragAndDrop(Calendar)
 
@@ -35,17 +32,15 @@ const localizer = dateFnsLocalizer({
 function App() {
   const {
     rooms,
-    selectedDate,
     userBookings,
-    availableHours,
-    cookies,
     currentDay,
     endingDay,
     setCurrentDay,
     setEndingDay,
-    week,
     setWeek
   } = useCustomHooks();
+
+  const { users } = useAppSelector(state => state.users);
 
   const resources = rooms.map((room:any) =>  {
     return {
@@ -54,9 +49,6 @@ function App() {
       description: room?.description,
     }
   })
-  const { users, currentUser } = useAppSelector(state => state.users);
-  // refactor with react router and redux
-  const [isSignupVisible, setIsSignupVisible] = useState(!currentUser.isRegister)
 
   const [bookings, setBookings] = useState([])
   
@@ -98,40 +90,46 @@ function App() {
     []
   )
 
+  // refactor with react router and redux
   return (
-    <div>
-      {isSignupVisible && 
-        <RegisterComponent setIsSignupVisible={setIsSignupVisible} />
-      }
-
-      {!isSignupVisible && !currentUser.isLogin &&
-        <LoginComponent
-          setIsSignupVisible={setIsSignupVisible}
-          status={'notLoading'} // TODO: Implement properly via Redux state
-        />
-      }
-
-      {currentUser.isLogin && 
-        <>
-          <ExpendableMenu
-            currentDay={currentDay}
-            endingDay={endingDay}
-            setCurrentDay={setCurrentDay}
-            setEndingDay={setEndingDay}
-            setWeek={setWeek}
-          />  
-          <Calendar
-            localizer={localizer}
-            events={events}
-            defaultDate={defaultDate}
-            defaultView={Views.DAY}
-            style={{ height: "100vh" }}
-            selectable
-            onSelectSlot={(e) => handleSelectEvent(e)}
-            resources={resources}
-            resourceIdAccessor="id"
-            scrollToTime={scrollToTime}
-            views={[Views.WEEK, Views.DAY]}
+    <Routes>
+      <Route
+        path="/login"
+        element={
+          <LoginComponent
+            status={'notLoading'} // TODO: Implement properly via Redux state
+          />
+        }
+      />
+      <Route
+        path="/signup"
+        element={<RegisterComponent />}
+      />
+      <Route
+        path="/my-booking"
+        element={
+          <>
+            <ExpendableMenu
+              currentDay={currentDay}
+              endingDay={endingDay}
+              setCurrentDay={setCurrentDay}
+              setEndingDay={setEndingDay}
+              setWeek={setWeek}
+            />  
+  
+  
+            <Calendar
+              localizer={localizer}
+              events={events}
+              defaultDate={defaultDate}
+              defaultView={Views.DAY}
+              style={{ height: "100vh" }}
+              selectable
+              onSelectSlot={(e) => handleSelectEvent(e)}
+              resources={resources}
+              resourceIdAccessor="id"
+              scrollToTime={scrollToTime}
+              views={[Views.WEEK, Views.DAY]}
           />
 
           {openBookingModal && (
@@ -150,10 +148,10 @@ function App() {
               setBooking={setBookings}
             />
           )}
-      </>
-      }
-    </div>
-  );
+          </>
+        }
+      />
+    </Routes>)
 }
 
 export default App;
