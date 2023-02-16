@@ -9,7 +9,7 @@ export const sendQuery = (query: any): Promise<any> => {
 
 export const getRooms = () => {
   return `{
-    getRooms{
+    rooms{
       id,
       name,
       description
@@ -19,7 +19,7 @@ export const getRooms = () => {
 
 export const getBookingsByUser = () => {
   return `{
-    getBookingsByUser{
+    bookings{
       id,
       user {
         id,
@@ -82,6 +82,24 @@ export const loginMutation = (email: string, password: string) => {
       email,
       username,
       token,
+    }
+  }`;
+};
+
+export const bookingMutation = (
+  roomId: String,
+  label: String,
+  startDate: String,
+  endDate: String
+) => {
+  return `mutation{
+    createBooking(
+      roomId: "${roomId}",
+      label: "${label}",
+      startDate: "${startDate}",
+      endDate: "${endDate}"
+    ){
+      id,user{id, username}, roomId,label,startDate,endDate
     }
   }`;
 };

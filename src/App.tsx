@@ -138,7 +138,6 @@ function App() {
     [setBookings]
   );
 
-  // refactor with react router and redux
   return (
     <Routes>
       <Route
