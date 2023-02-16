@@ -29,6 +29,14 @@ const localizer = dateFnsLocalizer({
   locales,
 })
 
+const calendarStyle = () => {
+	return {
+	  style: {
+		  backgroundColor: '#fff',
+		}
+	}
+}
+
 function App() {
   const {
     rooms,
@@ -127,6 +135,7 @@ function App() {
               resourceIdAccessor="id"
               scrollToTime={scrollToTime}
               views={[Views.WEEK, Views.DAY]}
+              dayPropGetter={calendarStyle}
             />
             {openBookingModal && (
               <BookingModal
