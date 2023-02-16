@@ -110,7 +110,6 @@ function App() {
   const moveEvent = useCallback(
     ({ event, start, end, resourceId }: any) => {
       setBookings((prev): any => {
-        console.log("prev::::::", prev);
         const existing = prev.find((ev: any) => ev.id === event.id) ?? {};
         const filtered = prev.filter((ev: any) => ev.id !== event.id);
         return [...filtered, { ...existing, start, end, resourceId }];
