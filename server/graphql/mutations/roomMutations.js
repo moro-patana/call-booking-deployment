@@ -34,35 +34,6 @@ module.exports = {
       return newRoom.populate("room").populate("user");
     },
   },
-  // What does this code do? Isn't the same as the getRooms query?
-  // rooms: {
-  //   type: roomType.roomType,
-  //   args: {
-  //     name: {
-  //       type: GraphQLString,
-  //     },
-  //     description: {
-  //       type: GraphQLString,
-  //     },
-  //   },
-  //   resolve: async (root, args, context) => {
-  //     const {
-  //       name,
-  //       description,
-  //     } = args;
-
-  //     const newRoomModel = new roomModel([{
-  //       name,
-  //       description,
-  //     }]);
-
-  //     const newRoom = await newRoomModel.get();
-  //     if (!newRoom) {
-  //       throw new Error(getErrorForCode(ERROR_CODES.EA1));
-  //     }
-  //     return newRoom.populate("room").populate("user");
-  //   },
-  // },
   deleteRoom: {
     type: roomType.roomType,
     args: {
