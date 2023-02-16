@@ -1,10 +1,9 @@
 import './App.css';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import LoginComponent from './components/Login';
 import RegisterComponent from './components/Register';
 import ExpendableMenu from './components/menu'
 import useCustomHooks from './customHooks';
-import { useAppSelector } from "../src/redux/hooks";
 import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay } from 'date-fns'
 import { enUS } from 'date-fns/locale'
@@ -14,12 +13,26 @@ import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import BookingModal from "./components/bookingModal"
 import { dateStringConverter } from './utils/dateUtils';
 import { Route, Routes } from 'react-router-dom';
+import { string } from 'prop-types';
 
-const DnDCalendar = withDragAndDrop(Calendar)
+interface IEvent {
+  id: number | string;
+  title: string;
+  start: Date | string;
+  end: Date | string;
+  resourceId: string;
+}
+interface IResource {
+  id: string | number;
+  title: string;
+  description: string;
+}
+
+const DragAndDropCalendar = withDragAndDrop<IEvent, IResource>(Calendar);
 
 const locales = {
-  'en-US': enUS,
-}
+  "en-US": enUS,
+};
 
 const localizer = dateFnsLocalizer({
   format,
@@ -32,7 +45,6 @@ const localizer = dateFnsLocalizer({
 function App() {
   const {
     rooms,
-    userBookings,
     currentDay,
     endingDay,
     setCurrentDay,
@@ -40,9 +52,11 @@ function App() {
     setWeek
   } = useCustomHooks();
 
-  const { users } = useAppSelector(state => state.users);
-
-  const resources = rooms.map((room:any) =>  {
+  const resources = rooms.map((room: {
+    id: string | number;
+    name: string;
+    description: string;
+  }) => {
     return {
       id: room?.id,
       title: room?.name,
@@ -50,16 +64,19 @@ function App() {
     }
   })
 
-  const [bookings, setBookings] = useState([])
+  const [bookings, setBookings] = useState([]);
 
-  const events = userBookings.map((booking:any) => {
-    return {
-      ...booking,
-      startDate: dateStringConverter(booking?.startDate),
-      endDate: dateStringConverter(booking?.endDate)
+  const events = bookings.map((booking: any) => {
+    if (typeof booking.startDate === "string" && typeof booking.endDate === "string"){
+      return {
+        ...booking,
+        start: dateStringConverter(booking?.startDate),
+        end: dateStringConverter(booking?.endDate),
+      };
     }
-  })
-  
+    return booking
+  });
+
   const [ openBookingModal, setOpenBookingModal ] = useState(false)
   const [slot, setSlot] = useState<any>(null)
   const [ selectedRoom, setSelectedRoom ] = useState(slot && slot?.resourceId)
@@ -88,7 +105,37 @@ function App() {
       scrollToTime: new Date(),
     }),
     []
-  )
+  );
+
+  const moveEvent = useCallback(
+    ({ event, start, end, resourceId }: any) => {
+      setBookings((prev): any => {
+        const existing = prev.find((ev: any) => ev.id === event.id) ?? {};
+        const filtered = prev.filter((ev: any) => ev.id !== event.id);
+        return [...filtered, { ...existing, start, end, resourceId }];
+      });
+    },
+    [setBookings]
+  );
+
+  const resizeEvent = useCallback(
+    ({
+      event,
+      start,
+      end,
+    }: {
+      event: IEvent;
+      start: Date | string;
+      end: Date | string;
+    }) => {
+      setBookings((prev): any => {
+        const existing = prev.find((ev: any) => ev.id === event.id) ?? {};
+        const filtered = prev.filter((ev: any) => ev.id !== event.id);
+        return [...filtered, { ...existing, start, end }];
+      });
+    },
+    [setBookings]
+  );
 
   return (
     <Routes>
@@ -100,10 +147,7 @@ function App() {
           />
         }
       />
-      <Route
-        path="/signup"
-        element={<RegisterComponent />}
-      />
+      <Route path="/signup" element={<RegisterComponent />} />
       <Route
         path="/my-booking"
         element={
@@ -115,7 +159,8 @@ function App() {
               setEndingDay={setEndingDay}
               setWeek={setWeek}
             />
-            <Calendar
+
+            <DragAndDropCalendar
               localizer={localizer}
               events={events}
               defaultDate={defaultDate}
@@ -125,9 +170,15 @@ function App() {
               onSelectSlot={(e) => handleSelectEvent(e)}
               resources={resources}
               resourceIdAccessor="id"
+              resourceTitleAccessor="title"
+              onEventDrop={moveEvent}
+              onEventResize={resizeEvent}
+              resizable
               scrollToTime={scrollToTime}
               views={[Views.WEEK, Views.DAY]}
+              step={15}
             />
+
             {openBookingModal && (
               <BookingModal
                 rooms={rooms}
