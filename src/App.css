@@ -38,3 +38,11 @@
     transform: rotate(360deg);
   }
 }
+
+.rbc-time-view-resources .rbc-header {
+  padding: 16px;
+}
+
+.rbc-time-view .rbc-allday-cell {
+  display: none;
+}
