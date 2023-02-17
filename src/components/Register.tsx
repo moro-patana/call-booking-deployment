@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Box, Button, Divider } from '@mui/material';
-import Registration from './registration';
-import AuthContainer from './authContainer'
+import Registration from './registration/Registration';
+import AuthContainer from './authContainer/AuthContainer'
 import { useAppDispatch } from '../redux/hooks';
 import { userRegistered } from '../redux/reducers/usersSlice';
 import { registerMutation, sendQuery } from "../graphqlHelper";

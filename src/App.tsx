@@ -2,7 +2,7 @@ import './App.css';
 import { useCallback, useMemo, useState } from 'react';
 import LoginComponent from './components/Login';
 import RegisterComponent from './components/Register';
-import ExpendableMenu from './components/menu'
+import ExpendableMenu from './components/menu/ExpendableMenu'
 import useCustomHooks from './customHooks';
 import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay } from 'date-fns'
@@ -10,10 +10,9 @@ import { enUS } from 'date-fns/locale'
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
-import BookingModal from "./components/bookingModal"
+import BookingModal from "./components/bookingModal/BookingModal"
 import { dateStringConverter } from './utils/dateUtils';
 import { Route, Routes } from 'react-router-dom';
-import { string } from 'prop-types';
 
 interface IEvent {
   id: number | string;
@@ -86,7 +85,7 @@ function App() {
   });
 
   const [ openBookingModal, setOpenBookingModal ] = useState(false)
-  const [slot, setSlot] = useState<any>(null)
+  const [ slot, setSlot ] = useState<any>(null)
   const [ selectedRoom, setSelectedRoom ] = useState(slot && slot?.resourceId)
   const [ position, setPosition ] = useState({x: 0, y: 0})
   const [ startDate, setStartDate ] = useState(new Date())

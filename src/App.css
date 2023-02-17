@@ -46,3 +46,7 @@
 .rbc-time-view .rbc-allday-cell {
   display: none;
 }
+
+.rbc-time-slot {
+  padding-top: 10.5px;
+}
