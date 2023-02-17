@@ -1,8 +1,8 @@
 import { FC, useState } from 'react';
 import { Box, Button, Divider } from '@mui/material';
 import LoginForm from './LoginForm'
-import AuthContainer  from './authContainer';
-import SpinnerIcon from './spinner'
+import AuthContainer  from './authContainer/AuthContainer';
+import Spinner from './spinner/Spinner'
 import { useAppDispatch } from '../redux/hooks';
 import { userLoggedIn, fetchCurrentUser } from '../redux/reducers/usersSlice';
 import { loginMutation, sendQuery } from "../graphqlHelper";
@@ -37,7 +37,7 @@ const LoginComponent: FC<LoginComponentType> = ({ status }) => {
   return (
     <AuthContainer heading={'Login to book'}>
       {status === "loading"
-        ? <SpinnerIcon action={"Login"} />
+        ? <Spinner action={"Login"} />
         : <div> 
             <LoginForm
               email={login.email}

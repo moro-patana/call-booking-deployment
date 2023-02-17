@@ -5,7 +5,7 @@ interface ActionType {
     action?: string
 }
 
-const SpinnerIcon: FC<ActionType> = ({ action }) => {
+const Spinner: FC<ActionType> = ({ action }) => {
   return (
     <Box sx={{
         marginTop: "120px",
@@ -22,4 +22,4 @@ const SpinnerIcon: FC<ActionType> = ({ action }) => {
   );
 };
 
-export default SpinnerIcon;
+export default Spinner;

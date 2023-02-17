@@ -2,8 +2,8 @@ import React, { useCallback, useState } from "react";
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import styled from "styled-components";
-import SelectInput from "../Select";
-import DatePicker from "../datePicker";
+import SelectInput from "../Select/SelectInput";
+import DatePicker from "../datePicker/DatePicker";
 import { RoomType } from "../../utils/types";
 import { getSelectedTimeMinutes, newDateGenerator, timeConverter } from "../../utils/dateUtils";
 

@@ -2,8 +2,8 @@ import { Table, TableBody, TableCell, TableRow } from "@mui/material";
 import { eachMinuteOfInterval } from "date-fns";
 import { dateStringConverter, timeConverter } from "../../utils/dateUtils";
 import { BookingType, RoomType, UserBookingType } from "../../utils/types";
-import BookingModal from "../bookingModal";
-import TooltipContent, { HtmlTooltip } from "../tooltip";
+import BookingModal from "../bookingModal/BookingModal";
+import TooltipContent, { HtmlTooltip } from "../tooltip/TooltipContent";
 import { useState } from "react";
 
 interface RoomPerHoursType {

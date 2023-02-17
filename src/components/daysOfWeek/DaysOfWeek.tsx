@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { TableCell, TableRow } from "@mui/material";
 import { format } from "date-fns";
-import Room from "../rooms";
+import Room from "../rooms/Room";
 import { BookingType, RoomType, UserBookingType } from "../../utils/types";
-import RoomPerHour from "../roomPerHour";
+import RoomPerHour from "../roomPerHour/RoomPerHour";
 
 interface DaysOfWeekType {
   availableHours: Date[];
