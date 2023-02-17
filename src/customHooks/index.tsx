@@ -1,7 +1,7 @@
 import { eachDayOfInterval, eachHourOfInterval, endOfWeek, startOfWeek } from "date-fns";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import { getBookingsByUser, getRooms, sendQuery, sendAuthorizedQuery } from "../graphqlHelper";
+import { getBookingsByUser, getRooms, sendQuery } from "../graphqlHelper";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { bookingsData, getBookingsByUserAction } from "../redux/reducers/bookingsSlice";
 import { roomsData, getRoomsAction } from "../redux/reducers/roomsSlice";
@@ -9,7 +9,7 @@ import { roomsData, getRoomsAction } from "../redux/reducers/roomsSlice";
 const useCustomHooks = () => {
   const dispatch = useAppDispatch();
   const rooms = useAppSelector(roomsData);
-  const { users, currentUser } = useAppSelector(state => state.users);
+  const { currentUser } = useAppSelector(state => state.users);
   const userBookings = useAppSelector(bookingsData);
     
   const selectedDate = new Date();
@@ -43,7 +43,7 @@ const useCustomHooks = () => {
       const response = await sendQuery(getBookingsByUser());
       dispatch(getBookingsByUserAction(response?.data?.data?.bookings));
     } catch (err) {
-      console.log('geBookingUser err', err)
+      console.log('getBookingUser err', err)
     }
   };
 
@@ -57,6 +57,7 @@ const useCustomHooks = () => {
     currentUser && currentUser.token && setCookies("auth-token", currentUser.token)
     currentUser.isLogin && fetchRooms();
     currentUser.isLogin && fetchBookingsByUser();
+     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser]);
 
   return {
