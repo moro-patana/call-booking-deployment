@@ -28,7 +28,6 @@ const BookingModal = ({
   open,
   handleClose,
   position,
-  day,
   date,
   startDate,
   endDate,
@@ -39,7 +38,6 @@ const BookingModal = ({
   const start = new Date(startDate);
   const end = new Date(endDate);
   const selectedHour = timeConverter(start?.getHours());
-  const [value, setValue] = useState(day);
   const [label, setLabel] = useState("");
   const [ roomId, setRoomId ] = useState(selectedRoom)
   const [repeatEvent, setRepeatEvent] = useState(repeatData[0].id)
@@ -59,7 +57,7 @@ const BookingModal = ({
   }
 
   const handleChange = (value: Date) => {
-    setValue(value)
+    return value
   }
 
   const handleRepeatEventChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,6 +85,8 @@ const BookingModal = ({
 
     setBooking((prev: any) => [...prev, newBooking])
     handleClose();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setBooking, label, roomId, startTime, endTime])
 
   return (

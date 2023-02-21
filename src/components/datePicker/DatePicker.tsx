@@ -4,7 +4,6 @@ import { Stack } from "@mui/system";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import styled from "styled-components";
-import { getSelectedTimeMinutes, timeConverter } from "../../utils/dateUtils";
 
 const timeStyle = {
   border: 0,
