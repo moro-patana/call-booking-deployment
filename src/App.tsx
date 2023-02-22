@@ -56,7 +56,8 @@ function App() {
     endingDay,
     setCurrentDay,
     setEndingDay,
-    setWeek
+    setWeek,
+    userBookings
   } = useCustomHooks();
 
   const resources = rooms.map((room: {
@@ -73,12 +74,16 @@ function App() {
 
   const [bookings, setBookings] = useState([]);
 
-  const events = bookings.map((booking: any) => {
+  const events = userBookings.map((booking: any) => {
     if (typeof booking.startDate === "string" && typeof booking.endDate === "string"){
       return {
-        ...booking,
+        id: booking.id,
+        resourceId: booking.roomId,
+        title: booking.title,
+        description: booking.description,
         start: dateStringConverter(booking?.startDate),
         end: dateStringConverter(booking?.endDate),
+        
       };
     }
     return booking
