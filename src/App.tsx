@@ -74,7 +74,19 @@ function App() {
 
   const [bookings, setBookings] = useState([]);
 
-  const events = userBookings.map((booking: any) => {
+  const events = userBookings.map((booking: 
+    {
+      id: string;
+      roomId: string;
+      title: string;
+      descrription: string;
+      startDate: string;
+      endDate: string;
+      description: string;
+      start: Date;
+      end: Date;
+      resourceId: string
+    }) => {
     if (typeof booking.startDate === "string" && typeof booking.endDate === "string"){
       return {
         id: booking.id,
