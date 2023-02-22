@@ -121,6 +121,7 @@ function App() {
     setOpenBookingModal(!openBookingModal)
     setStartDate(start)
     setEndDate(end);
+    return bookings
   }
 
   const { defaultDate, scrollToTime } = useMemo(
