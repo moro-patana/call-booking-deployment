@@ -1,17 +1,25 @@
-import { eachDayOfInterval, eachHourOfInterval, endOfWeek, startOfWeek } from "date-fns";
+import {
+  eachDayOfInterval,
+  eachHourOfInterval,
+  endOfWeek,
+  startOfWeek,
+} from "date-fns";
 import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { getBookingsByUser, getRooms, sendQuery } from "../graphqlHelper";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import { bookingsData, getBookingsByUserAction } from "../redux/reducers/bookingsSlice";
+import {
+  bookingsData,
+  getBookingsByUserAction,
+} from "../redux/reducers/bookingsSlice";
 import { roomsData, getRoomsAction } from "../redux/reducers/roomsSlice";
 
 const useCustomHooks = () => {
   const dispatch = useAppDispatch();
   const rooms = useAppSelector(roomsData);
-  const { currentUser } = useAppSelector(state => state.users);
+  const { currentUser } = useAppSelector((state) => state.users);
   const userBookings = useAppSelector(bookingsData);
-    
+
   const selectedDate = new Date();
   const startDay = startOfWeek(selectedDate, { weekStartsOn: 1 });
   const endDay = endOfWeek(selectedDate, { weekStartsOn: 1 });
@@ -24,17 +32,17 @@ const useCustomHooks = () => {
     end: endHour,
   });
 
-  const [ cookies, setCookies ] = useCookies(["auth-token"])
-  const [ currentDay, setCurrentDay ] = useState<any>(startDay)
-  const [ endingDay, setEndingDay ] = useState<any>(endDay)
-  const [ week, setWeek ] = useState(weekDays)
+  const [cookies, setCookies] = useCookies(["auth-token"]);
+  const [currentDay, setCurrentDay] = useState<any>(startDay);
+  const [endingDay, setEndingDay] = useState<any>(endDay);
+  const [week, setWeek] = useState(weekDays);
 
   const fetchRooms = async () => {
     try {
       const response = await sendQuery(getRooms());
       dispatch(getRoomsAction(response?.data?.data?.rooms));
     } catch (err) {
-      console.log('getRooms err', err)
+      console.log("getRooms err", err);
     }
   };
 
@@ -43,7 +51,7 @@ const useCustomHooks = () => {
       const response = await sendQuery(getBookingsByUser());
       dispatch(getBookingsByUserAction(response?.data?.data?.bookings));
     } catch (err) {
-      console.log('getBookingUser err', err)
+      console.log("getBookingUser err", err);
     }
   };
 
@@ -54,10 +62,12 @@ const useCustomHooks = () => {
   // };
 
   useEffect(() => {
-    currentUser && currentUser.token && setCookies("auth-token", currentUser.token)
+    currentUser &&
+      currentUser.token &&
+      setCookies("auth-token", currentUser.login.token);
     currentUser.isLogin && fetchRooms();
     currentUser.isLogin && fetchBookingsByUser();
-     // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser]);
 
   return {
@@ -72,8 +82,10 @@ const useCustomHooks = () => {
     endingDay,
     setEndingDay,
     week,
-    setWeek
-  }
+    setWeek,
+    currentUser,
+    fetchBookingsByUser
+  };
 };
 
 export default useCustomHooks;
