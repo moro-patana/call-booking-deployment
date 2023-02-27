@@ -6,6 +6,8 @@ import SelectInput from "../Select/SelectInput";
 import DatePicker from "../datePicker/DatePicker";
 import { RoomType } from "../../utils/types";
 import { getSelectedTimeMinutes, newDateGenerator, timeConverter } from "../../utils/dateUtils";
+import useCustomHooks from '../../customHooks/index';
+import { bookingMutation, sendAuthorizedQuery } from '../../graphqlHelper';
 
 interface propTypes {
   rooms: RoomType[];
@@ -22,6 +24,14 @@ interface propTypes {
   setBooking?: any
 }
 
+interface NewBooking {
+  roomId: string;
+  label: string;
+  startDate: any;
+  endDate: any;
+  token: string;
+}
+
 const BookingModal = ({
   rooms,
   repeatData,
@@ -33,8 +43,8 @@ const BookingModal = ({
   endDate,
   selectedRoom,
   setSelectedRoom,
-  setBooking
 }: propTypes) => {
+  const { currentUser, fetchBookingsByUser } = useCustomHooks() 
   const start = new Date(startDate);
   const end = new Date(endDate);
   const selectedHour = timeConverter(start?.getHours());
@@ -64,30 +74,35 @@ const BookingModal = ({
     setRepeatEvent(event.target.value)
   };
 
-  const handleClickOnBooking = useCallback(() => {
-    const newStartDate = newDateGenerator(start, startTime)
-    const newEndDate = newDateGenerator(end, endTime)
+  const addNewBooking = async (userBooking: NewBooking) => {
+    const { roomId, label, startDate, endDate, token } = userBooking;
+    const response = await sendAuthorizedQuery(
+      bookingMutation(roomId, label, startDate, endDate),
+      token
+    );
+    const booking = response.data.data;
+    return booking;
+  };
+  
+  const handleSubmitBooking = useCallback(async () => {
+    const newStartDate = newDateGenerator(start, startTime);
+    const newEndDate = newDateGenerator(end, endTime);
 
-    // const newBooking = {
-    //   roomId: `${roomId}`,
-    //   label: `${label}`,
-    //   startDate: `${newStartDate}`,
-    //   endDate: `${newEndDate}`
-    // }
-    const newBooking = {
-      start: newStartDate,
-      end: newEndDate,
-      title: label,
-      id: Date.now(),
-      roomId: roomId,
-      resourceId: roomId
-    }
-
-    setBooking((prev: any) => [...prev, newBooking])
+   if (currentUser.login.token && roomId) {
+    await addNewBooking({
+      label,
+      startDate: newStartDate,
+      endDate: newEndDate,
+      roomId,
+      token: currentUser.login.token,
+    });
+    
+    fetchBookingsByUser();
+   }
+  
     handleClose();
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setBooking, label, roomId, startTime, endTime])
+  }, [label, roomId, startTime, endTime]);
 
   return (
     <div>
@@ -170,7 +185,7 @@ const BookingModal = ({
           />
           <Wrapper className="button-wrapper">
             <Button onClick={handleClose}>Cancel</Button>
-            <Button onClick={handleClickOnBooking}>Book</Button>
+            <Button onClick={handleSubmitBooking}>Book</Button>
           </Wrapper>
         </Box>
       </Modal>
