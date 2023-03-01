@@ -29,8 +29,8 @@ const LoginComponent: FC<LoginComponentType> = ({ status }) => {
 
       dispatch(userLoggedIn(true))
       navigate("/my-booking");
-    } catch(err) {
-      console.log('error while register', err)
+    } catch(error) {
+      console.error('error while register', error)
     }
   };
 

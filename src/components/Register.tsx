@@ -46,8 +46,8 @@ const RegisterComponent = () => {
     dispatch(userRegistered(res.data.data))
     dispatch(userRegistered(true))
     navigate("/login");
-    } catch(err) {
-      console.log('error while register', err)
+    } catch(error) {
+      console.error('error while register', error)
     }
   };
   return (

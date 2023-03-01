@@ -76,30 +76,40 @@ const BookingModal = ({
 
   const addNewBooking = async (userBooking: NewBooking) => {
     const { roomId, label, startDate, endDate, token } = userBooking;
-    const response = await sendAuthorizedQuery(
-      bookingMutation(roomId, label, startDate, endDate),
-      token
-    );
-    const booking = response.data.data;
-    return booking;
+    
+    try {
+      const response = await sendAuthorizedQuery(
+        bookingMutation(roomId, label, startDate, endDate),
+        token
+      );
+      const booking = response.data.data;
+      return booking; 
+    } catch (error) {
+      console.error("Add a new booking", error)
+    }
   };
   
   const handleSubmitBooking = useCallback(async () => {
     const newStartDate = newDateGenerator(start, startTime);
     const newEndDate = newDateGenerator(end, endTime);
 
-   if (currentUser.login.token && roomId) {
-    await addNewBooking({
-      label,
-      startDate: newStartDate,
-      endDate: newEndDate,
-      roomId,
-      token: currentUser.login.token,
-    });
-    
-    fetchBookingsByUser();
-   }
-  
+    if (currentUser.login.token && roomId) {
+      try {
+          await addNewBooking({
+            label,
+            startDate: newStartDate,
+            endDate: newEndDate,
+            roomId,
+            token: currentUser.login.token,
+          });
+        
+          fetchBookingsByUser();
+      
+      } catch (error) {
+      console.error("Add a new booking", error);
+      }
+    };
+
     handleClose();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [label, roomId, startTime, endTime]);

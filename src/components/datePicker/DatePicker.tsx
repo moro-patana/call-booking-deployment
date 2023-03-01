@@ -39,6 +39,7 @@ const DatePicker = ({
         <Wrapper className="date-picker-wrapper">
           <DesktopDatePicker
             disablePast={true}
+            disableMaskedInput={true}
             label="date"
             inputFormat="EEEE, MMMM dd"
             value={value}

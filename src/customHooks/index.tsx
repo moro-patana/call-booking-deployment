@@ -41,8 +41,8 @@ const useCustomHooks = () => {
     try {
       const response = await sendQuery(getRooms());
       dispatch(getRoomsAction(response?.data?.data?.rooms));
-    } catch (err) {
-      console.log("getRooms err", err);
+    } catch (error) {
+      console.error("getRooms error", error);
     }
   };
 
@@ -50,8 +50,8 @@ const useCustomHooks = () => {
     try {
       const response = await sendQuery(getBookingsByUser());
       dispatch(getBookingsByUserAction(response?.data?.data?.bookings));
-    } catch (err) {
-      console.log("getBookingUser err", err);
+    } catch (error) {
+      console.error("getBookingUser error", error);
     }
   };
 
