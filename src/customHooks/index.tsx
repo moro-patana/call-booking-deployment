@@ -40,7 +40,7 @@ const useCustomHooks = () => {
   const fetchRooms = async () => {
     try {
       const response = await sendQuery(getRooms());
-      dispatch(getRoomsAction(response?.data?.data?.rooms));
+      dispatch(getRoomsAction(response?.data?.data?.getRooms));
     } catch (err) {
       console.log("getRooms err", err);
     }
@@ -49,7 +49,7 @@ const useCustomHooks = () => {
   const fetchBookingsByUser = async () => {
     try {
       const response = await sendQuery(getBookingsByUser());
-      dispatch(getBookingsByUserAction(response?.data?.data?.bookings));
+      dispatch(getBookingsByUserAction(response?.data?.data?.getBookings));
     } catch (err) {
       console.log("getBookingUser err", err);
     }

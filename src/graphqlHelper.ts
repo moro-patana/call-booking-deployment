@@ -9,7 +9,7 @@ export const sendQuery = (query: any): Promise<any> => {
 
 export const getRooms = () => {
   return `{
-    rooms{
+    getRooms{
       id,
       name,
       description
@@ -19,7 +19,7 @@ export const getRooms = () => {
 
 export const getBookingsByUser = () => {
   return `{
-    bookings{
+    getBookings{
       id,
       user {
         id,
