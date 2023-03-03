@@ -8,6 +8,9 @@ import { RoomType } from "../../utils/types";
 import { getSelectedTimeMinutes, newDateGenerator, timeConverter } from "../../utils/dateUtils";
 import useCustomHooks from '../../customHooks/index';
 import { bookingMutation, sendAuthorizedQuery } from '../../graphqlHelper';
+import { useDispatch } from 'react-redux';
+import { bookingsErrorMessage, getBookingErrorMessage } from "../../redux/reducers/bookingsSlice";
+import { useAppSelector } from "../../redux/hooks";
 
 interface BookingModalProps {
   rooms: RoomType[];
@@ -43,8 +46,8 @@ const BookingModal: FC<BookingModalProps> = ({
   endDate,
   selectedRoom,
   setSelectedRoom,
-  setBooking
 }) => {
+  const dispatch = useDispatch()
   const { currentUser, fetchBookingsByUser } = useCustomHooks();
   const start = new Date(startDate);
   const end = new Date(endDate);
@@ -83,10 +86,10 @@ const BookingModal: FC<BookingModalProps> = ({
         bookingMutation(roomId, label, startDate, endDate),
         token
       );
-      const booking = response.data.data;
-      return booking; 
+      const { data } = response.data;
+      return data; 
     } catch (error) {
-      console.error("Add a new booking", error)
+      dispatch(getBookingErrorMessage(error));
     }
   };
   
@@ -94,20 +97,19 @@ const BookingModal: FC<BookingModalProps> = ({
     const newStartDate = newDateGenerator(start, startTime);
     const newEndDate = newDateGenerator(end, endTime);
 
-    if (currentUser.login.token && roomId) {
+    if (currentUser?.login?.token && roomId) {
       try {
           await addNewBooking({
             label,
             startDate: newStartDate,
             endDate: newEndDate,
             roomId,
-            token: currentUser.login.token,
+            token: currentUser?.login?.token,
           });
         
           fetchBookingsByUser();
-      
       } catch (error) {
-      console.error("Add a new booking", error);
+        dispatch(getBookingErrorMessage(error));
       }
     };
 

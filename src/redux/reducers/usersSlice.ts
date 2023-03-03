@@ -1,24 +1,24 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 type fetchUserRegisterError = {
-  message: string
+  message: string;
 };
 
 type FetchUserLoginError = {
-  message: string
+  message: string;
 };
 
 interface UsersState {
-  users: [],
+  users: [];
   currentUser: {
-    username: string
-    email?: string
-    id?: string
-    token?: string
-    isRegister: boolean
-    isLogin: boolean
-    registerError: fetchUserRegisterError | null,
-    loginError: FetchUserLoginError | null,
+    username: string;
+    email?: string;
+    id?: string;
+    token?: string;
+    isRegister: boolean;
+    isLogin: boolean;
+    registerError: fetchUserRegisterError | null;
+    loginError: FetchUserLoginError | null;
     login: {
       email: string;
       id: string;
@@ -57,6 +57,12 @@ export const usersSlice = createSlice({
     userLoggedIn: (state, action) => {
       state.currentUser.isLogin = action.payload;
     },
+    userLogInError: (state, action) => {
+      state.currentUser.loginError = action.payload;
+    },
+    userRegisterError: (state, action) => {
+      state.currentUser.registerError = action.payload;
+    },
     userRegistered: (state, action) => {
       state.currentUser.isRegister = action.payload;
     },
@@ -66,14 +72,14 @@ export const usersSlice = createSlice({
   },
 });
 
-export const { fetchUsers, fetchCurrentUser, userLoggedIn, userRegistered, userLoggedout } = usersSlice.actions;
-
-// const selectLoginError = (state: RootState) => state?.users?.loginError
-// export const userErrorLogin = createSelector(
-//   selectLoginError,
-//   (loginError) => loginError
-// )
+export const {
+  fetchUsers,
+  fetchCurrentUser,
+  userLoggedIn,
+  userRegistered,
+  userLoggedout,
+  userLogInError,
+  userRegisterError,
+} = usersSlice.actions;
 
 export default usersSlice.reducer;
-
-

@@ -10,9 +10,10 @@ import { getBookingsByUser, getRooms, sendQuery } from "../graphqlHelper";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import {
   bookingsData,
+  getBookingErrorMessage,
   getBookingsByUserAction,
 } from "../redux/reducers/bookingsSlice";
-import { roomsData, getRoomsAction } from "../redux/reducers/roomsSlice";
+import { roomsData, getRoomsAction, getRoomsErrorMessage } from "../redux/reducers/roomsSlice";
 
 const useCustomHooks = () => {
   const dispatch = useAppDispatch();
@@ -42,7 +43,7 @@ const useCustomHooks = () => {
       const response = await sendQuery(getRooms());
       dispatch(getRoomsAction(response?.data?.data?.getRooms));
     } catch (error) {
-      console.log("getRooms err", error);
+      dispatch(getRoomsErrorMessage(error));
     }
   };
 
@@ -51,7 +52,7 @@ const useCustomHooks = () => {
       const response = await sendQuery(getBookingsByUser());
       dispatch(getBookingsByUserAction(response?.data?.data?.getBookings));
     } catch (error) {
-      console.log("getBookingUser err", error);
+      dispatch(getBookingErrorMessage(error));
     }
   };
 

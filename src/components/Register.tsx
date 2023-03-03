@@ -4,7 +4,7 @@ import { Box, Button, Divider } from '@mui/material';
 import Registration from './registration/Registration';
 import AuthContainer from './authContainer/AuthContainer'
 import { useAppDispatch } from '../redux/hooks';
-import { userRegistered } from '../redux/reducers/usersSlice';
+import { userRegistered, userRegisterError } from '../redux/reducers/usersSlice';
 import { registerMutation, sendQuery } from "../graphqlHelper";
 
 const RegisterComponent = () => {
@@ -46,7 +46,7 @@ const RegisterComponent = () => {
     dispatch(userRegistered(true))
     navigate("/login");
     } catch(error) {
-      console.error('error while register', error)
+      dispatch(userRegisterError(error));
     }
   };
   return (

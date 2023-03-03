@@ -1,13 +1,12 @@
 import { FC, useState } from 'react';
 import { Box, Button, Divider } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import LoginForm from './LoginForm'
 import AuthContainer  from './authContainer/AuthContainer';
 import Spinner from './spinner/Spinner'
 import { useAppDispatch } from '../redux/hooks';
-import { userLoggedIn, fetchCurrentUser } from '../redux/reducers/usersSlice';
+import { userLoggedIn, fetchCurrentUser, userLogInError } from '../redux/reducers/usersSlice';
 import { loginMutation, sendQuery } from "../graphqlHelper";
-import { useNavigate } from 'react-router-dom';
-
 
 interface LoginComponentProp {
   status: string;
@@ -26,11 +25,10 @@ const LoginComponent: FC<LoginComponentProp> = ({ status }) => {
     try {
       const res = await sendQuery(loginMutation(login.email, login.password))
       dispatch(fetchCurrentUser(res.data.data))
-
       dispatch(userLoggedIn(true))
       navigate("/my-booking");
     } catch(error) {
-      console.error('error while register', error)
+      dispatch(userLogInError(error));
     }
   };
 
