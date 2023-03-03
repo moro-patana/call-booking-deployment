@@ -1,20 +1,22 @@
-import React from "react";
-import { MenuItem, Select } from "@mui/material";
+import React, { FC, ReactNode } from "react";
+import { MenuItem, Select, SelectChangeEvent } from "@mui/material";
 import styled from "styled-components";
 import { RoomType } from "../../utils/types";
 
-const SelectInput = ({
+interface SelectInputProps {
+  data: RoomType[] | { name: string; id: string }[];
+  value: string;
+  note: string;
+  handleChange: (event: SelectChangeEvent<string | null | undefined>, child: ReactNode) => void;
+  defaultValue?: string | null;
+}
+
+const SelectInput: FC<SelectInputProps> = ({
   data,
   value,
   note,
   handleChange,
   defaultValue
-}: {
-  data: RoomType[] | { name: string; id: string }[];
-  value: string;
-  note: string;
-  handleChange: any;
-  defaultValue?: any
 }) => {
   return (
     <InputWrapper>

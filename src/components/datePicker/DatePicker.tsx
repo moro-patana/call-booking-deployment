@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FC } from "react";
 import { TextField } from "@mui/material";
 import { Stack } from "@mui/system";
 import { DesktopDatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -10,22 +10,22 @@ const timeStyle = {
   padding: 0,
 };
 
-const DatePicker = ({
+interface DatePickerProps {
+  value: Date | undefined;
+  handleChange: (value: Date | null) => void;
+  startTimeOnChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  endTimeOnChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  startTime: string;
+  endTime: string;
+}
+
+const DatePicker: FC<DatePickerProps> = ({
   value,
-  date,
   handleChange,
   startTimeOnChange,
   endTimeOnChange,
   startTime,
   endTime
-}: {
-  value: Date | undefined;
-  date: Date;
-  handleChange: any;
-  startTimeOnChange: any;
-  endTimeOnChange: any;
-  startTime: any;
-  endTime: any;
 }) => {
 
   return (

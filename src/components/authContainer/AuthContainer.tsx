@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 import { Box, Container, Typography } from '@mui/material';
 
 export interface UserType {
@@ -11,7 +11,12 @@ export interface UserType {
   passwordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const AuthContainer: FC<any> = ({ heading, children }) => {
+interface AuthContainerProps {
+  heading: string;
+  children: ReactNode;
+}
+
+const AuthContainer: FC<AuthContainerProps> = ({ heading, children }) => {
   return (
     <Container
       sx={{

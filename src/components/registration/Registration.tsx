@@ -6,17 +6,17 @@ import {
   TextField,
 } from '@mui/material';
 
-export interface UserType {
-  username: string
-  email: string
-  password: string
-  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
-  usernameChange: (event: React.ChangeEvent<HTMLInputElement>) => void
-  emailChange: (event: React.ChangeEvent<HTMLInputElement>) => void
-  passwordChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+export interface UserProps {
+  username: string;
+  email: string;
+  password: string;
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  usernameChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  emailChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  passwordChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const Registration: FC<UserType> = ({
+const Registration: FC<UserProps> = ({
   username,
   email,
   password,

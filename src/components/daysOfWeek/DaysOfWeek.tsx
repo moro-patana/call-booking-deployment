@@ -5,13 +5,13 @@ import Room from "../rooms/Room";
 import { BookingType, RoomType, UserBookingType } from "../../utils/types";
 import RoomPerHour from "../roomPerHour/RoomPerHour";
 
-interface DaysOfWeekType {
+interface DaysOfWeekProps {
   availableHours: Date[];
   selectedDate: Date;
   rooms: RoomType[];
   bookings: BookingType[] | [];
   users: UserBookingType[];
-  weekDays: any[];
+  weekDays: Date[];
 }
 
 const DaysOfWeek = ({
@@ -21,7 +21,7 @@ const DaysOfWeek = ({
   bookings,
   users,
   weekDays
-}: DaysOfWeekType) => {
+}: DaysOfWeekProps) => {
 
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isActive, setIsActive] = useState<boolean>(false);

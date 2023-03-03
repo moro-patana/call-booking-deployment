@@ -1,17 +1,17 @@
 import { Box, Button, Grid, TextField } from '@mui/material';
 import { FC } from 'react';
 
-interface LoginType {
-  email: string
-  password: string
+interface LoginFormProps {
+  email: string;
+  password: string;
   // emailErr: string
   // passwordErr: string
-  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
-  emailChange: (event: React.ChangeEvent<HTMLInputElement>) => void
-  passwordChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
+  emailChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  passwordChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const LoginForm: FC<LoginType> = ({
+const LoginForm: FC<LoginFormProps> = ({
   email,
   password,
   // emailErr,

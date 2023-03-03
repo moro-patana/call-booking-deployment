@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Box, Button, Divider } from '@mui/material';
 import Registration from './registration/Registration';
 import AuthContainer from './authContainer/AuthContainer'
 import { useAppDispatch } from '../redux/hooks';
 import { userRegistered } from '../redux/reducers/usersSlice';
 import { registerMutation, sendQuery } from "../graphqlHelper";
-import { useNavigate } from 'react-router-dom';
-
 
 const RegisterComponent = () => {
   const navigate = useNavigate()

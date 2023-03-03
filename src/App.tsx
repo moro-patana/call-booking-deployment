@@ -21,6 +21,7 @@ interface IEvent {
   end: Date | string;
   resourceId: string;
 }
+
 interface IResource {
   id: string | number;
   title: string;

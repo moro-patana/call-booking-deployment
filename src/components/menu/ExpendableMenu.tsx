@@ -11,15 +11,15 @@ import { covertTONormalDate } from '../../utils/dateUtils';
 
 const iconStyle = { padding: 0, height: "24px" }
 
-interface MenuType {
-  currentDay: Date
-  endingDay: Date
-  setCurrentDay: (value: Date) => void 
-  setEndingDay: (value: Date) => void
-  setWeek: (value: Date[]) => void
+interface MenuProps {
+  currentDay: Date;
+  endingDay: Date;
+  setCurrentDay: (value: Date) => void;
+  setEndingDay: (value: Date) => void;
+  setWeek: (value: Date[]) => void;
 }
 
-const ExpendableMenu: FC<MenuType> = ({
+const ExpendableMenu: FC<MenuProps> = ({
   currentDay,
   endingDay,
   setCurrentDay,
