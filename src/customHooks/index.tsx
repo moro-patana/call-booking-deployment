@@ -40,18 +40,18 @@ const useCustomHooks = () => {
   const fetchRooms = async () => {
     try {
       const response = await sendQuery(getRooms());
-      dispatch(getRoomsAction(response?.data?.data?.rooms));
+      dispatch(getRoomsAction(response?.data?.data?.getRooms));
     } catch (error) {
-      console.error("getRooms error", error);
+      console.log("getRooms err", error);
     }
   };
 
   const fetchBookingsByUser = async () => {
     try {
       const response = await sendQuery(getBookingsByUser());
-      dispatch(getBookingsByUserAction(response?.data?.data?.bookings));
+      dispatch(getBookingsByUserAction(response?.data?.data?.getBookings));
     } catch (error) {
-      console.error("getBookingUser error", error);
+      console.log("getBookingUser err", error);
     }
   };
 
