@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FC } from "react";
 import {
   styled as materialStyle,
   Tooltip,
@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import styled from "styled-components";
 
-interface TooltipContentType {
+interface TooltipContentProps {
   room: string;
   startTime: string;
   endTime: string;
@@ -31,13 +31,13 @@ export const HtmlTooltip = materialStyle(
   },
 }));
 
-const TooltipContent = ({
+const TooltipContent: FC<TooltipContentProps> = ({
   room,
   startTime,
   endTime,
   user,
   description,
-}: TooltipContentType) => {
+}) => {
   return (
     <Wrapper>
       <h3>{room}</h3>

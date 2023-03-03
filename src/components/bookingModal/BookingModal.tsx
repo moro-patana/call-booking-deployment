@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from "react";
-import { Box, Button, Modal, TextField, Typography } from "@mui/material";
+import React, { FC, useCallback, useState } from "react";
+import { Box, Button, Modal, SelectChangeEvent, TextField, Typography } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import styled from "styled-components";
 import SelectInput from "../Select/SelectInput";
@@ -9,11 +9,11 @@ import { getSelectedTimeMinutes, newDateGenerator, timeConverter } from "../../u
 import useCustomHooks from '../../customHooks/index';
 import { bookingMutation, sendAuthorizedQuery } from '../../graphqlHelper';
 
-interface propTypes {
+interface BookingModalProps {
   rooms: RoomType[];
   repeatData: { name: string; id: string }[];
   open: boolean;
-  handleClose: any;
+  handleClose: () => void;
   position: { x: number; y: number };
   day: Date;
   date: Date;
@@ -32,7 +32,7 @@ interface NewBooking {
   token: string;
 }
 
-const BookingModal = ({
+const BookingModal: FC<BookingModalProps> = ({
   rooms,
   repeatData,
   open,
@@ -43,14 +43,15 @@ const BookingModal = ({
   endDate,
   selectedRoom,
   setSelectedRoom,
-}: propTypes) => {
-  const { currentUser, fetchBookingsByUser } = useCustomHooks() 
+  setBooking
+}) => {
+  const { currentUser, fetchBookingsByUser } = useCustomHooks();
   const start = new Date(startDate);
   const end = new Date(endDate);
   const selectedHour = timeConverter(start?.getHours());
   const [label, setLabel] = useState("");
-  const [ roomId, setRoomId ] = useState(selectedRoom)
-  const [repeatEvent, setRepeatEvent] = useState(repeatData[0].id)
+  const [ roomId, setRoomId ] = useState(selectedRoom);
+  const [repeatEvent, setRepeatEvent] = useState(repeatData[0].id);
   const [ startTime, setStartTime] = useState(
     `${selectedHour}:${getSelectedTimeMinutes(date, 0)}`
   );
@@ -58,19 +59,19 @@ const BookingModal = ({
     `${selectedHour}:${getSelectedTimeMinutes(date, date?.getMinutes() + 15)}`
   );
 
-  const handleStartTimeEvnt = (event: any) => {
-    setStartTime(event.target.value)
+  const handleStartTimeEvnt = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setStartTime(event.target.value);
   }
 
-  const handleEndTimeEvnt = (event: any) => {
+  const handleEndTimeEvnt = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEndTime(event.target.value);
   }
 
-  const handleChange = (value: Date) => {
+  const handleChange = (value: Date | null) => {
     return value
   }
 
-  const handleRepeatEventChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleRepeatEventChange = (event: SelectChangeEvent<any>) => {
     setRepeatEvent(event.target.value)
   };
 
@@ -170,7 +171,6 @@ const BookingModal = ({
             <DatePicker
               value={startDate}
               handleChange={handleChange}
-              date={date}
               startTime={startTime}
               endTime={endTime}
               startTimeOnChange={handleStartTimeEvnt}  
@@ -178,7 +178,7 @@ const BookingModal = ({
             />
           </DatePickerWrapper>
           <SelectInput
-            handleChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+            handleChange={(event: SelectChangeEvent<any>) => {
               setSelectedRoom(event.target.value)
               setRoomId(event.target.value)
             }}

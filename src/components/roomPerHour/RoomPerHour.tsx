@@ -1,12 +1,12 @@
+import { FC, useState } from "react";
 import { Table, TableBody, TableCell, TableRow } from "@mui/material";
 import { eachMinuteOfInterval } from "date-fns";
 import { dateStringConverter, timeConverter } from "../../utils/dateUtils";
 import { BookingType, RoomType, UserBookingType } from "../../utils/types";
 import BookingModal from "../bookingModal/BookingModal";
 import TooltipContent, { HtmlTooltip } from "../tooltip/TooltipContent";
-import { useState } from "react";
 
-interface RoomPerHoursType {
+interface RoomPerHoursProps {
   rooms: RoomType[];
   bookings: BookingType[] | [];
   day: Date;
@@ -14,13 +14,13 @@ interface RoomPerHoursType {
   users: UserBookingType[];
 }
 
-const RoomPerHour = ({
+const RoomPerHour: FC<RoomPerHoursProps> = ({
   rooms,
   bookings,
   day,
   date,
   users,
-}: RoomPerHoursType) => {
+}) => {
   const viewPort = window.innerWidth;
   const [cellId, setCellId] = useState("");
   const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });

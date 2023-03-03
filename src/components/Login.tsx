@@ -9,11 +9,11 @@ import { loginMutation, sendQuery } from "../graphqlHelper";
 import { useNavigate } from 'react-router-dom';
 
 
-interface LoginComponentType {
-  status: string
+interface LoginComponentProp {
+  status: string;
 }
 
-const LoginComponent: FC<LoginComponentType> = ({ status }) => {
+const LoginComponent: FC<LoginComponentProp> = ({ status }) => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch();
   const [ login, setLogin ] = useState({

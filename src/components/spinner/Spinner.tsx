@@ -1,11 +1,11 @@
 import { FC } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 
-interface ActionType {
+interface SpinnerPropType {
     action?: string
 }
 
-const Spinner: FC<ActionType> = ({ action }) => {
+const Spinner: FC<SpinnerPropType> = ({ action }) => {
   return (
     <Box sx={{
         marginTop: "120px",
