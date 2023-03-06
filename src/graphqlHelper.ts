@@ -17,6 +17,7 @@ export const getRooms = () => {
   }`;
 };
 
+// TODO Make it work with an user id which needs BE changes
 export const getBookingsByUser = () => {
   return `{
     getBookings{

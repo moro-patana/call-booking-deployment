@@ -12,6 +12,8 @@ interface RoomPerHoursProps {
   day: Date;
   date: Date;
   users: UserBookingType[];
+  errorMessage: string;
+  setErrorMessage: (value: string) => void;
 }
 
 const RoomPerHour: FC<RoomPerHoursProps> = ({

@@ -23,6 +23,8 @@ Please describe the tests that you have done or needs to be done.
 
 ## Checklist:
 
+Please only check the ones that you have done, not everything
+
 - [ ] My code follows the style guidelines of this project
 - [ ] I have updated the Changelog file
 - [ ] I have performed a self-review of my own code

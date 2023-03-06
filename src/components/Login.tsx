@@ -27,7 +27,7 @@ const LoginComponent: FC<LoginComponentProp> = ({ status, setErrorMessage }) => 
       const res = await sendQuery(loginMutation(login.email, login.password))
       dispatch(fetchCurrentUser(res.data.data))
       dispatch(userLoggedIn(true))
-      navigate("/my-booking");
+      navigate("/");
     } catch(error: any) {
       setErrorMessage(error["message"]);
     }

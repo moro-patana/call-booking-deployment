@@ -12,6 +12,8 @@ interface DaysOfWeekProps {
   bookings: BookingType[] | [];
   users: UserBookingType[];
   weekDays: Date[];
+  errorMessage: string;
+  setErrorMessage: (value: string) => void;
 }
 
 const DaysOfWeek = ({
@@ -20,7 +22,9 @@ const DaysOfWeek = ({
   availableHours,
   bookings,
   users,
-  weekDays
+  weekDays,
+  errorMessage,
+  setErrorMessage
 }: DaysOfWeekProps) => {
 
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -145,6 +149,8 @@ const DaysOfWeek = ({
                         day={day}
                         date={date}
                         users={users}
+                        errorMessage={errorMessage}
+                        setErrorMessage={setErrorMessage}
                       /> 
                     </TableCell>
                   );

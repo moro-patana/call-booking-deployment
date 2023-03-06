@@ -40,10 +40,9 @@ const RegisterComponent = ({setErrorMessage}:{setErrorMessage: (value: string) =
   const handleRegistrationSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
     try {
-    const res = await sendQuery(registerMutation(accountRegister.username, accountRegister.email, accountRegister.password))
-
-    dispatch(userRegistered(res.data.data))
-    dispatch(userRegistered(true))
+    const res = await sendQuery(registerMutation(accountRegister.username, accountRegister.email, accountRegister.password));
+    dispatch(userRegistered(res.data.data));
+    dispatch(userRegistered(true));
     navigate("/login");
     } catch(error: any) {
       setErrorMessage(error);
