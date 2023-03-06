@@ -28,7 +28,7 @@ const LoginComponent: FC<LoginComponentProp> = ({ status }) => {
       dispatch(fetchCurrentUser(res.data.data))
 
       dispatch(userLoggedIn(true))
-      navigate("/my-booking");
+      navigate("/");
     } catch(err) {
       console.log('error while register', err)
     }
