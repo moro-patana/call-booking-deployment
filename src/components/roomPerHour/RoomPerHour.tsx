@@ -150,6 +150,8 @@ const RoomPerHour: FC<RoomPerHoursProps> = ({
                     endDate={new Date()}
                     selectedRoom={selectedRoom}
                     setSelectedRoom={setSelectedRoom}
+                    errorMessage=""
+                    setErrorMessage={() => ""}
                     
                   />
 

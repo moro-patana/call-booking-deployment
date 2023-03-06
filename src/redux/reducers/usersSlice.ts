@@ -1,13 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-type fetchUserRegisterError = {
-  message: string;
-};
-
-type FetchUserLoginError = {
-  message: string;
-};
-
 interface UsersState {
   users: [];
   currentUser: {
@@ -17,8 +9,6 @@ interface UsersState {
     token?: string;
     isRegister: boolean;
     isLogin: boolean;
-    registerError: fetchUserRegisterError | null;
-    loginError: FetchUserLoginError | null;
     login: {
       email: string;
       id: string;
@@ -37,8 +27,6 @@ const initialState: UsersState = {
     token: "",
     isRegister: false,
     isLogin: false,
-    registerError: null,
-    loginError: null,
     login: { email: "", id: "", token: "", username: "" },
   },
 };
@@ -57,12 +45,6 @@ export const usersSlice = createSlice({
     userLoggedIn: (state, action) => {
       state.currentUser.isLogin = action.payload;
     },
-    userLogInError: (state, action) => {
-      state.currentUser.loginError = action.payload;
-    },
-    userRegisterError: (state, action) => {
-      state.currentUser.registerError = action.payload;
-    },
     userRegistered: (state, action) => {
       state.currentUser.isRegister = action.payload;
     },
@@ -78,8 +60,6 @@ export const {
   userLoggedIn,
   userRegistered,
   userLoggedout,
-  userLogInError,
-  userRegisterError,
 } = usersSlice.actions;
 
 export default usersSlice.reducer;

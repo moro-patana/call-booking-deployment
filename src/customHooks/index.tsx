@@ -8,12 +8,8 @@ import { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { getBookingsByUser, getRooms, sendQuery } from "../graphqlHelper";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
-import {
-  bookingsData,
-  getBookingErrorMessage,
-  getBookingsByUserAction,
-} from "../redux/reducers/bookingsSlice";
-import { roomsData, getRoomsAction, getRoomsErrorMessage } from "../redux/reducers/roomsSlice";
+import { bookingsData, getBookingsByUserAction } from "../redux/reducers/bookingsSlice";
+import { roomsData, getRoomsAction } from "../redux/reducers/roomsSlice";
 
 const useCustomHooks = () => {
   const dispatch = useAppDispatch();
@@ -37,13 +33,14 @@ const useCustomHooks = () => {
   const [currentDay, setCurrentDay] = useState<any>(startDay);
   const [endingDay, setEndingDay] = useState<any>(endDay);
   const [week, setWeek] = useState(weekDays);
+  const [errorMessage, setErrorMessage] = useState(""); // As this file is no longer needed, I still added this state in order to show how this state is used for the rest of the app.
 
   const fetchRooms = async () => {
     try {
       const response = await sendQuery(getRooms());
       dispatch(getRoomsAction(response?.data?.data?.getRooms));
-    } catch (error) {
-      dispatch(getRoomsErrorMessage(error));
+    } catch (error: any) {
+      setErrorMessage(error["message"])
     }
   };
 
@@ -51,8 +48,8 @@ const useCustomHooks = () => {
     try {
       const response = await sendQuery(getBookingsByUser());
       dispatch(getBookingsByUserAction(response?.data?.data?.getBookings));
-    } catch (error) {
-      dispatch(getBookingErrorMessage(error));
+    } catch (error: any) {
+      setErrorMessage(error["message"])
     }
   };
 
@@ -85,7 +82,8 @@ const useCustomHooks = () => {
     week,
     setWeek,
     currentUser,
-    fetchBookingsByUser
+    fetchBookingsByUser,
+    errorMessage
   };
 };
 

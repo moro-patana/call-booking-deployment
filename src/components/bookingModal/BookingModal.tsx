@@ -8,9 +8,6 @@ import { RoomType } from "../../utils/types";
 import { getSelectedTimeMinutes, newDateGenerator, timeConverter } from "../../utils/dateUtils";
 import useCustomHooks from '../../customHooks/index';
 import { bookingMutation, sendAuthorizedQuery } from '../../graphqlHelper';
-import { useDispatch } from 'react-redux';
-import { bookingsErrorMessage, getBookingErrorMessage } from "../../redux/reducers/bookingsSlice";
-import { useAppSelector } from "../../redux/hooks";
 
 interface BookingModalProps {
   rooms: RoomType[];
@@ -24,7 +21,8 @@ interface BookingModalProps {
   endDate: Date;
   selectedRoom: string;
   setSelectedRoom: (value: string) => void;
-  setBooking?: any
+  errorMessage: string;
+  setErrorMessage: (value: string) => void;
 }
 
 interface NewBooking {
@@ -46,8 +44,9 @@ const BookingModal: FC<BookingModalProps> = ({
   endDate,
   selectedRoom,
   setSelectedRoom,
+  errorMessage,
+  setErrorMessage,
 }) => {
-  const dispatch = useDispatch()
   const { currentUser, fetchBookingsByUser } = useCustomHooks();
   const start = new Date(startDate);
   const end = new Date(endDate);
@@ -88,8 +87,8 @@ const BookingModal: FC<BookingModalProps> = ({
       );
       const { data } = response.data;
       return data; 
-    } catch (error) {
-      dispatch(getBookingErrorMessage(error));
+    } catch (error: any) {
+      setErrorMessage(error["message"]);
     }
   };
   
@@ -108,8 +107,8 @@ const BookingModal: FC<BookingModalProps> = ({
           });
         
           fetchBookingsByUser();
-      } catch (error) {
-        dispatch(getBookingErrorMessage(error));
+      } catch (error: any) {
+        setErrorMessage(error);
       }
     };
 

@@ -102,12 +102,13 @@ function App() {
     return booking
   });
 
-  const [ openBookingModal, setOpenBookingModal ] = useState(false)
-  const [ slot, setSlot ] = useState<any>(null)
-  const [ selectedRoom, setSelectedRoom ] = useState(slot && slot?.resourceId)
-  const [ position, setPosition ] = useState({x: 0, y: 0})
-  const [ startDate, setStartDate ] = useState(new Date())
-  const [ endDate, setEndDate ] = useState(new Date())
+  const [ openBookingModal, setOpenBookingModal ] = useState(false);
+  const [ slot, setSlot ] = useState<any>(null);
+  const [ selectedRoom, setSelectedRoom ] = useState(slot && slot?.resourceId);
+  const [ position, setPosition ] = useState({x: 0, y: 0});
+  const [ startDate, setStartDate ] = useState(new Date());
+  const [ endDate, setEndDate ] = useState(new Date());
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSelectEvent = (slot: any) => {
     setSlot(slot)
@@ -170,10 +171,11 @@ function App() {
         element={
           <LoginComponent
             status={'notLoading'} // TODO: Implement properly via Redux state
+            setErrorMessage={setErrorMessage}
           />
         }
       />
-      <Route path="/signup" element={<RegisterComponent />} />
+      <Route path="/signup" element={<RegisterComponent setErrorMessage={setErrorMessage} />} />
       <Route
         path="/my-booking"
         element={
@@ -219,7 +221,8 @@ function App() {
                 endDate={endDate}
                 selectedRoom={selectedRoom}
                 setSelectedRoom={setSelectedRoom}
-                setBooking={setBookings}
+                errorMessage={errorMessage}
+                setErrorMessage={setErrorMessage}
               />
             )}
           </>

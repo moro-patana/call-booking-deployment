@@ -5,14 +5,15 @@ import LoginForm from './LoginForm'
 import AuthContainer  from './authContainer/AuthContainer';
 import Spinner from './spinner/Spinner'
 import { useAppDispatch } from '../redux/hooks';
-import { userLoggedIn, fetchCurrentUser, userLogInError } from '../redux/reducers/usersSlice';
+import { userLoggedIn, fetchCurrentUser } from '../redux/reducers/usersSlice';
 import { loginMutation, sendQuery } from "../graphqlHelper";
 
 interface LoginComponentProp {
   status: string;
+  setErrorMessage: (value: string) => void;
 }
 
-const LoginComponent: FC<LoginComponentProp> = ({ status }) => {
+const LoginComponent: FC<LoginComponentProp> = ({ status, setErrorMessage }) => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch();
   const [ login, setLogin ] = useState({
@@ -27,8 +28,8 @@ const LoginComponent: FC<LoginComponentProp> = ({ status }) => {
       dispatch(fetchCurrentUser(res.data.data))
       dispatch(userLoggedIn(true))
       navigate("/my-booking");
-    } catch(error) {
-      dispatch(userLogInError(error));
+    } catch(error: any) {
+      setErrorMessage(error["message"]);
     }
   };
 
@@ -40,8 +41,6 @@ const LoginComponent: FC<LoginComponentProp> = ({ status }) => {
             <LoginForm
               email={login.email}
               password={login.password}
-              // emailErr={errorMessages.email}
-              // passwordErr={errorMessages.password}
               emailChange={
                 (event: React.ChangeEvent<HTMLInputElement>) => 
                   setLogin({...login, email: event.target.value})

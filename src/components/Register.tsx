@@ -4,10 +4,10 @@ import { Box, Button, Divider } from '@mui/material';
 import Registration from './registration/Registration';
 import AuthContainer from './authContainer/AuthContainer'
 import { useAppDispatch } from '../redux/hooks';
-import { userRegistered, userRegisterError } from '../redux/reducers/usersSlice';
+import { userRegistered } from '../redux/reducers/usersSlice';
 import { registerMutation, sendQuery } from "../graphqlHelper";
 
-const RegisterComponent = () => {
+const RegisterComponent = ({setErrorMessage}:{setErrorMessage: (value: string) => void}) => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch();
   const [accountRegister, setAccountRegister] = useState({
@@ -45,8 +45,8 @@ const RegisterComponent = () => {
     dispatch(userRegistered(res.data.data))
     dispatch(userRegistered(true))
     navigate("/login");
-    } catch(error) {
-      dispatch(userRegisterError(error));
+    } catch(error: any) {
+      setErrorMessage(error);
     }
   };
   return (
