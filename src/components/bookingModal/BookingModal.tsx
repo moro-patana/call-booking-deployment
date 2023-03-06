@@ -92,7 +92,7 @@ const BookingModal: FC<BookingModalProps> = ({
         const { data } = response.data;
         return data;
         } catch (error: any) {
-          setErrorMessage(error["message"])
+          setErrorMessage(error["message"]);
         }
     };
 

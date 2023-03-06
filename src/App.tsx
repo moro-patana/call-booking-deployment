@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
@@ -6,11 +7,10 @@ import './App.css';
 import LoginComponent from './components/Login';
 import RegisterComponent from './components/Register';
 import Calendar from './pages/Calendar';
-import { useState } from 'react';
 
 function App() {
   const [errorMessage, setErrorMessage] = useState("");
-  console.log('errorMessage::::::', errorMessage);
+
   return (
     <Routes>
       <Route

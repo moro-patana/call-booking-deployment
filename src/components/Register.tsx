@@ -7,7 +7,7 @@ import { useAppDispatch } from '../redux/hooks';
 import { userRegistered } from '../redux/reducers/usersSlice';
 import { registerMutation, sendQuery } from "../graphqlHelper";
 
-const RegisterComponent = ({setErrorMessage}:{setErrorMessage: (value: string) => void}) => {
+const RegisterComponent = ({ setErrorMessage }:{ setErrorMessage: (value: string) => void }) => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch();
   const [accountRegister, setAccountRegister] = useState({
