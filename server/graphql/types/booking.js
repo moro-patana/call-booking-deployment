@@ -11,7 +11,7 @@ exports.bookingType = new GraphQLObjectType({
       id: {
         type: new GraphQLNonNull(GraphQLID),
       },
-      partecipants: {
+      participants: {
         type: GraphQLList(GraphQLID),
       },
       roomId: {
