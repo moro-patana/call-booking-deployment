@@ -1,15 +1,6 @@
-import React, { FC, ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 import { Box, Container, Typography } from '@mui/material';
-
-export interface UserType {
-  username: string;
-  email: string;
-  password: string;
-  onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
-  usernameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  emailChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  passwordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
+import styles from './authContainer.module.css';
 
 interface AuthContainerProps {
   heading: string;
@@ -17,27 +8,16 @@ interface AuthContainerProps {
 }
 
 const AuthContainer: FC<AuthContainerProps> = ({ heading, children }) => {
+  const { container, box, typography } = styles;
+  
   return (
     <Container
-      sx={{
-        width: '464px',
-        height: '543px',
-        position: 'absolute',
-        top: '370px',
-        right: '12px',
-        zIndex: 999,
-        boxShadow: 3,
-        borderRadius: '5px',
-        background: '#fff',
-        padding: '24px 0',
-      }}
+      className={container}
     >
       <Box
-        sx={{
-          textAlign: 'initial',
-        }}
+       className={box}
       >
-        <Typography variant='h3' sx={{ marginBottom: '20px' }}>
+        <Typography variant='h3' className={typography}>
           {heading}
         </Typography>
         {children}

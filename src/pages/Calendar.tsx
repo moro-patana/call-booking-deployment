@@ -14,7 +14,7 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { bookingsData } from "../redux/reducers/bookingsSlice";
 import { roomsData } from "../redux/reducers/roomsSlice";
 
-import { dateStringConverter, getCurrentDay, getEndingDay, getWeekDays } from "../utils/dateUtils";
+import { dateStringConverter, getCurrentDay, getEndingDay } from "../utils/dateUtils";
 import { Booking, IEvent, IResource, RoomType } from "../utils/types";
 
 const DragAndDropCalendar = withDragAndDrop<IEvent, IResource>(Calendar);
