@@ -13,7 +13,7 @@ const argType = {
   label: { type: GraphQLString },
   startDate: { type: GraphQLString },
   endDate: { type: GraphQLString },
-  partecipants: { type: GraphQLList(GraphQLID) }
+  participants: { type: GraphQLList(GraphQLID) }
 }
 
 module.exports = {
@@ -27,11 +27,11 @@ module.exports = {
         label,
         startDate,
         endDate,
-        partecipants
+        participants
       } = args;
 
       const uModel = new bookingModel({
-        partecipants,
+        participants,
         roomId,
         label,
         startDate,

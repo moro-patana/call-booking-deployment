@@ -2,4 +2,4 @@ Let's always edit this file to describe what yo did using the ticket name. It wi
 
 For eg:
 
-[ADDED] - Added a PR template
+[CHANGED] - Removed all inline styles from BookingModal component and used CSS modules instead
