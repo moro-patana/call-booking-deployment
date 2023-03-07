@@ -104,3 +104,4 @@ export const bookingMutation = (
     }
   }`;
 };
+export const deleteBooking = (id: string | number) => `mutation{deleteBooking(id:"${id}"){label}}`;

@@ -16,6 +16,7 @@ import { roomsData } from "../redux/reducers/roomsSlice";
 
 import { dateStringConverter, getCurrentDay, getEndingDay, getWeekDays } from "../utils/dateUtils";
 import { Booking, IEvent, IResource, RoomType } from "../utils/types";
+import { sendAuthorizedQuery, deleteBooking } from '../graphqlHelper';
 
 const DragAndDropCalendar = withDragAndDrop<IEvent, IResource>(Calendar);
 
@@ -133,6 +134,18 @@ const MyBooking = () => {
         [setBookings]
     );
 
+    
+    const onDeleteEvent = async(event: IEvent) => {
+            if(event.id){
+                const response = await sendAuthorizedQuery(
+                    deleteBooking(event.id), currentUser.login.token
+                );
+                console.log('response.data::::::', response.data);
+            const booking = response.data.data;
+            return booking;
+        }
+    }
+
     return (
         <Box>
             <ExpendableMenu
@@ -161,6 +174,7 @@ const MyBooking = () => {
                 views={[Views.WEEK, Views.DAY]}
                 dayPropGetter={calendarStyle}
                 step={15}
+                onSelectEvent={onDeleteEvent}
             />
 
             {openBookingModal && (
