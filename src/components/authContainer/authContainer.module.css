@@ -1,0 +1,20 @@
+.container {
+    width: 464px;
+    height: 543px;
+    position: absolute;
+    top: 370px;
+    right: 12px;
+    z-index: 999;
+    box-shadow: 3;
+    border-radius: 5px;
+    background: #fff;
+    padding: 24px 0;
+}
+
+.box {
+    text-align: initial;
+}
+
+.typography {
+    margin-bottom: 20px
+}

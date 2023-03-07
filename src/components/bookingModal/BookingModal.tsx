@@ -1,17 +1,14 @@
 import React, { FC, useCallback, useState } from "react";
 import { Box, Button, Modal, SelectChangeEvent, TextField, Typography } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import styled from "styled-components";
-
 import { fetchBookingsByUser } from "../../redux/actions/bookings";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-
 import SelectInput from "../Select/SelectInput";
 import DatePicker from "../datePicker/DatePicker";
-
 import { RoomType } from "../../utils/types";
 import { getSelectedTimeMinutes, newDateGenerator, timeConverter } from "../../utils/dateUtils";
 import { bookingMutation, sendAuthorizedQuery } from '../../graphqlHelper';
+import styles from './bookingModal.module.css';
 
 interface BookingModalProps {
     rooms: RoomType[];
@@ -30,11 +27,11 @@ interface BookingModalProps {
 }
 
 interface NewBooking {
-    roomId: string;
-    label: string;
-    startDate: any;
-    endDate: any;
-    token: string;
+  roomId: string;
+  label: string;
+  startDate: any;
+  endDate: any;
+  token: string;
 }
 
 const BookingModal: FC<BookingModalProps> = ({
@@ -51,36 +48,42 @@ const BookingModal: FC<BookingModalProps> = ({
     errorMessage,
     setErrorMessage
 }) => {
-    const { currentUser } = useAppSelector(state => state.users);
-    const dispatch = useAppDispatch();
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const selectedHour = timeConverter(start?.getHours());
-    const [label, setLabel] = useState("");
-    const [roomId, setRoomId] = useState(selectedRoom);
-    const [repeatEvent, setRepeatEvent] = useState(repeatData[0].id);
-    const [startTime, setStartTime] = useState(
-        `${selectedHour}:${getSelectedTimeMinutes(date, 0)}`
-    );
-    const [endTime, setEndTime] = useState(
-        `${selectedHour}:${getSelectedTimeMinutes(date, date?.getMinutes() + 15)}`
-    );
+  const { currentUser } = useAppSelector(state => state.users);
+  const dispatch = useAppDispatch();
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const selectedHour = timeConverter(start?.getHours());
+  const [label, setLabel] = useState("");
+  const [roomId, setRoomId] = useState(selectedRoom);
+  const [repeatEvent, setRepeatEvent] = useState(repeatData[0].id);
+  const [startTime, setStartTime] = useState(
+    `${selectedHour}:${getSelectedTimeMinutes(date, 0)}`
+  );
+  const [endTime, setEndTime] = useState(
+    `${selectedHour}:${getSelectedTimeMinutes(date, date?.getMinutes() + 15)}`
+  );
+  const { modal, box, typography, backdrop, datePickerWrapper, buttonWrapper, textField } = styles;
 
-    const handleStartTimeEvent = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setStartTime(event.target.value);
-    };
+  const boxPosition = {
+    left: position.x > 70 ? "70%" : `${position.x}%`,
+    top: position.y > 518 ? 518 : position.y > 18 ? position.y : 18,
+  };
 
-    const handleEndTimeEvent = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setEndTime(event.target.value);
-    };
+  const handleStartTimeEvent = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setStartTime(event.target.value);
+  };
 
-    const handleChange = (value: Date | null) => {
-        return value;
-    };
+  const handleEndTimeEvent = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEndTime(event.target.value);
+  };
 
-    const handleRepeatEventChange = (event: SelectChangeEvent<any>) => {
-        setRepeatEvent(event.target.value);
-    };
+  const handleChange = (value: Date | null) => {
+    return value;
+  };
+
+  const handleRepeatEventChange = (event: SelectChangeEvent<any>) => {
+    setRepeatEvent(event.target.value);
+  };
 
     const addNewBooking = async (userBooking: NewBooking) => {
         const { roomId, label, startDate, endDate, token } = userBooking;
@@ -119,112 +122,71 @@ const BookingModal: FC<BookingModalProps> = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [label, roomId, startTime, endTime]);
 
-    return (
-        <div>
-            <Modal
-                open={open}
-                onClose={handleClose}
-                sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    "& > .MuiBackdrop-root": {
-                        backgroundColor: "transparent",
-                        cursor: "pointer",
-                    },
-                }}
-            >
-                <Box
-                    sx={{
-                        width: "100%",
-                        maxWidth: "364px",
-                        backgroundColor: "#fff",
-                        padding: "19px 24px",
-                        margin: "auto",
-                        outline: 0,
-                        boxShadow: "0px 0px 6px #c8c8c8",
-                        display: "flex",
-                        flexDirection: "column",
-                        position: "absolute",
-                        left: position.x > 70 ? "70%" : `${position.x}%`,
-                        top: position.y > 518 ? 518 : position.y > 18 ? position.y : 18,
-                    }}
-                >
-                    <Typography
-                        variant="h3"
-                        sx={{ fontSize: "14px", marginBottom: "18px" }}
-                    >
-                        Book a room
-                    </Typography>
+  return (
+    <div>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        className={modal}
+        slotProps={{backdrop: { className: backdrop }}}
+      >
+        <Box
+          className={box}
+          sx={boxPosition}
+        >
+          <Typography
+            variant="h3"
+            className={typography}
+            id={styles.typography}
+          >
+            Book a room
+          </Typography>
 
-                    <TextField
-                        label="label"
-                        sx={{ marginBottom: "16px" }}
-                        onChange={(event) => setLabel(event.target.value)}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                    />
-                    <DatePickerWrapper
-                        style={{
-                            marginBottom: "14px",
-                            display: "flex",
-                            alignItems: "center",
-                        }}
-                    >
-                        <AccessTimeIcon />
-                        <DatePicker
-                            value={startDate}
-                            handleChange={handleChange}
-                            startTime={startTime}
-                            endTime={endTime}
-                            startTimeOnChange={handleStartTimeEvent}
-                            endTimeOnChange={handleEndTimeEvent}
-                        />
-                    </DatePickerWrapper>
-                    <SelectInput
-                        handleChange={(event: SelectChangeEvent<any>) => {
-                            setSelectedRoom(event.target.value)
-                            setRoomId(event.target.value)
-                        }}
-                        data={rooms}
-                        defaultValue={selectedRoom}
-                        value={roomId}
-                        note="There are available rooms"
-                    />
-                    <SelectInput
-                        handleChange={handleRepeatEventChange}
-                        data={repeatData}
-                        value={repeatEvent}
-                        note="Select repeat options"
-                    />
-                    <Wrapper className="button-wrapper">
-                        <Button onClick={handleClose}>Cancel</Button>
-                        <Button onClick={handleSubmitBooking}>Book</Button>
-                    </Wrapper>
-                </Box>
-            </Modal>
-        </div>
-    );
+          <TextField
+            label="label"
+            className={textField}
+            onChange={(event) => setLabel(event.target.value)}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+          <Box
+            className={datePickerWrapper}
+          >
+            <AccessTimeIcon />
+            <DatePicker
+              value={startDate}
+              handleChange={handleChange}
+              startTime={startTime}
+              endTime={endTime}
+              startTimeOnChange={handleStartTimeEvent}  
+              endTimeOnChange={handleEndTimeEvent}  
+            />
+          </Box>
+          <SelectInput
+            handleChange={(event: SelectChangeEvent<any>) => {
+              setSelectedRoom(event.target.value)
+              setRoomId(event.target.value)
+            }}
+            data={rooms}
+            defaultValue={selectedRoom}
+            value={roomId}
+            note="There are available rooms"
+          />
+          <SelectInput
+            handleChange={handleRepeatEventChange}
+            data={repeatData}
+            value={repeatEvent}
+            note="Select repeat options"
+          />
+          <Box className={buttonWrapper}>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={handleSubmitBooking}>Book</Button>
+          </Box>
+        </Box>
+      </Modal>
+    </div>
+  )
 };
-
-const DatePickerWrapper = styled("div")`
-  svg {
-    margin-right: 16px;
-    height: 20px;
-  }
-`;
-
-const Wrapper = styled("div")`
-  &.button-wrapper {
-    display: flex;
-    place-content: end;
-    margin-top: auto;
-    button {
-      padding: 9px 7px;
-      color: #6200ee;
-      font-size: 14px;
-    }
-  }
-`;
 
 export default BookingModal;

@@ -22,11 +22,7 @@ export const getBookingsByUser = () => {
   return `{
     getBookings{
       id,
-      user {
-        id,
-        username,
-        email
-      },
+      partecipants,
       roomId,
       label,
       startDate,
