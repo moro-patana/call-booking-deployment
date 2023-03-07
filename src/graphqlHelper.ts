@@ -22,7 +22,7 @@ export const getBookingsByUser = () => {
   return `{
     getBookings{
       id,
-      partecipants,
+      participants,
       roomId,
       label,
       startDate,
@@ -33,7 +33,7 @@ export const getBookingsByUser = () => {
 
 export const getUsers = () => {
   return `{
-    users{
+    participants{
       id,
       email,
       password,
@@ -96,7 +96,12 @@ export const bookingMutation = (
       startDate: "${startDate}",
       endDate: "${endDate}"
     ){
-      id,user{id, username}, roomId,label,startDate,endDate
+      id,
+      participants, 
+      roomId,
+      label,
+      startDate,
+      endDate
     }
   }`;
 };
