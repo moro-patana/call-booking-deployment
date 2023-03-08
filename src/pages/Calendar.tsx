@@ -5,9 +5,6 @@ import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import { format, getDay, parse, startOfWeek } from 'date-fns';
 import { enUS } from 'date-fns/locale';
 
-import BookingModal from "../components/bookingModal/BookingModal";
-import ExpendableMenu from "../components/menu/ExpendableMenu";
-
 import { fetchBookingsByUser } from "../redux/actions/bookings";
 import { fetchRooms } from "../redux/actions/rooms";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
@@ -16,7 +13,9 @@ import { roomsData } from "../redux/reducers/roomsSlice";
 
 import { dateStringConverter, getCurrentDay, getEndingDay } from "../utils/dateUtils";
 import { Booking, IEvent, IResource, RoomType } from "../utils/types";
-import { sendAuthorizedQuery, deleteBooking } from '../graphqlHelper';
+import EditBookingModal from "../components/editBookingModal/EditBookingModal";
+import BookingModal from "../components/bookingModal/BookingModal";
+import ExpendableMenu from "../components/menu/ExpendableMenu";
 
 const DragAndDropCalendar = withDragAndDrop<IEvent, IResource>(Calendar);
 
@@ -58,6 +57,16 @@ const MyBooking = () => {
     const [currentDay, setCurrentDay] = useState<Date>(startDay);
     const [endingDay, setEndingDay] = useState<Date>(endDay);
 
+    // Edit modal states
+    const [isEditModalOpened, setIsEditModalOpened] = useState(false);
+    const [selectedBooking, setSelectedBooking] = useState<IEvent>({
+        id: "",
+        title: "",
+        start: new Date(),
+        end: new Date(),
+        resourceId: "",
+    });
+
     const resources = rooms?.map((room: RoomType) => {
         return {
             id: room?.id,
@@ -71,7 +80,7 @@ const MyBooking = () => {
             return {
                 id: booking.id,
                 resourceId: booking.roomId,
-                title: booking.title,
+                title: booking.label,
                 description: booking.description,
                 start: dateStringConverter(booking?.startDate),
                 end: dateStringConverter(booking?.endDate),
@@ -134,16 +143,24 @@ const MyBooking = () => {
         [setBookings]
     );
 
-    
-    const onDeleteEvent = async(event: IEvent) => {
-            if(event.id){
-                const response = await sendAuthorizedQuery(
-                    deleteBooking(event.id), currentUser.login.token
-                );
-                console.log('response.data::::::', response.data);
-            const booking = response.data.data;
-            return booking;
-        }
+    const openEditModal = (event: IEvent, e: any,) => {
+        const { start, end, resourceId, title, id } = event;
+        
+        const screenWidth = window.screen.width;
+        const x = Math.floor((e.pageX / screenWidth) * 100);
+        const y = e.pageY;
+
+        setSelectedBooking({
+            ...selectedBooking,
+            id,
+            title,
+            start,
+            end,
+            resourceId,
+        })
+
+        setIsEditModalOpened(true);
+        setPosition({x, y})
     }
 
     return (
@@ -174,8 +191,18 @@ const MyBooking = () => {
                 views={[Views.WEEK, Views.DAY]}
                 dayPropGetter={calendarStyle}
                 step={15}
-                onSelectEvent={onDeleteEvent}
+                onSelectEvent={openEditModal}
             />
+
+            {isEditModalOpened && (
+                <EditBookingModal 
+                  isEditModalOpened={isEditModalOpened} 
+                  setIsEditModalOpened={setIsEditModalOpened}
+                  position={position}
+                  selectedBooking={selectedBooking}
+                  setSelectedBooking={setSelectedBooking}
+              />
+            )}
 
             {openBookingModal && (
                 <BookingModal
