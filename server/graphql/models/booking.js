@@ -2,10 +2,11 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const BookingSchema = new Schema({
-  label: { type: String, require: true },
-  startDate: { type: String, require: true },
-  endDate: { type: String, require: true },
-  roomId: {
+  title: { type: String, require: true },
+  description: { type: String, require: true },
+  start: { type: String, require: true },
+  end: { type: String, require: true },
+  resourceId: {
     type: Schema.Types.ObjectId,
     ref: "room",
   },

@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { roomsData } from "../../redux/reducers/roomsSlice";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { useAppSelector } from "../../redux/hooks";
 import { timeConverter } from "../../utils/dateUtils";
 import { IEvent } from "../../utils/types";
 import { deleteBooking, sendAuthorizedQuery } from "../../graphqlHelper";
@@ -17,12 +17,12 @@ import { deleteBooking, sendAuthorizedQuery } from "../../graphqlHelper";
 import styles from "./editBookingModal.module.css";
 import SelectInput from "../Select/SelectInput";
 import DatePicker from "../datePicker/DatePicker";
-import { fetchBookingsByUser } from "../../redux/actions/bookings";
 
 interface EditModalProps {
   position: { x: number; y: number };
   isEditModalOpened: boolean;
   selectedBooking: IEvent;
+  repeatData: { name: string; id: string }[];
   setIsEditModalOpened: (value: boolean) => void;
   setSelectedBooking: (value: IEvent) => void;
 }
@@ -31,6 +31,7 @@ const EditBookingModal: FC<EditModalProps> = ({
   position,
   isEditModalOpened,
   selectedBooking,
+  repeatData,
   setIsEditModalOpened,
   setSelectedBooking,
 }) => {
@@ -45,7 +46,6 @@ const EditBookingModal: FC<EditModalProps> = ({
     buttonContainer,
     deleteButton,
   } = styles;
-  const dispatch = useAppDispatch();
   const { currentUser } = useAppSelector((state) => state.users);
   const rooms = useAppSelector(roomsData);
   const { title, start, end, resourceId } = selectedBooking;
@@ -55,12 +55,6 @@ const EditBookingModal: FC<EditModalProps> = ({
     `${getHours(start)}:${getMinutes(start)}`
   );
   const [endTime, setEndTime] = useState(`${getHours(end)}:${getMinutes(end)}`);
-
-  const repeatData = [
-    { name: "Does not repeat", id: "1" },
-    { name: "Daily", id: "2" },
-    { name: "Weekly", id: "3" },
-  ];
 
   const boxPosition = {
     left: position.x > 70 ? "70%" : `${position.x}%`,

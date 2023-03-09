@@ -1,18 +1,20 @@
 import React, { FC } from "react";
 import {
-  styled as materialStyle,
-  Tooltip,
-  tooltipClasses,
-  TooltipProps,
+    Stack,
+    styled as materialStyle,
+    Tooltip,
+    tooltipClasses,
+    TooltipProps,
+    Typography,
 } from "@mui/material";
-import styled from "styled-components";
+import styles from './TooltipContent.module.css';
 
 interface TooltipContentProps {
-  room: string;
-  startTime: string;
-  endTime: string;
-  user: string;
-  description: string;
+    room: string;
+    startTime: string;
+    endTime: string;
+    user: string;
+    description: string;
 }
 
 export const HtmlTooltip = materialStyle(
@@ -32,57 +34,23 @@ export const HtmlTooltip = materialStyle(
 }));
 
 const TooltipContent: FC<TooltipContentProps> = ({
-  room,
-  startTime,
-  endTime,
-  user,
-  description,
+    room,
+    startTime,
+    endTime,
+    user,
+    description,
 }) => {
-  return (
-    <Wrapper>
-      <h3>{room}</h3>
-      <time>{`${startTime} - ${endTime}`}</time>
-      <p>{description}</p>
-      <small>Does not repeat</small>
-      <span>{user}</span>
-    </Wrapper>
-  );
+    const { wrapper, heading, smallText, span } = styles;
+
+    return (
+        <Stack className={wrapper}>
+            <Typography variant="body1" className={heading}>{room}</Typography>
+            <Typography variant="subtitle1">{`${startTime} - ${endTime}`}</Typography>
+            <Typography variant="body2">{description}</Typography>
+            <small className={smallText}>Does not repeat</small>
+            <Typography component='span' variant="subtitle2" className={span}>{user}</Typography>
+        </Stack>
+    );
 };
-
-const Wrapper = styled("div")`
-  h3 {
-    font-size: 16px;
-    text-decoration: underline;
-    margin-top: 0;
-    font-weight: 400;
-  }
-  time {
-    font-size: 18px;
-  }
-  p {
-    font-size: 14px;
-    margin-top: 0;
-  }
-  span {
-    color: #b9b9b9;
-    font-size: 14px;
-    font-style: italic;
-  }
-
-  small {
-    font-size: 12px;
-  }
-  time,
-  span,
-  small {
-    display: block;
-  }
-  h3,
-  time,
-  p,
-  small {
-    margin-bottom: 14px;
-  }
-`;
 
 export default TooltipContent;

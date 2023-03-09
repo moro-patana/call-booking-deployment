@@ -64,7 +64,6 @@ exports.RoomQuery = new GraphQLObjectType({
               .populate("room")
               .sort({ name: -1 });
 
-            console.log({ rooms });
             if (!rooms) {
               throw new Error(getErrorForCode(ERROR_CODES.EA3));
             }

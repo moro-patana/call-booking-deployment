@@ -54,7 +54,7 @@ export type Booking = {
   startDate: string;
   endDate: string;
   description: string;
-  start: Date;
-  end: Date;
+  start: string;
+  end: string;
   resourceId: string
 }
