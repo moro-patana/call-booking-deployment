@@ -23,10 +23,11 @@ export const getBookingsByUser = () => {
     getBookings{
       id,
       participants,
-      roomId,
-      label,
-      startDate,
-      endDate
+      resourceId,
+      title,
+      description,
+      start,
+      end
     }
   }`;
 };
@@ -87,21 +88,25 @@ export const bookingMutation = (
   roomId: String,
   label: String,
   startDate: String,
-  endDate: String
+  endDate: String,
+  userId: String
 ) => {
   return `mutation{
     createBooking(
-      roomId: "${roomId}",
-      label: "${label}",
-      startDate: "${startDate}",
-      endDate: "${endDate}"
+      participants: ["${userId}"],
+      resourceId: "${roomId}",
+      title: "${label}",
+      description: "${label}",
+      start: "${startDate}",
+      end: "${endDate}"
     ){
       id,
       participants, 
-      roomId,
-      label,
-      startDate,
-      endDate
+      resourceId,
+      title,
+      description,
+      start,
+      end
     }
   }`;
 };

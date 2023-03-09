@@ -9,11 +9,12 @@ const checkAuth = require("../../utils/check-auth");
 const { getErrorForCode, ERROR_CODES } = require("../../utils/errorCodes");
 
 const argType = {
-  roomId: { type: new GraphQLNonNull(GraphQLID) },
-  label: { type: GraphQLString },
-  startDate: { type: GraphQLString },
-  endDate: { type: GraphQLString },
-  participants: { type: GraphQLList(GraphQLID) }
+  resourceId: { type: new GraphQLNonNull(GraphQLID) },
+  title: { type: new GraphQLNonNull(GraphQLString) },
+  description: { type: GraphQLString },
+  start: { type: new GraphQLNonNull(GraphQLString) },
+  end: { type: new GraphQLNonNull(GraphQLString) },
+  participants: { type: GraphQLList(new GraphQLNonNull(GraphQLID)) }
 }
 
 module.exports = {
@@ -23,19 +24,21 @@ module.exports = {
     resolve: async (root, args, context) => {
       // const user = checkAuth(context);
       const {
-        roomId,
-        label,
-        startDate,
-        endDate,
+        resourceId,
+        title,
+        description,
+        start,
+        end,
         participants
       } = args;
 
       const uModel = new bookingModel({
         participants,
-        roomId,
-        label,
-        startDate,
-        endDate,
+        resourceId,
+        title,
+        description,
+        start,
+        end,
       });
 
       const newBooking = await uModel.save();
@@ -62,7 +65,7 @@ module.exports = {
       }
 
       try {
-        if (user.id === bookingToRemove.user.id) {
+        if (user.id && bookingToRemove?.participants?.includes(user.id)) {
           await bookingToRemove.delete();
 
             return {
@@ -82,18 +85,17 @@ module.exports = {
     type: bookingType.bookingType,
     args: {
       id: { type: new GraphQLNonNull(GraphQLString) },
-      roomId: { type: new GraphQLNonNull(GraphQLID) },
-      label: { type: GraphQLString },
-      startDate: { type: GraphQLString },
-      endDate: { type: GraphQLString },
-      user: { type: new GraphQLInputObjectType({
-        name: 'UserInput',
+      resourceId: { type: new GraphQLNonNull(GraphQLID) },
+      title: { type: new GraphQLNonNull(GraphQLString) },
+      description: { type: GraphQLString },
+      start: { type: new GraphQLNonNull(GraphQLString) },
+      end: { type: new GraphQLNonNull(GraphQLString) },
+      participants: { type: new GraphQLNonNull(new GraphQLInputObjectType({
+        name: 'UserId',
         fields: () => ({
-          id:          { type: GraphQLID },
-          username: { type: GraphQLString },
-          email:    { type: GraphQLString }, 
+          id: { type: GraphQLID },
         })
-      }) }
+      })) }
     },
     resolve: async (root, args, context) => {
       const user = checkAuth(context);

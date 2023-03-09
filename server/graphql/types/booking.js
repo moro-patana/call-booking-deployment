@@ -14,16 +14,19 @@ exports.bookingType = new GraphQLObjectType({
       participants: {
         type: GraphQLList(GraphQLID),
       },
-      roomId: {
+      resourceId: {
         type: GraphQLID,
       },
-      label: {
+      title: {
         type: GraphQLString,
       },
-      startDate: {
+      description: {
         type: GraphQLString,
       },
-      endDate: {
+      start: {
+        type: GraphQLString,
+      },
+      end: {
         type: GraphQLString,
       },
     };
