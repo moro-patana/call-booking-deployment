@@ -50,14 +50,14 @@ const EditBookingModal: FC<EditModalProps> = ({
   const dispatch = useAppDispatch();
   const { currentUser } = useAppSelector((state) => state.users);
   const rooms = useAppSelector(roomsData);
+
   const { title, start, end, resourceId } = selectedBooking;
   const getHours = (time: Date) => timeConverter(time.getHours());
   const getMinutes = (time: Date) => timeConverter(time.getMinutes());
-  const [startTime, setStartTime] = useState(
-    `${getHours(start)}:${getMinutes(start)}`
-  );
-  const [endTime, setEndTime] = useState(`${getHours(end)}:${getMinutes(end)}`);
+
   const [isDeletionConfirmed, setIsDeletionConfirmed] = useState(false);
+  const [startTime, setStartTime] = useState(`${getHours(start)}:${getMinutes(start)}`);
+  const [endTime, setEndTime] = useState(`${getHours(end)}:${getMinutes(end)}`);
 
   const boxPosition = {
     left: position.x > 70 ? "70%" : `${position.x}%`,
@@ -73,7 +73,9 @@ const EditBookingModal: FC<EditModalProps> = ({
           deleteBooking(selectedBooking.id),
           currentUser.login.token
         );
+
         const { data } = response.data;
+
         setIsEditModalOpened(false);
         dispatch(fetchBookingsByUser());
         return data;

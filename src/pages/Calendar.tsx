@@ -198,6 +198,7 @@ const MyBooking = () => {
         step={15}
         onSelectEvent={openEditModal}
       />
+
       {isEditModalOpened && (
         <EditBookingModal
           isEditModalOpened={isEditModalOpened}
