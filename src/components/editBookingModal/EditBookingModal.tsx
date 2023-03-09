@@ -10,6 +10,7 @@ import {
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { roomsData } from "../../redux/reducers/roomsSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { fetchBookingsByUser } from "../../redux/actions/bookings";
 import { timeConverter } from "../../utils/dateUtils";
 import { IEvent } from "../../utils/types";
 import { deleteBooking, sendAuthorizedQuery } from "../../graphqlHelper";
@@ -17,7 +18,6 @@ import { deleteBooking, sendAuthorizedQuery } from "../../graphqlHelper";
 import styles from "./editBookingModal.module.css";
 import SelectInput from "../Select/SelectInput";
 import DatePicker from "../datePicker/DatePicker";
-import { fetchBookingsByUser } from "../../redux/actions/bookings";
 
 interface EditModalProps {
   position: { x: number; y: number };
@@ -57,7 +57,7 @@ const EditBookingModal: FC<EditModalProps> = ({
     `${getHours(start)}:${getMinutes(start)}`
   );
   const [endTime, setEndTime] = useState(`${getHours(end)}:${getMinutes(end)}`);
-  const [isDeleteConfirmed, setIsDeleteConfirmed] = useState(false);
+  const [isDeletionConfirmed, setIsDeletionConfirmed] = useState(false);
 
   const boxPosition = {
     left: position.x > 70 ? "70%" : `${position.x}%`,
@@ -144,16 +144,16 @@ const EditBookingModal: FC<EditModalProps> = ({
           />
 
           <Box className={buttonContainer}>
-            {isDeleteConfirmed && (
+            {isDeletionConfirmed && (
               <Button className={deleteButton} onClick={onDeleteEvent}>
                 Confirm deletion
               </Button>
             )}
 
-            {!isDeleteConfirmed && (
+            {!isDeletionConfirmed && (
               <Button
                 className={deleteButton}
-                onClick={() => setIsDeleteConfirmed(true)}
+                onClick={() => setIsDeletionConfirmed(true)}
               >
                 Delete
               </Button>
