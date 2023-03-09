@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { roomsData } from "../../redux/reducers/roomsSlice";
-import { useAppSelector } from "../../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { timeConverter } from "../../utils/dateUtils";
 import { IEvent } from "../../utils/types";
 import { deleteBooking, sendAuthorizedQuery } from "../../graphqlHelper";
@@ -17,6 +17,7 @@ import { deleteBooking, sendAuthorizedQuery } from "../../graphqlHelper";
 import styles from "./editBookingModal.module.css";
 import SelectInput from "../Select/SelectInput";
 import DatePicker from "../datePicker/DatePicker";
+import { fetchBookingsByUser } from "../../redux/actions/bookings";
 
 interface EditModalProps {
   position: { x: number; y: number };
@@ -46,6 +47,7 @@ const EditBookingModal: FC<EditModalProps> = ({
     buttonContainer,
     deleteButton,
   } = styles;
+  const dispatch = useAppDispatch();
   const { currentUser } = useAppSelector((state) => state.users);
   const rooms = useAppSelector(roomsData);
   const { title, start, end, resourceId } = selectedBooking;
@@ -55,6 +57,7 @@ const EditBookingModal: FC<EditModalProps> = ({
     `${getHours(start)}:${getMinutes(start)}`
   );
   const [endTime, setEndTime] = useState(`${getHours(end)}:${getMinutes(end)}`);
+  const [isDeleteConfirmed, setIsDeleteConfirmed] = useState(false);
 
   const boxPosition = {
     left: position.x > 70 ? "70%" : `${position.x}%`,
@@ -72,7 +75,7 @@ const EditBookingModal: FC<EditModalProps> = ({
         );
         const { data } = response.data;
         setIsEditModalOpened(false);
-        // dispatch(fetchBookingsByUser());
+        dispatch(fetchBookingsByUser());
         return data;
       }
     } catch (error: any) {
@@ -141,9 +144,21 @@ const EditBookingModal: FC<EditModalProps> = ({
           />
 
           <Box className={buttonContainer}>
-            <Button className={deleteButton} onClick={onDeleteEvent}>
-              Delete
-            </Button>
+            {isDeleteConfirmed && (
+              <Button className={deleteButton} onClick={onDeleteEvent}>
+                Confirm deletion
+              </Button>
+            )}
+
+            {!isDeleteConfirmed && (
+              <Button
+                className={deleteButton}
+                onClick={() => setIsDeleteConfirmed(true)}
+              >
+                Delete
+              </Button>
+            )}
+
             <Box className={buttonWrapper}>
               <Button onClick={() => setIsEditModalOpened(false)}>
                 Cancel

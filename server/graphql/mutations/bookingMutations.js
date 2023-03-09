@@ -67,11 +67,10 @@ module.exports = {
       try {
         if (user.id && bookingToRemove?.participants?.includes(user.id)) {
           await bookingToRemove.delete();
-
             return {
-              username: bookingToRemove.user.username,
+              participants: bookingToRemove.participants,
               id: bookingToRemove.id,
-              label: bookingToRemove.label,
+              title: bookingToRemove.title,
             };
           } else {
             throw new Error(getErrorForCode(ERROR_CODES.EG1));
