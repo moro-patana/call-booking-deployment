@@ -1,12 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Box } from "@mui/material";
-import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
+import { Calendar, dateFnsLocalizer, Views } from "react-big-calendar";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
-import { format, getDay, parse, startOfWeek } from 'date-fns';
-import { enUS } from 'date-fns/locale';
-
-import BookingModal from "../components/bookingModal/BookingModal";
-import ExpendableMenu from "../components/menu/ExpendableMenu";
+import { format, getDay, parse, startOfWeek } from "date-fns";
+import { enUS } from "date-fns/locale";
 
 import { fetchBookingsByUser } from "../redux/actions/bookings";
 import { fetchRooms } from "../redux/actions/rooms";
@@ -14,8 +11,15 @@ import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { bookingsData } from "../redux/reducers/bookingsSlice";
 import { roomsData } from "../redux/reducers/roomsSlice";
 
-import { dateStringConverter, getCurrentDay, getEndingDay } from "../utils/dateUtils";
+import {
+  dateStringConverter,
+  getCurrentDay,
+  getEndingDay,
+} from "../utils/dateUtils";
 import { Booking, IEvent, IResource, RoomType } from "../utils/types";
+import EditBookingModal from "../components/editBookingModal/EditBookingModal";
+import BookingModal from "../components/bookingModal/BookingModal";
+import ExpendableMenu from "../components/menu/ExpendableMenu";
 
 const DragAndDropCalendar = withDragAndDrop<IEvent, IResource>(Calendar);
 
@@ -32,15 +36,15 @@ const localizer = dateFnsLocalizer({
 const calendarStyle = () => {
   return {
     style: {
-      backgroundColor: '#fff',
-    }
+      backgroundColor: "#fff",
+    },
   };
 };
 
 const MyBooking = () => {
   const rooms = useAppSelector(roomsData);
   const userBookings = useAppSelector(bookingsData);
-  const { currentUser } = useAppSelector(state => state.users);
+  const { currentUser } = useAppSelector((state) => state.users);
   const dispatch = useAppDispatch();
 
   const selectedDate = new Date();
@@ -50,12 +54,24 @@ const MyBooking = () => {
   const [bookings, setBookings] = useState([]);
   const [openBookingModal, setOpenBookingModal] = useState(false);
   const [slot, setSlot] = useState<{ resourceId: string } | null>(null);
-  const [selectedRoom, setSelectedRoom] = useState<string>(slot?.resourceId || '');
+  const [selectedRoom, setSelectedRoom] = useState<string>(
+    slot?.resourceId || ""
+  );
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [startDate, setStartDate] = useState(selectedDate);
   const [endDate, setEndDate] = useState(selectedDate);
   const [currentDay, setCurrentDay] = useState<Date>(startDay);
   const [endingDay, setEndingDay] = useState<Date>(endDay);
+
+  // Edit modal states
+  const [isEditModalOpened, setIsEditModalOpened] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<IEvent>({
+    id: "",
+    title: "",
+    start: new Date(),
+    end: new Date(),
+    resourceId: "",
+  });
 
   const resources = rooms?.map((room: RoomType) => {
     return {
@@ -77,38 +93,44 @@ const MyBooking = () => {
     if (currentUser?.login) {
       dispatch(fetchRooms());
       dispatch(fetchBookingsByUser());
-    };
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser]);
 
   const handleSelectEvent = (slot: any) => {
-    setSlot(slot)
+    setSlot(slot);
     const { box, start, end, resourceId } = slot;
     const screenWidth = window.screen.width;
     const xPercentage = Math.floor((box.x / screenWidth) * 100);
     setPosition({
-        x: xPercentage,
-        y: box.y,
-    })
-    setSelectedRoom(resourceId)
-    setOpenBookingModal(!openBookingModal)
-    setStartDate(start)
+      x: xPercentage,
+      y: box.y,
+    });
+    setSelectedRoom(resourceId);
+    setOpenBookingModal(!openBookingModal);
+    setStartDate(start);
     setEndDate(end);
     return bookings;
-  }
+  };
 
-  const { defaultDate, scrollToTime } = useMemo(() => ({ defaultDate: new Date(), scrollToTime: new Date() }), []);
+  const { defaultDate, scrollToTime } = useMemo(
+    () => ({ defaultDate: new Date(), scrollToTime: new Date() }),
+    []
+  );
 
-  const moveEvent = useCallback(({ event, start, end, resourceId }: any) => {
-    setBookings((prev): any => {
-      const existing = prev.find((ev: any) => ev.id === event.id) ?? {};
-      const filtered = prev.filter((ev: any) => ev.id !== event.id);
-      return [...filtered, { ...existing, start, end, resourceId }];
-    });
-  }, [setBookings]);
+  const moveEvent = useCallback(
+    ({ event, start, end, resourceId }: any) => {
+      setBookings((prev): any => {
+        const existing = prev.find((ev: any) => ev.id === event.id) ?? {};
+        const filtered = prev.filter((ev: any) => ev.id !== event.id);
+        return [...filtered, { ...existing, start, end, resourceId }];
+      });
+    },
+    [setBookings]
+  );
 
   const resizeEvent = useCallback(
-    ({ 
+    ({
       event,
       start,
       end,
@@ -125,6 +147,26 @@ const MyBooking = () => {
     },
     [setBookings]
   );
+
+  const openEditModal = (booking: IEvent, event: any) => {
+    const { start, end, resourceId, title, id } = booking;
+
+    const screenWidth = window.screen.width;
+    const x = Math.floor((event.pageX / screenWidth) * 100);
+    const y = event.pageY;
+
+    setSelectedBooking({
+      ...selectedBooking,
+      id,
+      title,
+      start,
+      end,
+      resourceId,
+    });
+
+    setIsEditModalOpened(true);
+    setPosition({ x, y });
+  };
 
   return (
     <Box>
@@ -154,7 +196,19 @@ const MyBooking = () => {
         views={[Views.WEEK, Views.DAY]}
         dayPropGetter={calendarStyle}
         step={15}
+        onSelectEvent={openEditModal}
       />
+
+      {isEditModalOpened && (
+        <EditBookingModal
+          isEditModalOpened={isEditModalOpened}
+          setIsEditModalOpened={setIsEditModalOpened}
+          position={position}
+          selectedBooking={selectedBooking}
+          setSelectedBooking={setSelectedBooking}
+          repeatData={[{ name: "Daily", id: "1" }]}
+        />
+      )}
 
       {openBookingModal && (
         <BookingModal
@@ -173,6 +227,6 @@ const MyBooking = () => {
       )}
     </Box>
   );
-}
+};
 
 export default MyBooking;

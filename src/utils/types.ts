@@ -35,8 +35,8 @@ export interface UserType {
 export interface IEvent {
   id: number | string;
   title: string;
-  start: Date | string;
-  end: Date | string;
+  start: Date;
+  end: Date;
   resourceId: string;
 }
 
@@ -50,6 +50,7 @@ export type Booking = {
   id: string;
   roomId: string;
   title: string;
+  label: string;
   startDate: string;
   endDate: string;
   description: string;
