@@ -60,6 +60,8 @@ module.exports = {
       const user = checkAuth(context);
       const bookingToRemove = await bookingModel.findById(args.id);
       
+      const { participants, id, title } = bookingToRemove;
+
       if (!bookingToRemove) {
         throw new Error(getErrorForCode(ERROR_CODES.EA2));
       }
@@ -68,9 +70,9 @@ module.exports = {
         if (user.id && bookingToRemove?.participants?.includes(user.id)) {
           await bookingToRemove.delete();
             return {
-              participants: bookingToRemove.participants,
-              id: bookingToRemove.id,
-              title: bookingToRemove.title,
+              participants,
+              id,
+              title,
             };
           } else {
             throw new Error(getErrorForCode(ERROR_CODES.EG1));

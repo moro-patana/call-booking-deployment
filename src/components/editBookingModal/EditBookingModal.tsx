@@ -56,7 +56,9 @@ const EditBookingModal: FC<EditModalProps> = ({
   const getMinutes = (time: Date) => timeConverter(time.getMinutes());
 
   const [isDeletionConfirmed, setIsDeletionConfirmed] = useState(false);
-  const [startTime, setStartTime] = useState(`${getHours(start)}:${getMinutes(start)}`);
+  const [startTime, setStartTime] = useState(
+    `${getHours(start)}:${getMinutes(start)}`
+  );
   const [endTime, setEndTime] = useState(`${getHours(end)}:${getMinutes(end)}`);
 
   const boxPosition = {
@@ -80,8 +82,8 @@ const EditBookingModal: FC<EditModalProps> = ({
         dispatch(fetchBookingsByUser());
         return data;
       }
-    } catch (error: any) {
-      console.error(error["message"]);
+    } catch (error: unknown) {
+      console.error(error);
     }
   };
 

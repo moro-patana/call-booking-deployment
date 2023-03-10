@@ -148,12 +148,12 @@ const MyBooking = () => {
     [setBookings]
   );
 
-  const openEditModal = (event: IEvent, e: any) => {
-    const { start, end, resourceId, title, id } = event;
+  const openEditModal = (booking: IEvent, event: any) => {
+    const { start, end, resourceId, title, id } = booking;
 
     const screenWidth = window.screen.width;
-    const x = Math.floor((e.pageX / screenWidth) * 100);
-    const y = e.pageY;
+    const x = Math.floor((event.pageX / screenWidth) * 100);
+    const y = event.pageY;
 
     setSelectedBooking({
       ...selectedBooking,
