@@ -1,0 +1,50 @@
+.container {
+    text-align: end;
+    position: absolute;
+    right: 9px;
+    bottom: 7px;
+    z-index: 999;
+    background: #fff;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 320px;
+    gap: 14px;
+}
+
+.buttonFlexContainer {
+    display: flex;
+    align-items: center;
+}
+
+.buttonFlex {
+    display: flex;
+    flex-direction: column;
+}
+
+.selectButton {
+    font-size: 20px;
+    color: #000;
+}
+
+.button {
+    border-color: #9d9898;
+    padding: 0px
+}
+
+.iconStyle {
+    padding: 0;
+    height: 24px;
+}
+
+.menu {
+    margin: 5px;
+    top: -8px;
+    left: 3px;
+}
+
+.menuItem {
+    align-self: end;
+}
