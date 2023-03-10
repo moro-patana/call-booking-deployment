@@ -27,11 +27,11 @@ interface BookingModalProps {
 }
 
 interface NewBooking {
-  roomId: string;
-  label: string;
-  startDate: any;
-  endDate: any;
-  token: string;
+  resourceId: string;
+  title: string;
+  start: String;
+  end: String;
+  token: String | undefined
 }
 
 const BookingModal: FC<BookingModalProps> = ({
@@ -85,38 +85,41 @@ const BookingModal: FC<BookingModalProps> = ({
     setRepeatEvent(event.target.value);
   };
 
-    const addNewBooking = async (userBooking: NewBooking) => {
-        const { roomId, label, startDate, endDate, token } = userBooking;
-        try {
-          const response = await sendAuthorizedQuery(
-            bookingMutation(roomId, label, startDate, endDate),
-            token
-        );
-        const { data } = response.data;
-        return data;
-        } catch (error: any) {
-          setErrorMessage(error["message"]);
-        }
-    };
+  const addNewBooking = async (userBooking: NewBooking) => {
+    const { resourceId, title, start, end } = userBooking;
+    const { id, token } = currentUser.login;
+    
+    try {
+      const response = await sendAuthorizedQuery(
+        bookingMutation(resourceId, title, start, end, id),
+        token
+      );
+      const { data } = response.data;
+      return data;
+    } catch (error: any) {
+      setErrorMessage(error["message"]);
+    }
+  };
 
-    const handleSubmitBooking = useCallback(async () => {
-        const newStartDate = newDateGenerator(start, startTime);
-        const newEndDate = newDateGenerator(end, endTime);
+  const handleSubmitBooking = useCallback(async () => {
+    const newStartDate = String(newDateGenerator(start, startTime));
+    const newEndDate = String(newDateGenerator(end, endTime));
+    const { token } = currentUser.login;
 
-        try {
-          if (currentUser.login.token && roomId) {
-            await addNewBooking({
-                label,
-                startDate: newStartDate,
-                endDate: newEndDate,
-                roomId,
-                token: currentUser.login.token,
-            });
-            dispatch(fetchBookingsByUser(setErrorMessage));
-          }
-        } catch (error: any) {
-          setErrorMessage(error["message"]);
+      try {
+        if (token && roomId) {
+          await addNewBooking({
+            resourceId: roomId,
+            title: label,
+            start: newStartDate,
+            end: newEndDate,
+            token: token,
+          });
+          dispatch(fetchBookingsByUser(setErrorMessage));
         }
+      } catch (error: any) {
+        setErrorMessage(error["message"]);
+      }
 
         handleClose();
         // eslint-disable-next-line react-hooks/exhaustive-deps

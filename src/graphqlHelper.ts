@@ -22,18 +22,19 @@ export const getBookingsByUser = () => {
   return `{
     getBookings{
       id,
-      partecipants,
-      roomId,
-      label,
-      startDate,
-      endDate
+      participants,
+      resourceId,
+      title,
+      description,
+      start,
+      end
     }
   }`;
 };
 
 export const getUsers = () => {
   return `{
-    users{
+    participants{
       id,
       email,
       password,
@@ -87,16 +88,25 @@ export const bookingMutation = (
   roomId: String,
   label: String,
   startDate: String,
-  endDate: String
+  endDate: String,
+  userId: String
 ) => {
   return `mutation{
     createBooking(
-      roomId: "${roomId}",
-      label: "${label}",
-      startDate: "${startDate}",
-      endDate: "${endDate}"
+      participants: ["${userId}"],
+      resourceId: "${roomId}",
+      title: "${label}",
+      description: "${label}",
+      start: "${startDate}",
+      end: "${endDate}"
     ){
-      id,user{id, username}, roomId,label,startDate,endDate
+      id,
+      participants, 
+      resourceId,
+      title,
+      description,
+      start,
+      end
     }
   }`;
 };
