@@ -1,14 +1,14 @@
 import axios from "axios";
-const BACKEND_URL = "http://localhost:4000";
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:4000';
 
 export const sendQuery = (query: any): Promise<any> => {
-  return axios.post(`${BACKEND_URL}/graphql?`, {
-    query,
-  });
+    return axios.post(`${BACKEND_URL}/graphql?`, {
+        query,
+    });
 };
 
 export const getRooms = () => {
-  return `{
+    return `{
     getRooms{
       id,
       name,
@@ -19,7 +19,7 @@ export const getRooms = () => {
 
 // TODO Make it work with an user id which needs BE changes
 export const getBookingsByUser = () => {
-  return `{
+    return `{
     getBookings{
       id,
       participants,
@@ -33,56 +33,63 @@ export const getBookingsByUser = () => {
 };
 
 export const getUsers = () => {
-  return `{
-    participants{
+    return `{
+    users{
       id,
       email,
       password,
-      username
+      username,
+      picture
     }
   }`;
 };
 
 export const sendAuthorizedQuery = (
-  query: string,
-  token: string
+    query: string,
+    token: string
 ): Promise<any> => {
-  const config = {
-    headers: { Authorization: `Bearer ${token}` },
-  };
-  return axios.post(
-    `${BACKEND_URL}/graphql?`,
-    {
-      query,
-    },
-    config
-  );
+    const config = {
+        headers: { Authorization: `Bearer ${token}` },
+    };
+    return axios.post(
+        `${BACKEND_URL}/graphql?`,
+        {
+            query,
+        },
+        config
+    );
 };
 
-export const registerMutation = (
-  username: string,
-  email: string,
-  password: string,
-) => `mutation {
-  register(registerInput:{username:"${username}", email:"${email}", password:"${password}"})
-    { id,
-      email,
-      username,
-      token
-    }}`;
-
-export const loginMutation = (email: string, password: string) => {
-  return `mutation{
-    login(email: "${email}",
-    password: "${password}",
-    ){
-      id,
-      email,
-      username,
-      token,
+export const loginMutation = (
+    username: string,
+    email: string,
+    password: string,
+    access_token: string,
+    picture: string,
+    hd: string,
+    expires_in: number
+) => {
+  return `mutation {
+    login(
+      loginInput:{
+        username:"${username}", 
+        email:"${email}", 
+        password:"${password}", 
+        access_token:"${access_token}", 
+        picture:"${picture}", 
+        hd: "${hd}", 
+        expires_in: ${expires_in}
+      }) {
+       id,
+        email,
+        username,
+        picture,
+        access_token,
+        hd,
+        expires_in
     }
   }`;
-};
+}
 
 export const bookingMutation = (
   roomId: String,

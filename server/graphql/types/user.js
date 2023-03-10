@@ -1,7 +1,6 @@
 const GraphQLObjectType = require("graphql").GraphQLObjectType;
 const GraphQLNonNull = require("graphql").GraphQLNonNull;
-const GraphQLID = require("graphql").GraphQLID;
-const GraphQLString = require("graphql").GraphQLString;
+const { GraphQLID, GraphQLString, GraphQLFloat } = require("graphql");
 
 exports.userType = new GraphQLObjectType({
   name: "user",
@@ -19,9 +18,18 @@ exports.userType = new GraphQLObjectType({
       password: {
         type: new GraphQLNonNull(GraphQLString),
       },
-      token: {
-        type: GraphQLString,
+      access_token: {
+        type: new GraphQLNonNull(GraphQLString),
       },
+      picture: {
+        type: new GraphQLNonNull(GraphQLString),
+      },
+      hd: {
+        type: new GraphQLNonNull(GraphQLString),
+      },
+      expires_in: {
+        type: new GraphQLNonNull(GraphQLFloat),
+      }
     };
   },
 });

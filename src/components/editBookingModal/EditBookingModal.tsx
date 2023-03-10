@@ -12,7 +12,7 @@ import { roomsData } from "../../redux/reducers/roomsSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { fetchBookingsByUser } from "../../redux/actions/bookings";
 import { timeConverter } from "../../utils/dateUtils";
-import { IEvent } from "../../utils/types";
+import { ErrorMessage, IEvent } from "../../utils/types";
 import { deleteBooking, sendAuthorizedQuery } from "../../graphqlHelper";
 
 import styles from "./editBookingModal.module.css";
@@ -26,7 +26,7 @@ interface EditModalProps {
   repeatData: { name: string; id: string }[];
   setIsEditModalOpened: (value: boolean) => void;
   setSelectedBooking: (value: IEvent) => void;
-  setErrorMessage: (value: string) => void;
+  setErrorMessage: (value: ErrorMessage) => void;
 }
 
 const EditBookingModal: FC<EditModalProps> = ({
@@ -84,8 +84,8 @@ const EditBookingModal: FC<EditModalProps> = ({
         dispatch(fetchBookingsByUser(setErrorMessage));
         return data;
       }
-    } catch (error: any) {
-      setErrorMessage(error["message"]);
+    } catch (error) {
+      setErrorMessage(error);
     }
   };
 

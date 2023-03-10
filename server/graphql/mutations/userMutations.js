@@ -1,24 +1,22 @@
+const { GraphQLFloat, GraphQLString, GraphQLInputObjectType, GraphQLNonNull } = require("graphql");
 const userType = require("../types/user");
 const usersModel = require("../models/user");
-const JWT_SECRET = require("../../config").JWT_SECRET;
-const GraphQLNonNull = require("graphql").GraphQLNonNull;
-const GraphQLString = require("graphql").GraphQLString;
-const GraphQLInputObjectType = require("graphql").GraphQLInputObjectType;
-const {
-  validateRegisterInput,
-  validateLoginInput,
-} = require("../../utils/validators");
-const checkAuth = require("../../utils/check-auth");
+const { JWT_SECRET } = require("../../config");
+const { validateRegisterInput } = require("../../utils/validators");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { getErrorForCode, ERROR_CODES } = require("../../utils/errorCodes");
 
-const RegisterInput = new GraphQLInputObjectType({
-  name: "RegisterInput",
+const loginInput = new GraphQLInputObjectType({
+  name: "loginInput",
   fields: {
     username: { type: new GraphQLNonNull(GraphQLString) },
-    password: { type: new GraphQLNonNull(GraphQLString) },
     email: { type: new GraphQLNonNull(GraphQLString) },
+    password: { type: new GraphQLNonNull(GraphQLString) },
+    access_token: { type: new GraphQLNonNull(GraphQLString) },
+    picture: { type: new GraphQLNonNull(GraphQLString) },
+    hd: { type: new GraphQLNonNull(GraphQLString) },
+    expires_in: { type: new GraphQLNonNull(GraphQLFloat) },
   },
 });
 
@@ -31,86 +29,49 @@ const generateToken = (user) => {
 };
 
 module.exports = {
-  register: {
+  login: {
     type: userType.userType,
     args: {
-      registerInput: {
-        type: RegisterInput,
+      loginInput: {
+        type: loginInput,
       },
     },
-    resolve: async (root, args) => {
+    resolve: async (_root, args) => {
       const {
-        registerInput: { password, username, email },
+        loginInput: { password, username, email, access_token, picture, expires_in, hd },
       } = args;
 
-      const existingUser = await usersModel.findOne({ username });
-      const { errors, valid } = validateRegisterInput(
-        username,
-        email,
-        password
-      );
+      const existingUser = await usersModel.findOne({ email });
+      const { errors, valid } = validateRegisterInput(username, email, password);
 
       if (!valid) {
         throw new Error(`Errors ${JSON.stringify(errors)}`);
       }
 
       if (existingUser) {
-        throw new Error(getErrorForCode(ERROR_CODES.EU2));
+        const token = generateToken(existingUser);
+        const userData = { ...existingUser._doc, id: existingUser._id, token };
+        return userData;
+      } else {
+        const hashedPassword = await bcrypt.hash(password, 12);
+        const uModel = new usersModel({
+          password: hashedPassword,
+          email,
+          username,
+          access_token,
+          picture,
+          expires_in,
+          hd
+        });
+
+        const res = await uModel.save();
+        if (!res) {
+          throw new Error(getErrorForCode(ERROR_CODES.EU3));
+        };
+        const token = generateToken(res);
+        const userData = { ...res._doc, id: res._id, token };
+        return userData;
       }
-      const hashedPassword = await bcrypt.hash(password, 12);
-      const uModel = new usersModel({
-        password: hashedPassword,
-        email,
-        username,
-      });
-      
-      const res = await uModel.save();
-      
-      if (!res) {
-        throw new Error(getErrorForCode(ERROR_CODES.EU3));
-      }
-
-      const token = generateToken(res);
-      const userData = { ...res._doc, id: res._id, token };
-      return userData;
-    },
-  },
-  login: {
-    type: userType.userType,
-    args: {
-      email: {
-        type: new GraphQLNonNull(GraphQLString),
-      },
-      password: {
-        type: new GraphQLNonNull(GraphQLString),
-      },
-    },
-    resolve: async (root, { email, password }) => {
-      const { errors, valid } = validateLoginInput(email, password);
-
-      const existingUser = await usersModel.findOne({ email });
-
-      if (!valid) {
-        throw new Error(errors);
-      }
-
-      if (!existingUser) {
-        const errNoUser = getErrorForCode(ERROR_CODES.EU12);
-        errors.general = errNoUser;
-        throw new Error(errNoUser);
-      }
-
-      const match = await bcrypt.compare(password, existingUser.password);
-
-      if (!match) {
-        const errNoUser = getErrorForCode(ERROR_CODES.EU13);
-        errors.general = errNoUser;
-        throw new Error(errNoUser);
-      }
-      const token = generateToken(existingUser);
-
-      const userData = { ...existingUser._doc, id: existingUser._id, token };
-      return userData;
-    },
-  },
+    }
+  }
 };

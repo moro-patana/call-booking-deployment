@@ -5,7 +5,7 @@ import { fetchBookingsByUser } from "../../redux/actions/bookings";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import SelectInput from "../Select/SelectInput";
 import DatePicker from "../datePicker/DatePicker";
-import { RoomType } from "../../utils/types";
+import { ErrorMessage, RoomType } from "../../utils/types";
 import { getSelectedTimeMinutes, newDateGenerator, timeConverter } from "../../utils/dateUtils";
 import { bookingMutation, sendAuthorizedQuery } from '../../graphqlHelper';
 import styles from './bookingModal.module.css';
@@ -22,8 +22,8 @@ interface BookingModalProps {
     endDate: Date;
     selectedRoom: string;
     setSelectedRoom: (value: string) => void;
-    errorMessage: string;
-    setErrorMessage: (value: string) => void;
+    errorMessage: ErrorMessage;
+    setErrorMessage: (value: ErrorMessage) => void;
 }
 
 interface NewBooking {
@@ -96,8 +96,8 @@ const BookingModal: FC<BookingModalProps> = ({
       );
       const { data } = response.data;
       return data;
-    } catch (error: any) {
-      setErrorMessage(error["message"]);
+    } catch (error) {
+      setErrorMessage(error);
     }
   };
 
@@ -117,8 +117,8 @@ const BookingModal: FC<BookingModalProps> = ({
           });
           dispatch(fetchBookingsByUser(setErrorMessage));
         }
-      } catch (error: any) {
-        setErrorMessage(error["message"]);
+      } catch (error) {
+        setErrorMessage(error);
       }
 
         handleClose();

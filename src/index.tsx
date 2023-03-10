@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { StyledEngineProvider } from '@mui/material';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
+import { CookiesProvider } from 'react-cookie';
 import reportWebVitals from './reportWebVitals';
 import store from './redux/store';
 import App from './App';
@@ -16,9 +17,11 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <StyledEngineProvider injectFirst>
-        <Provider store={store}>
-          <App />
-        </Provider>
+        <CookiesProvider>
+          <Provider store={store}>
+            <App />
+          </Provider>
+        </CookiesProvider>
       </StyledEngineProvider>
     </BrowserRouter>
   </React.StrictMode>

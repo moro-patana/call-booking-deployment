@@ -42,7 +42,7 @@ app.listen(app.get("port"), () => {
 
 app.use(
   "/graphql",
-  graphqlHTTP((req, res, graphQLParams) => {
+  graphqlHTTP((req, _res, _graphQLParams) => {
     return {
       schema: mergedSchema,
       rootValue: global,
@@ -52,8 +52,11 @@ app.use(
   })
 );
 
-function logErrors(err, req, res, next) {
-  console.error(err.stack);
+app.use((_req, res, _next) => {
+    res.header("Access-Control-Allow-Origin", "*")
+});
+
+function logErrors(err, _req, _res, next) {
   next(err);
 }
 
@@ -65,7 +68,7 @@ function clientErrorHandler(err, req, res, next) {
   }
 }
 
-function errorHandler(err, req, res, next) {
+function errorHandler(err, _req, res, _next) {
   res.status(500);
   res.render("error", { error: err });
 }
