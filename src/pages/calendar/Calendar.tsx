@@ -228,8 +228,8 @@ const CalendarPage = ({
         <BookingModal
           rooms={rooms}
           repeatData={[{ name: "Daily", id: "1" }]}
-          open={openBookingModal}
-          handleClose={() => setOpenBookingModal(false)}
+          openBookingModal={openBookingModal}
+          closeBookingModal={() => setOpenBookingModal(false)}
           position={position}
           day={new Date()}
           date={new Date()}

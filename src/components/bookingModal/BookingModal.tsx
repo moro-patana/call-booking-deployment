@@ -13,8 +13,8 @@ import styles from './bookingModal.module.css';
 interface BookingModalProps {
     rooms: RoomType[];
     repeatData: { name: string; id: string }[];
-    open: boolean;
-    handleClose: () => void;
+    openBookingModal: boolean;
+    closeBookingModal: () => void;
     position: { x: number; y: number };
     day: Date;
     date: Date;
@@ -26,19 +26,11 @@ interface BookingModalProps {
     setErrorMessage: (value: ErrorMessage) => void;
 }
 
-interface NewBooking {
-  resourceId: string;
-  title: string;
-  start: String;
-  end: String;
-  token: String | undefined
-}
-
 const BookingModal: FC<BookingModalProps> = ({
     rooms,
     repeatData,
-    open,
-    handleClose,
+    openBookingModal,
+    closeBookingModal,
     position,
     date,
     startDate,
@@ -85,51 +77,34 @@ const BookingModal: FC<BookingModalProps> = ({
     setRepeatEvent(event.target.value);
   };
 
-  const addNewBooking = async (userBooking: NewBooking) => {
-    const { resourceId, title, start, end } = userBooking;
-    const { id, token } = currentUser.login;
-    
-    try {
-      const response = await sendAuthorizedQuery(
-        bookingMutation(resourceId, title, start, end, id),
-        token
-      );
-      const { data } = response.data;
-      return data;
-    } catch (error) {
-      setErrorMessage(error);
-    }
-  };
-
   const handleSubmitBooking = useCallback(async () => {
     const newStartDate = String(newDateGenerator(start, startTime));
     const newEndDate = String(newDateGenerator(end, endTime));
-    const { token } = currentUser.login;
+    const { id, token } = currentUser.login;
 
       try {
         if (token && roomId) {
-          await addNewBooking({
-            resourceId: roomId,
-            title: label,
-            start: newStartDate,
-            end: newEndDate,
-            token: token,
-          });
+          const response = await sendAuthorizedQuery(
+            bookingMutation(roomId, label, newStartDate, newEndDate, id),
+            token
+          );
+          const { data } = response.data;
           dispatch(fetchBookingsByUser(setErrorMessage));
+          return data;
         }
       } catch (error) {
         setErrorMessage(error);
       }
 
-        handleClose();
+      closeBookingModal();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [label, roomId, startTime, endTime]);
 
   return (
     <div>
       <Modal
-        open={open}
-        onClose={handleClose}
+        open={openBookingModal}
+        onClose={closeBookingModal}
         className={modal}
         slotProps={{backdrop: { className: backdrop }}}
       >
@@ -183,7 +158,7 @@ const BookingModal: FC<BookingModalProps> = ({
             note="Select repeat options"
           />
           <Box className={buttonWrapper}>
-            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={closeBookingModal}>Cancel</Button>
             <Button onClick={handleSubmitBooking}>Book</Button>
           </Box>
         </Box>
