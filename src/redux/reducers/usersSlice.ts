@@ -11,14 +11,13 @@ type FetchUserLoginError = {
 interface UsersState {
   users: [],
   currentUser: {
-    username: string
-    email?: string
-    id?: string
-    token?: string
-    isRegister: boolean
-    isLogin: boolean
-    registerError: fetchUserRegisterError | null,
-    loginError: FetchUserLoginError | null,
+    username: string;
+    email?: string;
+    id?: string;
+    token?: string;
+    isLogin: boolean;
+    registerError: fetchUserRegisterError | null;
+    loginError: FetchUserLoginError | null;
     login: {
       email: string;
       id: string;
@@ -35,7 +34,6 @@ const initialState: UsersState = {
     username: "",
     email: "",
     token: "",
-    isRegister: false,
     isLogin: false,
     registerError: null,
     loginError: null,
@@ -48,17 +46,14 @@ export const usersSlice = createSlice({
   name: "users",
   initialState,
   reducers: {
-    fetchUsers: (state, action) => {
+    setUsers: (state, action) => {
       state.users = action.payload;
     },
-    fetchCurrentUser: (state, action) => {
+    setCurrentUser: (state, action) => {
       state.currentUser = action.payload;
     },
-    userLoggedIn: (state, action) => {
+    setUserLoggedIn: (state, action) => {
       state.currentUser.isLogin = action.payload;
-    },
-    userRegistered: (state, action) => {
-      state.currentUser.isRegister = action.payload;
     },
     userLoggedout: (state, action) => {
       state.currentUser.isLogin = action.payload;
@@ -66,13 +61,7 @@ export const usersSlice = createSlice({
   },
 });
 
-export const { fetchUsers, fetchCurrentUser, userLoggedIn, userRegistered, userLoggedout } = usersSlice.actions;
-
-// const selectLoginError = (state: RootState) => state?.users?.loginError
-// export const userErrorLogin = createSelector(
-//   selectLoginError,
-//   (loginError) => loginError
-// )
+export const { setUsers, setCurrentUser, setUserLoggedIn, userLoggedout } = usersSlice.actions;
 
 export default usersSlice.reducer;
 

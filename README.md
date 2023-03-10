@@ -55,6 +55,8 @@ Open [http://localhost:4000/graphql](http://localhost:4000/graphql) to view it i
 ### 3b. `yarn  start`
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
+### 3c. Environment setup
+Create an `.env` file, copy the content from `example.env` file and fill it accordingly.
 
 # Other useful configurations
 ### `yarn run build`
