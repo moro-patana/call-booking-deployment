@@ -3,4 +3,5 @@ Let's always edit this file to describe what yo did using the ticket name. It wi
 For eg:
 
 [CHANGED] - Removed all inline styles from BookingModal component and used CSS modules instead
+[FEATURE] - Create a Header component
 [ADDED] - Added Google login functionalities

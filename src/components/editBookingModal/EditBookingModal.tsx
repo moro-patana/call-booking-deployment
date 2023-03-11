@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import { FC, useState } from "react";
 import {
   Box,
   Button,
@@ -14,26 +14,25 @@ import { fetchBookingsByUser } from "../../redux/actions/bookings";
 import { timeConverter } from "../../utils/dateUtils";
 import { IEvent } from "../../utils/types";
 import { deleteBooking, sendAuthorizedQuery } from "../../graphqlHelper";
-
 import styles from "./editBookingModal.module.css";
 import SelectInput from "../Select/SelectInput";
 import DatePicker from "../datePicker/DatePicker";
 
 interface EditModalProps {
   position: { x: number; y: number };
-  isEditModalOpened: boolean;
+  showEditBookingModal: boolean;
   selectedBooking: IEvent;
   repeatData: { name: string; id: string }[];
-  setIsEditModalOpened: (value: boolean) => void;
+  setShowEditBookingModal: (value: boolean) => void;
   setSelectedBooking: (value: IEvent) => void;
 }
 
 const EditBookingModal: FC<EditModalProps> = ({
   position,
-  isEditModalOpened,
+  showEditBookingModal,
   selectedBooking,
   repeatData,
-  setIsEditModalOpened,
+  setShowEditBookingModal,
   setSelectedBooking,
 }) => {
   const {
@@ -78,7 +77,7 @@ const EditBookingModal: FC<EditModalProps> = ({
 
         const { data } = response.data;
 
-        setIsEditModalOpened(false);
+        setShowEditBookingModal(false);
         dispatch(fetchBookingsByUser());
         return data;
       }
@@ -90,8 +89,8 @@ const EditBookingModal: FC<EditModalProps> = ({
   return (
     <div>
       <Modal
-        open={isEditModalOpened}
-        onClose={() => setIsEditModalOpened(false)}
+        open={showEditBookingModal}
+        onClose={() => setShowEditBookingModal(false)}
         className={modal}
         slotProps={{ backdrop: { className: backdrop } }}
       >
@@ -164,7 +163,7 @@ const EditBookingModal: FC<EditModalProps> = ({
             )}
 
             <Box className={buttonWrapper}>
-              <Button onClick={() => setIsEditModalOpened(false)}>
+              <Button onClick={() => setShowEditBookingModal(false)}>
                 Cancel
               </Button>
               <Button onClick={handleEditBooking}>Save</Button>

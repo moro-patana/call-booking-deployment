@@ -5,22 +5,17 @@ import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import { format, getDay, parse, startOfWeek } from 'date-fns';
 import { useCookies } from "react-cookie";
 import { enUS } from 'date-fns/locale';
-
 import { fetchBookingsByUser } from "../../redux/actions/bookings";
 import { fetchRooms } from "../../redux/actions/rooms";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { bookingsData } from "../../redux/reducers/bookingsSlice";
 import { roomsData } from "../../redux/reducers/roomsSlice";
-
-import {
-  dateStringConverter,
-  getCurrentDay,
-  getEndingDay,
-} from "../../utils/dateUtils";
+import { dateStringConverter, getCurrentDay, getEndingDay } from "../../utils/dateUtils";
 import { Booking, IEvent, IResource, RoomType } from "../../utils/types";
 import EditBookingModal from "../../components/editBookingModal/EditBookingModal";
 import BookingModal from "../../components/bookingModal/BookingModal";
 import ExpendableMenu from "../../components/menu/ExpendableMenu";
+import styles from './calendar.module.css';
 
 const DragAndDropCalendar = withDragAndDrop<IEvent, IResource>(Calendar);
 
@@ -65,7 +60,7 @@ const CalendarPage = () => {
   const [endingDay, setEndingDay] = useState<Date>(endDay);
 
   // Edit modal states
-  const [isEditModalOpened, setIsEditModalOpened] = useState(false);
+  const [showEditBookingModal, setShowEditBookingModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<IEvent>({
     id: "",
     title: "",
@@ -73,6 +68,7 @@ const CalendarPage = () => {
     end: new Date(),
     resourceId: "",
   });
+  const { container } = styles;
 
   const resources = rooms?.map((room: RoomType) => {
     return {
@@ -165,12 +161,12 @@ const CalendarPage = () => {
       resourceId,
     });
 
-    setIsEditModalOpened(true);
+    setShowEditBookingModal(true);
     setPosition({ x, y });
   };
 
   return (
-    <Box>
+    <Box className={container}>
       <ExpendableMenu
         currentDay={currentDay}
         endingDay={endingDay}
@@ -200,10 +196,10 @@ const CalendarPage = () => {
         onSelectEvent={openEditModal}
       />
 
-      {isEditModalOpened && (
+      {showEditBookingModal && (
         <EditBookingModal
-          isEditModalOpened={isEditModalOpened}
-          setIsEditModalOpened={setIsEditModalOpened}
+          showEditBookingModal={showEditBookingModal}
+          setShowEditBookingModal={setShowEditBookingModal}
           position={position}
           selectedBooking={selectedBooking}
           setSelectedBooking={setSelectedBooking}
