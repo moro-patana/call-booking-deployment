@@ -21,11 +21,15 @@ const Login = () => {
     try {
       if (data) {
         const { name, email, sub, access_token, picture, hd, expires_in } = data;
-        const res = await sendQuery(loginMutation(name, email, sub, access_token, picture, hd, expires_in));
-        dispatch(setCurrentUser(res.data.data));
-        dispatch(setUserLoggedIn(true));
-        setCookie('currentUser', res.data.data, { path: '/' });
-        navigate("/");
+        if(hd === 'onja.org') {
+          const res = await sendQuery(loginMutation(name, email, sub, access_token, picture, hd, expires_in));
+          dispatch(setCurrentUser(res.data.data));
+          dispatch(setUserLoggedIn(true));
+          setCookie('currentUser', res.data.data, { path: '/' });
+          navigate("/");
+        } else {
+          dispatch(setErrorMessage('Email domain not allowed. You must be under onja.org domain in order to log in. Please try again!'));
+        }
       }
     } catch (error) {
       dispatch(setErrorMessage(error));
@@ -74,7 +78,7 @@ const Login = () => {
           key={'bottom right'}
         >
           <Alert severity="error" className={alert}>
-            An error has occured when trying to log in with google. Please try again but if it persists, contact one of the devs.
+            {typeof errorMessage === 'string' ? errorMessage : `An error has occured when trying to log in with google. Please try again but if it persists, contact one of the devs.`}
           </Alert>
         </Snackbar>
       )}
