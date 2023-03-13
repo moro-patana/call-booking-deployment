@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import { Alert, Box, Divider, Snackbar, Typography } from '@mui/material';
+import { Alert, Box, Button, Divider, Snackbar, Typography } from '@mui/material';
 import { LoginSocialGoogle, IResolveParams } from 'reactjs-social-login';
-import { GoogleLoginButton } from 'react-social-login-buttons';
+import GoogleIcon from '@mui/icons-material/Google';
 import { useCookies } from 'react-cookie';
 import { ErrorMessage } from '../../utils/types';
 import { loginMutation, sendQuery } from "../../graphqlHelper";
@@ -19,7 +19,7 @@ const Login = ({ errorMessage, setErrorMessage } : ErrorMessageStateType) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [cookies, setCookie] = useCookies(['currentUser']);
-  const { container, heading, alert, paragraph, buttonWrapper, googleButton, divider } = styles;
+  const { container, heading, alert, paragraph, buttonWrapper, googleButton, divider, googleIcon } = styles;
 
   const onLoginResolve = async ({ data }: IResolveParams) => {
     try {
@@ -56,7 +56,12 @@ const Login = ({ errorMessage, setErrorMessage } : ErrorMessageStateType) => {
           onResolve={onLoginResolve}
           onReject={error => setErrorMessage(error)}
         >
-          <GoogleLoginButton className={googleButton} />
+          <Button
+            startIcon={<GoogleIcon className={googleIcon} />}
+            className={googleButton}
+          >
+            Log in with Google
+          </Button>
         </LoginSocialGoogle>
       </Box>
       <Divider orientation='horizontal' className={divider}/>

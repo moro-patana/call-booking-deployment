@@ -32,6 +32,15 @@
 .googleButton {
   flex-direction: row;
   justify-content: center;
+  text-transform: none;
+  font-size: 1.25rem;
+  background-color: #D9D9D9;
+  width: 100%;
+}
+
+.googleIcon {
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 .googleButton div {
@@ -44,12 +53,15 @@
 
 .divider {
   margin: 3.5rem 0;
-  flex-shrink: 0;
-  width: 458px;
+  width: 100%;
 }
 
 @media (min-width: 375px) {
   .buttonWrapper {
     width: 400px;
+  }
+
+  .divider {
+    width: 458px;
   }
 }
