@@ -1,22 +1,25 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Alert, Box, Divider, Snackbar, Typography } from '@mui/material';
+import { Alert, Box, Button, Divider, Snackbar, Typography } from '@mui/material';
 import { LoginSocialGoogle, IResolveParams } from 'reactjs-social-login';
-import { GoogleLoginButton } from 'react-social-login-buttons';
+import GoogleIcon from '@mui/icons-material/Google';
 import { useCookies } from 'react-cookie';
-
+import { ErrorMessage } from '../../utils/types';
 import { loginMutation, sendQuery } from "../../graphqlHelper";
 import { useAppDispatch } from '../../redux/hooks';
 import { setCurrentUser, setUserLoggedIn } from '../../redux/reducers/usersSlice';
 
 import styles from './login.module.css';
 
-const Login = () => {
+interface ErrorMessageStateType {
+  errorMessage: ErrorMessage;
+  setErrorMessage: (value: ErrorMessage) => void;
+}
+
+const Login = ({ errorMessage, setErrorMessage } : ErrorMessageStateType) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [loginError, setLoginError] = useState<string | unknown | {} | null>(null);
   const [cookies, setCookie] = useCookies(['currentUser']);
-  const { container, heading, alert, paragraph, buttonWrapper, googleButton, divider } = styles;
+  const { container, heading, alert, paragraph, buttonWrapper, googleButton, divider, googleIcon } = styles;
 
   const onLoginResolve = async ({ data }: IResolveParams) => {
     try {
@@ -28,8 +31,8 @@ const Login = () => {
         setCookie('currentUser', res.data.data, { path: '/' });
         navigate("/");
       }
-    } catch (err) {
-      setLoginError(err);
+    } catch (error) {
+      setErrorMessage(error);
     }
   };
 
@@ -51,9 +54,14 @@ const Login = () => {
           discoveryDocs="claims_supported"
           access_type="offline"
           onResolve={onLoginResolve}
-          onReject={err => setLoginError(err)}
+          onReject={error => setErrorMessage(error)}
         >
-          <GoogleLoginButton className={googleButton} />
+          <Button
+            startIcon={<GoogleIcon className={googleIcon} />}
+            className={googleButton}
+          >
+            Log in with Google
+          </Button>
         </LoginSocialGoogle>
       </Box>
       <Divider orientation='horizontal' className={divider}/>
@@ -61,11 +69,11 @@ const Login = () => {
         If you don’t have a Google account yet, please
         contact the Onja google workspace administrators to create one for you.
       </Typography>
-      {!!loginError && (
+      {!!errorMessage && (
         <Snackbar
           open
           autoHideDuration={6000}
-          onClose={() => setLoginError(false)}
+          onClose={() => setErrorMessage(false)}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           key={'bottom right'}
         >

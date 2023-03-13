@@ -5,44 +5,40 @@ import { fetchBookingsByUser } from "../../redux/actions/bookings";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import SelectInput from "../Select/SelectInput";
 import DatePicker from "../datePicker/DatePicker";
-import { RoomType } from "../../utils/types";
+import { ErrorMessage, RoomType } from "../../utils/types";
 import { getSelectedTimeMinutes, newDateGenerator, timeConverter } from "../../utils/dateUtils";
 import { bookingMutation, sendAuthorizedQuery } from '../../graphqlHelper';
 import styles from './bookingModal.module.css';
 
 interface BookingModalProps {
-  rooms: RoomType[];
-  repeatData: { name: string; id: string }[];
-  open: boolean;
-  handleClose: () => void;
-  position: { x: number; y: number };
-  day: Date;
-  date: Date;
-  startDate: Date;
-  endDate: Date;
-  selectedRoom: string;
-  setSelectedRoom: (value: string) => void;
-}
-
-interface NewBooking {
-  resourceId: string;
-  title: string;
-  start: String;
-  end: String;
-  token: String | undefined
+    rooms: RoomType[];
+    repeatData: { name: string; id: string }[];
+    openBookingModal: boolean;
+    closeBookingModal: () => void;
+    position: { x: number; y: number };
+    day: Date;
+    date: Date;
+    startDate: Date;
+    endDate: Date;
+    selectedRoom: string;
+    setSelectedRoom: (value: string) => void;
+    errorMessage: ErrorMessage;
+    setErrorMessage: (value: ErrorMessage) => void;
 }
 
 const BookingModal: FC<BookingModalProps> = ({
-  rooms,
-  repeatData,
-  open,
-  handleClose,
-  position,
-  date,
-  startDate,
-  endDate,
-  selectedRoom,
-  setSelectedRoom
+    rooms,
+    repeatData,
+    openBookingModal,
+    closeBookingModal,
+    position,
+    date,
+    startDate,
+    endDate,
+    selectedRoom,
+    setSelectedRoom,
+    errorMessage,
+    setErrorMessage
 }) => {
   const { currentUser } = useAppSelector(state => state.users);
   const dispatch = useAppDispatch();
@@ -81,43 +77,34 @@ const BookingModal: FC<BookingModalProps> = ({
     setRepeatEvent(event.target.value);
   };
 
-  const addNewBooking = async (userBooking: NewBooking) => {
-    const { resourceId, title, start, end } = userBooking;
-    const { id, token } = currentUser.login;
-    const response = await sendAuthorizedQuery(
-      bookingMutation(resourceId, title, start, end, id),
-      token
-    );
-    const booking = response.data.data;
-    return booking;
-  };
-
   const handleSubmitBooking = useCallback(async () => {
     const newStartDate = String(newDateGenerator(start, startTime));
     const newEndDate = String(newDateGenerator(end, endTime));
-    const { token } = currentUser.login;
+    const { id, token } = currentUser.login;
 
-    if (currentUser.login.token && roomId) {
-      await addNewBooking({
-        resourceId: roomId,
-        title: label,
-        start: newStartDate,
-        end: newEndDate,
-        token: token,
-      });
+      try {
+        if (token && roomId) {
+          const response = await sendAuthorizedQuery(
+            bookingMutation(roomId, label, newStartDate, newEndDate, id),
+            token
+          );
+          const { data } = response.data;
+          dispatch(fetchBookingsByUser(setErrorMessage));
+          return data;
+        }
+      } catch (error) {
+        setErrorMessage(error);
+      }
 
-      dispatch(fetchBookingsByUser());
-    }
-
-    handleClose();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [label, roomId, startTime, endTime]);
+      closeBookingModal();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [label, roomId, startTime, endTime]);
 
   return (
     <div>
       <Modal
-        open={open}
-        onClose={handleClose}
+        open={openBookingModal}
+        onClose={closeBookingModal}
         className={modal}
         slotProps={{backdrop: { className: backdrop }}}
       >
@@ -171,7 +158,7 @@ const BookingModal: FC<BookingModalProps> = ({
             note="Select repeat options"
           />
           <Box className={buttonWrapper}>
-            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={closeBookingModal}>Cancel</Button>
             <Button onClick={handleSubmitBooking}>Book</Button>
           </Box>
         </Box>
