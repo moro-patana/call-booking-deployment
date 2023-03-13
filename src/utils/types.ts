@@ -58,3 +58,5 @@ export type Booking = {
   end: string;
   resourceId: string
 }
+
+export type ErrorMessage = string | unknown | {} | null

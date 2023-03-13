@@ -12,7 +12,7 @@ import { roomsData } from "../../redux/reducers/roomsSlice";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { fetchBookingsByUser } from "../../redux/actions/bookings";
 import { timeConverter } from "../../utils/dateUtils";
-import { IEvent } from "../../utils/types";
+import { ErrorMessage, IEvent } from "../../utils/types";
 import { deleteBooking, sendAuthorizedQuery } from "../../graphqlHelper";
 import styles from "./editBookingModal.module.css";
 import SelectInput from "../Select/SelectInput";
@@ -25,6 +25,7 @@ interface EditModalProps {
   repeatData: { name: string; id: string }[];
   setShowEditBookingModal: (value: boolean) => void;
   setSelectedBooking: (value: IEvent) => void;
+  setErrorMessage: (value: ErrorMessage) => void;
 }
 
 const EditBookingModal: FC<EditModalProps> = ({
@@ -34,6 +35,7 @@ const EditBookingModal: FC<EditModalProps> = ({
   repeatData,
   setShowEditBookingModal,
   setSelectedBooking,
+  setErrorMessage,
 }) => {
   const {
     modal,
@@ -78,11 +80,11 @@ const EditBookingModal: FC<EditModalProps> = ({
         const { data } = response.data;
 
         setShowEditBookingModal(false);
-        dispatch(fetchBookingsByUser());
+        dispatch(fetchBookingsByUser(setErrorMessage));
         return data;
       }
-    } catch (error: unknown) {
-      console.error(error);
+    } catch (error) {
+      setErrorMessage(error);
     }
   };
 

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Box } from "@mui/material";
 import { Calendar, dateFnsLocalizer, Views } from "react-big-calendar";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
-import { format, getDay, parse, startOfWeek } from 'date-fns';
+import { format, getDay, parse, startOfWeek } from "date-fns";
 import { useCookies } from "react-cookie";
 import { enUS } from 'date-fns/locale';
 import { fetchBookingsByUser } from "../../redux/actions/bookings";
@@ -10,14 +10,30 @@ import { fetchRooms } from "../../redux/actions/rooms";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { bookingsData } from "../../redux/reducers/bookingsSlice";
 import { roomsData } from "../../redux/reducers/roomsSlice";
-import { dateStringConverter, getCurrentDay, getEndingDay } from "../../utils/dateUtils";
-import { Booking, IEvent, IResource, RoomType } from "../../utils/types";
+
+import {
+  dateStringConverter,
+  getCurrentDay,
+  getEndingDay,
+} from "../../utils/dateUtils";
+import {
+  Booking,
+  ErrorMessage,
+  IEvent,
+  IResource,
+  RoomType,
+} from "../../utils/types";
 import EditBookingModal from "../../components/editBookingModal/EditBookingModal";
 import BookingModal from "../../components/bookingModal/BookingModal";
 import ExpendableMenu from "../../components/menu/ExpendableMenu";
 import styles from './calendar.module.css';
 
 const DragAndDropCalendar = withDragAndDrop<IEvent, IResource>(Calendar);
+
+interface ErrorMessageStateType {
+  errorMessage: ErrorMessage;
+  setErrorMessage: (value: ErrorMessage) => void;
+}
 
 const locales = { "en-US": enUS };
 
@@ -37,11 +53,11 @@ const calendarStyle = () => {
   };
 };
 
-const CalendarPage = () => {
+const CalendarPage = ({ errorMessage, setErrorMessage }: ErrorMessageStateType) => {
   const rooms = useAppSelector(roomsData);
   const userBookings = useAppSelector(bookingsData);
-  const [cookies] = useCookies(['currentUser']);
-  const { currentUser } = useAppSelector(state => state.users) || cookies;
+  const [cookies] = useCookies(["currentUser"]);
+  const { currentUser } = useAppSelector((state) => state.users) || cookies;
   const dispatch = useAppDispatch();
   const selectedDate = new Date();
   const startDay = getCurrentDay(selectedDate);
@@ -88,8 +104,8 @@ const CalendarPage = () => {
 
   useEffect(() => {
     if (currentUser?.login) {
-      dispatch(fetchRooms());
-      dispatch(fetchBookingsByUser());
+      dispatch(fetchRooms(setErrorMessage));
+      dispatch(fetchBookingsByUser(setErrorMessage));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser]);
@@ -204,6 +220,7 @@ const CalendarPage = () => {
           selectedBooking={selectedBooking}
           setSelectedBooking={setSelectedBooking}
           repeatData={[{ name: "Daily", id: "1" }]}
+          setErrorMessage={setErrorMessage}
         />
       )}
 
@@ -211,8 +228,8 @@ const CalendarPage = () => {
         <BookingModal
           rooms={rooms}
           repeatData={[{ name: "Daily", id: "1" }]}
-          open={openBookingModal}
-          handleClose={() => setOpenBookingModal(false)}
+          openBookingModal={openBookingModal}
+          closeBookingModal={() => setOpenBookingModal(false)}
           position={position}
           day={new Date()}
           date={new Date()}
@@ -220,6 +237,8 @@ const CalendarPage = () => {
           endDate={endDate}
           selectedRoom={selectedRoom}
           setSelectedRoom={setSelectedRoom}
+          errorMessage={errorMessage}
+          setErrorMessage={setErrorMessage}
         />
       )}
     </Box>

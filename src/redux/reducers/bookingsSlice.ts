@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 
 const initialState = {
-  bookings: []
+  bookings: [],
 };
 
 export const bookingsSlice = createSlice({
