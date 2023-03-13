@@ -1,13 +1,16 @@
 import React, { FC, useCallback, useState } from "react";
 import { Box, Button, Modal, SelectChangeEvent, TextField, Typography } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { fetchBookingsByUser } from "../../redux/actions/bookings";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import SelectInput from "../Select/SelectInput";
-import DatePicker from "../datePicker/DatePicker";
-import { ErrorMessage, RoomType } from "../../utils/types";
-import { getSelectedTimeMinutes, newDateGenerator, timeConverter } from "../../utils/dateUtils";
-import { bookingMutation, sendAuthorizedQuery } from '../../graphqlHelper';
+import { fetchBookingsByUser } from "../../../redux/actions/bookings";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import { setErrorMessage } from "../../../redux/reducers/errorMessage";
+import { RoomType } from "../../../utils/types";
+import { getSelectedTimeMinutes, newDateGenerator, timeConverter } from "../../../utils/dateUtils";
+import { bookingMutation, sendAuthorizedQuery } from '../../../graphqlHelper';
+
+import SelectInput from "../../UIs/Select/SelectInput";
+import DatePicker from "../../UIs/datePicker/DatePicker";
+
 import styles from './bookingModal.module.css';
 
 interface BookingModalProps {
@@ -22,8 +25,6 @@ interface BookingModalProps {
     endDate: Date;
     selectedRoom: string;
     setSelectedRoom: (value: string) => void;
-    errorMessage: ErrorMessage;
-    setErrorMessage: (value: ErrorMessage) => void;
 }
 
 const BookingModal: FC<BookingModalProps> = ({
@@ -36,9 +37,7 @@ const BookingModal: FC<BookingModalProps> = ({
     startDate,
     endDate,
     selectedRoom,
-    setSelectedRoom,
-    errorMessage,
-    setErrorMessage
+    setSelectedRoom
 }) => {
   const { currentUser } = useAppSelector(state => state.users);
   const dispatch = useAppDispatch();
@@ -88,12 +87,11 @@ const BookingModal: FC<BookingModalProps> = ({
             bookingMutation(roomId, label, newStartDate, newEndDate, id),
             token
           );
-          const { data } = response.data;
-          dispatch(fetchBookingsByUser(setErrorMessage));
-          return data;
+          dispatch(fetchBookingsByUser());
+          return response.data.data;
         }
       } catch (error) {
-        setErrorMessage(error);
+        dispatch(setErrorMessage(error));
       }
 
       closeBookingModal();
@@ -127,6 +125,7 @@ const BookingModal: FC<BookingModalProps> = ({
             InputLabelProps={{
               shrink: true,
             }}
+            size='small'
           />
           <Box
             className={datePickerWrapper}

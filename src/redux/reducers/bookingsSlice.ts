@@ -5,7 +5,7 @@ const initialState = {
   bookings: [],
 };
 
-export const bookingsSlice = createSlice({
+const bookingsSlice = createSlice({
   name: "bookings",
   initialState,
   reducers: {

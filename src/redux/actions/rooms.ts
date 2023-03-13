@@ -1,15 +1,16 @@
 import { getRooms, sendQuery } from "../../graphqlHelper";
 import { getRoomsAction } from "../reducers/roomsSlice";
 import { GetBookingByUserAction } from "../actionTypes";
-import { ErrorMessage } from "../../utils/types";
+import { setErrorMessage } from "../reducers/errorMessage";
 
-export const fetchRooms = (setErrorMessage: (value: ErrorMessage) => void) => {
+export const fetchRooms = () => {
   return async (dispatch: GetBookingByUserAction) => {
     try {
       const response = await sendQuery(getRooms());
-      dispatch(getRoomsAction(response?.data?.data?.getRooms));
+      const resData = response?.data?.data?.getRooms;
+      dispatch(getRoomsAction(resData));
     } catch (error) {
-        setErrorMessage(error)
+        dispatch(setErrorMessage(error))
     }
   };
 };

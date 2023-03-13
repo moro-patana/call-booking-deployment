@@ -5,7 +5,7 @@ const initialState = {
   rooms: [],
 };
 
-export const roomsSlice = createSlice({
+const roomsSlice = createSlice({
   name: "rooms",
   initialState,
   reducers: {

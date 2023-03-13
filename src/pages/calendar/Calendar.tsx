@@ -10,30 +10,15 @@ import { fetchRooms } from "../../redux/actions/rooms";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { bookingsData } from "../../redux/reducers/bookingsSlice";
 import { roomsData } from "../../redux/reducers/roomsSlice";
+import { dateStringConverter, getCurrentDay, getEndingDay } from "../../utils/dateUtils";
+import { Booking, IEvent, IResource, RoomType } from "../../utils/types";
 
-import {
-  dateStringConverter,
-  getCurrentDay,
-  getEndingDay,
-} from "../../utils/dateUtils";
-import {
-  Booking,
-  ErrorMessage,
-  IEvent,
-  IResource,
-  RoomType,
-} from "../../utils/types";
-import EditBookingModal from "../../components/editBookingModal/EditBookingModal";
-import BookingModal from "../../components/bookingModal/BookingModal";
+import EditBookingModal from "../../components/modals/editBookingModal/EditBookingModal";
+import BookingModal from "../../components/modals/bookingModal/BookingModal";
 import ExpendableMenu from "../../components/menu/ExpendableMenu";
 import styles from './calendar.module.css';
 
 const DragAndDropCalendar = withDragAndDrop<IEvent, IResource>(Calendar);
-
-interface ErrorMessageStateType {
-  errorMessage: ErrorMessage;
-  setErrorMessage: (value: ErrorMessage) => void;
-}
 
 const locales = { "en-US": enUS };
 
@@ -53,7 +38,7 @@ const calendarStyle = () => {
   };
 };
 
-const CalendarPage = ({ errorMessage, setErrorMessage }: ErrorMessageStateType) => {
+const CalendarPage = () => {
   const rooms = useAppSelector(roomsData);
   const userBookings = useAppSelector(bookingsData);
   const [cookies] = useCookies(["currentUser"]);
@@ -66,9 +51,7 @@ const CalendarPage = ({ errorMessage, setErrorMessage }: ErrorMessageStateType) 
   const [bookings, setBookings] = useState([]);
   const [openBookingModal, setOpenBookingModal] = useState(false);
   const [slot, setSlot] = useState<{ resourceId: string } | null>(null);
-  const [selectedRoom, setSelectedRoom] = useState<string>(
-    slot?.resourceId || ""
-  );
+  const [selectedRoom, setSelectedRoom] = useState<string>(slot?.resourceId || "");
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [startDate, setStartDate] = useState(selectedDate);
   const [endDate, setEndDate] = useState(selectedDate);
@@ -104,8 +87,8 @@ const CalendarPage = ({ errorMessage, setErrorMessage }: ErrorMessageStateType) 
 
   useEffect(() => {
     if (currentUser?.login) {
-      dispatch(fetchRooms(setErrorMessage));
-      dispatch(fetchBookingsByUser(setErrorMessage));
+      dispatch(fetchRooms());
+      dispatch(fetchBookingsByUser());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser]);
@@ -220,7 +203,6 @@ const CalendarPage = ({ errorMessage, setErrorMessage }: ErrorMessageStateType) 
           selectedBooking={selectedBooking}
           setSelectedBooking={setSelectedBooking}
           repeatData={[{ name: "Daily", id: "1" }]}
-          setErrorMessage={setErrorMessage}
         />
       )}
 
@@ -237,8 +219,6 @@ const CalendarPage = ({ errorMessage, setErrorMessage }: ErrorMessageStateType) 
           endDate={endDate}
           selectedRoom={selectedRoom}
           setSelectedRoom={setSelectedRoom}
-          errorMessage={errorMessage}
-          setErrorMessage={setErrorMessage}
         />
       )}
     </Box>

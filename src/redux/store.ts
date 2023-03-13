@@ -2,11 +2,14 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import bookingsSlice from "./reducers/bookingsSlice";
 import roomsSlice from "./reducers/roomsSlice";
 import usersSlice from "./reducers/usersSlice";
+import errorMessageSlice from './reducers/errorMessage';
+
 const rootReducer = combineReducers({
   // reducer state goes here imported from ./slices
   bookings: bookingsSlice,
   rooms: roomsSlice,
   users: usersSlice,
+  errorMessage: errorMessageSlice
 });
 
 // If needed: Get createBrowserHistory from history lib

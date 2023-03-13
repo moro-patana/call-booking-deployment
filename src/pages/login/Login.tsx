@@ -3,23 +3,19 @@ import { Alert, Box, Button, Divider, Snackbar, Typography } from '@mui/material
 import { LoginSocialGoogle, IResolveParams } from 'reactjs-social-login';
 import GoogleIcon from '@mui/icons-material/Google';
 import { useCookies } from 'react-cookie';
-import { ErrorMessage } from '../../utils/types';
 import { loginMutation, sendQuery } from "../../graphqlHelper";
-import { useAppDispatch } from '../../redux/hooks';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { setCurrentUser, setUserLoggedIn } from '../../redux/reducers/usersSlice';
 
 import styles from './login.module.css';
+import { setErrorMessage } from '../../redux/reducers/errorMessage';
 
-interface ErrorMessageStateType {
-  errorMessage: ErrorMessage;
-  setErrorMessage: (value: ErrorMessage) => void;
-}
-
-const Login = ({ errorMessage, setErrorMessage } : ErrorMessageStateType) => {
+const Login = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [cookies, setCookie] = useCookies(['currentUser']);
   const { container, heading, alert, paragraph, buttonWrapper, googleButton, divider, googleIcon } = styles;
+  const { errorMessage } = useAppSelector((state) => state.errorMessage);
 
   const onLoginResolve = async ({ data }: IResolveParams) => {
     try {
@@ -32,7 +28,7 @@ const Login = ({ errorMessage, setErrorMessage } : ErrorMessageStateType) => {
         navigate("/");
       }
     } catch (error) {
-      setErrorMessage(error);
+      dispatch(setErrorMessage(error));
     }
   };
 
@@ -54,7 +50,7 @@ const Login = ({ errorMessage, setErrorMessage } : ErrorMessageStateType) => {
           discoveryDocs="claims_supported"
           access_type="offline"
           onResolve={onLoginResolve}
-          onReject={error => setErrorMessage(error)}
+          onReject={error => dispatch(setErrorMessage(error))}
         >
           <Button
             startIcon={<GoogleIcon className={googleIcon} />}
@@ -73,7 +69,7 @@ const Login = ({ errorMessage, setErrorMessage } : ErrorMessageStateType) => {
         <Snackbar
           open
           autoHideDuration={6000}
-          onClose={() => setErrorMessage(false)}
+          onClose={() => dispatch(setErrorMessage(null))}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
           key={'bottom right'}
         >

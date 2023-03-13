@@ -42,7 +42,7 @@ const initialState: UsersState = {
 };
 
 // TODO: handle diff async state with Redux Thunk
-export const usersSlice = createSlice({
+const usersSlice = createSlice({
   name: "users",
   initialState,
   reducers: {

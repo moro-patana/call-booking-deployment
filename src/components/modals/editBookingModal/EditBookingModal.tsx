@@ -8,15 +8,19 @@ import {
   Typography,
 } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { roomsData } from "../../redux/reducers/roomsSlice";
-import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { fetchBookingsByUser } from "../../redux/actions/bookings";
-import { timeConverter } from "../../utils/dateUtils";
-import { ErrorMessage, IEvent } from "../../utils/types";
-import { deleteBooking, sendAuthorizedQuery } from "../../graphqlHelper";
+
+import { roomsData } from "../../../redux/reducers/roomsSlice";
+import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import { fetchBookingsByUser } from "../../../redux/actions/bookings";
+import { setErrorMessage } from "../../../redux/reducers/errorMessage";
+import { timeConverter } from "../../../utils/dateUtils";
+import { IEvent } from "../../../utils/types";
+import { deleteBooking, sendAuthorizedQuery } from "../../../graphqlHelper";
+
+import SelectInput from "../../UIs/Select/SelectInput";
+import DatePicker from "../../UIs/datePicker/DatePicker";
+
 import styles from "./editBookingModal.module.css";
-import SelectInput from "../Select/SelectInput";
-import DatePicker from "../datePicker/DatePicker";
 
 interface EditModalProps {
   position: { x: number; y: number };
@@ -25,7 +29,6 @@ interface EditModalProps {
   repeatData: { name: string; id: string }[];
   setShowEditBookingModal: (value: boolean) => void;
   setSelectedBooking: (value: IEvent) => void;
-  setErrorMessage: (value: ErrorMessage) => void;
 }
 
 const EditBookingModal: FC<EditModalProps> = ({
@@ -35,7 +38,6 @@ const EditBookingModal: FC<EditModalProps> = ({
   repeatData,
   setShowEditBookingModal,
   setSelectedBooking,
-  setErrorMessage,
 }) => {
   const {
     modal,
@@ -80,11 +82,11 @@ const EditBookingModal: FC<EditModalProps> = ({
         const { data } = response.data;
 
         setShowEditBookingModal(false);
-        dispatch(fetchBookingsByUser(setErrorMessage));
+        dispatch(fetchBookingsByUser());
         return data;
       }
     } catch (error) {
-      setErrorMessage(error);
+      dispatch(setErrorMessage(error));
     }
   };
 
@@ -114,6 +116,7 @@ const EditBookingModal: FC<EditModalProps> = ({
             InputLabelProps={{
               shrink: true,
             }}
+            size='small'
           />
 
           <Box className={datePickerWrapper}>
