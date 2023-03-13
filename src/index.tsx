@@ -8,6 +8,7 @@ import reportWebVitals from './reportWebVitals';
 import store from './redux/store';
 import App from './App';
 import './index.css';
+import Header from './components/header/Header';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -19,6 +20,7 @@ root.render(
       <StyledEngineProvider injectFirst>
         <CookiesProvider>
           <Provider store={store}>
+            <Header />
             <App />
           </Provider>
         </CookiesProvider>

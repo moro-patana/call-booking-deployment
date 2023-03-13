@@ -1,3 +1,7 @@
+body {
+  overflow: hidden;
+}
+
 .App {
   text-align: center;
   position: relative;
@@ -50,3 +54,13 @@
 .rbc-time-slot {
   padding-top: 10.5px;
 }
+
+.rbc-time-column {
+  height: -webkit-fill-available;
+}
+
+
+
+
+
+

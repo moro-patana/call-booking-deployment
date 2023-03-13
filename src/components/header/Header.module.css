@@ -1,0 +1,76 @@
+@import "../../constant.css";
+
+span {
+  font-size: 20px;
+}
+
+.headerBar {
+    position: sticky;
+    background-color: var(--blue);
+}
+
+.container {
+  max-width: initial;
+}
+
+.title {
+  display: flex;
+  text-decoration: none;
+  color: var(--white);
+  font-weight: 400;
+  line-height: 25px;
+  align-items: center;
+  margin-right: 16px;
+  font-size: 20px
+}
+
+.title img {
+  margin-right: 10px;
+}
+
+.menuItem a {
+  text-decoration: none;
+}
+
+.wrapper {
+  flex-grow: 1;
+  justify-content: flex-end;
+}
+
+.wrapper li a,
+.wrapper button {
+  color: var(--white);
+}
+
+.desktopContainer {
+  display: none;
+}
+
+.desktopContainer li {
+  display: block;
+  margin: 16px 0;
+}
+
+.mobileContainer {
+  display: flex;
+}
+
+.menuAppBar {
+  display: block;
+  text-align: center;
+}
+
+.menuAppBar a {
+  color: var(--black);
+}
+
+@media (min-width: 900px) {
+  .desktopContainer {
+    display: flex;
+  }
+
+  .mobileContainer,
+  .menuAppBar {
+    display: none;
+  }
+}

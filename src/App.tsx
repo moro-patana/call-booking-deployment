@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
+
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
-import { useCookies } from "react-cookie";
 import './App.css';
 
 import Login from './pages/login/Login';
