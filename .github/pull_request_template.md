@@ -1,3 +1,9 @@
+## FRONTEND PRs should be opened against develop not MAIN unless advised otherwise by core-maintainers
+
+<!--
+  You are amazing! Thanks for contributing to this project!
+-->
+
 ## Description
 
 Please include a summary of the change and which issue is fixed. Please also include relevant motivation and context. List any dependencies that are required for this change.
@@ -10,12 +16,12 @@ Please include a summary of the change and which issue is fixed. Please also inc
 
 ## Type of change
 
-Please delete options that are not relevant.
-
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] This change requires a documentation update
+- [ ] Dependency / security upgrade
+- [ ] Bugfix (non-breaking change which fixes an issue)
+- [ ] New component - these should be created on their own
+- [ ] New feature (which adds functionality to an existing feature)
+- [ ] Breaking change (fix/feature causing existing functionality to break)
+- [ ] Code quality improvements to existing code or addition of tests
 
 ## Testing
 
