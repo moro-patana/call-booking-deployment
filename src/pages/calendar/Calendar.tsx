@@ -30,6 +30,11 @@ import styles from './calendar.module.css';
 
 const DragAndDropCalendar = withDragAndDrop<IEvent, IResource>(Calendar);
 
+interface ErrorMessageStateType {
+  errorMessage: ErrorMessage;
+  setErrorMessage: (value: ErrorMessage) => void;
+}
+
 const locales = { "en-US": enUS };
 
 const localizer = dateFnsLocalizer({
@@ -48,13 +53,7 @@ const calendarStyle = () => {
   };
 };
 
-const CalendarPage = ({
-  errorMessage,
-  setErrorMessage,
-}: {
-  errorMessage: ErrorMessage;
-  setErrorMessage: (value: ErrorMessage) => void;
-}) => {
+const CalendarPage = ({ errorMessage, setErrorMessage }: ErrorMessageStateType) => {
   const rooms = useAppSelector(roomsData);
   const userBookings = useAppSelector(bookingsData);
   const [cookies] = useCookies(["currentUser"]);

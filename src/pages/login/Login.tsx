@@ -10,7 +10,12 @@ import { setCurrentUser, setUserLoggedIn } from '../../redux/reducers/usersSlice
 
 import styles from './login.module.css';
 
-const Login = ({ errorMessage, setErrorMessage } : { errorMessage: ErrorMessage; setErrorMessage: (value: ErrorMessage) => void}) => {
+interface ErrorMessageStateType {
+  errorMessage: ErrorMessage;
+  setErrorMessage: (value: ErrorMessage) => void;
+}
+
+const Login = ({ errorMessage, setErrorMessage } : ErrorMessageStateType) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [cookies, setCookie] = useCookies(['currentUser']);
