@@ -17,10 +17,9 @@ export const getRooms = () => {
   }`;
 };
 
-// TODO Make it work with an user id which needs BE changes
-export const getBookingsByUser = () => {
+export const getBookingsByUser = (userId: string) => {
     return `{
-    getBookings{
+    getBookingsByUser(participantId: "${userId}"){
       id,
       participants,
       resourceId,
@@ -34,7 +33,7 @@ export const getBookingsByUser = () => {
 
 export const getUsers = () => {
     return `{
-    users{
+    getUsers{
       id,
       email,
       password,

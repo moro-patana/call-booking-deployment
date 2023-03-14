@@ -87,7 +87,7 @@ const BookingModal: FC<BookingModalProps> = ({
             bookingMutation(roomId, label, newStartDate, newEndDate, id),
             access_token
           );
-          dispatch(fetchBookingsByUser());
+          dispatch(fetchBookingsByUser(id));
           closeBookingModal();
           return response.data.data;
         }
