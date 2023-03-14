@@ -47,21 +47,18 @@ exports.BookingQuery = new GraphQLObjectType({
           }
         },
       },
-      getUserBookings: {
+      getBookingsByUser: {
         type: new GraphQLList(bookingType),
         args: {
-          userId: {
+          participantId: {
             type: new GraphQLNonNull(GraphQLID),
           },
         },
-        resolve: async (_, { userId }) => {
+        resolve: async (_, { participantId }) => {
           try {
-            const bookings = await BookingModel.find({ user: userId })
-              .populate("user")
-              .populate("booking")
-              .populate("room");
+            const bookings = await BookingModel.find({ participants: participantId });
 
-              if (!bookings) {
+            if (!bookings) {
               throw new Error(getErrorForCode(ERROR_CODES.EA3));
             }
             return bookings;

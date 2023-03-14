@@ -42,7 +42,7 @@ const CalendarPage = () => {
   const rooms = useAppSelector(roomsData);
   const userBookings = useAppSelector(bookingsData);
   const [cookies] = useCookies(["currentUser"]);
-  const { currentUser } = useAppSelector((state) => state.users) || cookies;
+  const { currentUser } = cookies;
   const dispatch = useAppDispatch();
   const selectedDate = new Date();
   const startDay = getCurrentDay(selectedDate);
@@ -88,7 +88,7 @@ const CalendarPage = () => {
   useEffect(() => {
     if (currentUser?.login) {
       dispatch(fetchRooms());
-      dispatch(fetchBookingsByUser());
+      dispatch(fetchBookingsByUser(currentUser.id));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser]);

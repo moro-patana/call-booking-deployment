@@ -82,7 +82,7 @@ const EditBookingModal: FC<EditModalProps> = ({
         const { data } = response.data;
 
         setShowEditBookingModal(false);
-        dispatch(fetchBookingsByUser());
+        dispatch(fetchBookingsByUser(currentUser.login.id));
         return data;
       }
     } catch (error) {
