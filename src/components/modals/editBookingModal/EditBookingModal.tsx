@@ -76,13 +76,12 @@ const EditBookingModal: FC<EditModalProps> = ({
       if (selectedBooking.id) {
         const response = await sendAuthorizedQuery(
           deleteBooking(selectedBooking.id),
-          currentUser.login.token
+          currentUser.login.access_token
         );
 
         const { data } = response.data;
-
-        setShowEditBookingModal(false);
         dispatch(fetchBookingsByUser());
+        setShowEditBookingModal(false);
         return data;
       }
     } catch (error) {
@@ -116,7 +115,7 @@ const EditBookingModal: FC<EditModalProps> = ({
             InputLabelProps={{
               shrink: true,
             }}
-            size='small'
+            size="small"
           />
 
           <Box className={datePickerWrapper}>

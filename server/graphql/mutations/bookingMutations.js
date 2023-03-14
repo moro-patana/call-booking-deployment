@@ -22,7 +22,6 @@ module.exports = {
     type: bookingType.bookingType,
     args: argType,
     resolve: async (root, args, context) => {
-      // const user = checkAuth(context);
       const {
         resourceId,
         title,
@@ -67,7 +66,7 @@ module.exports = {
       }
 
       try {
-        if (user.id && bookingToRemove?.participants?.includes(user.id)) {
+        if (user.id && participants?.includes(user.id)) {
           await bookingToRemove.delete();
             return {
               participants,
