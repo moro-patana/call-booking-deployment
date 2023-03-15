@@ -11,9 +11,12 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 import { roomsData } from "../../../redux/reducers/roomsSlice";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
-import { fetchBookingsByUser } from "../../../redux/actions/bookings";
+import {
+  fetchBookingsByUser,
+  updateSelectedBooking,
+} from "../../../redux/actions/bookings";
 import { setErrorMessage } from "../../../redux/reducers/errorMessage";
-import { timeConverter } from "../../../utils/dateUtils";
+import { newDateGenerator, timeConverter } from "../../../utils/dateUtils";
 import { IEvent } from "../../../utils/types";
 import { deleteBooking, sendAuthorizedQuery } from "../../../graphqlHelper";
 
@@ -52,9 +55,10 @@ const EditBookingModal: FC<EditModalProps> = ({
   } = styles;
   const dispatch = useAppDispatch();
   const { currentUser } = useAppSelector((state) => state.users);
+  const userId = currentUser.login.id;
+  const { access_token } = currentUser.login;
   const rooms = useAppSelector(roomsData);
-
-  const { title, start, end, resourceId } = selectedBooking;
+  const { title, start, end, resourceId, id } = selectedBooking;
   const getHours = (time: Date) => timeConverter(time.getHours());
   const getMinutes = (time: Date) => timeConverter(time.getMinutes());
 
@@ -69,21 +73,34 @@ const EditBookingModal: FC<EditModalProps> = ({
     top: position.y > 518 ? 518 : position.y > 18 ? position.y : 18,
   };
 
-  const handleEditBooking = () => selectedBooking;
+  const handleEditBooking = async () => {
+    const newStartDate = String(newDateGenerator(start, startTime));
+    const newEndDate = String(newDateGenerator(end, endTime));
+
+    dispatch(
+      updateSelectedBooking(
+        id,
+        resourceId,
+        title,
+        newStartDate,
+        newEndDate,
+        userId,
+        access_token
+      )
+    );
+    setShowEditBookingModal(false);
+  };
 
   const onDeleteEvent = async () => {
     try {
       if (selectedBooking.id) {
         const response = await sendAuthorizedQuery(
           deleteBooking(selectedBooking.id),
-          currentUser.login.access_token
+          access_token
         );
-
-        const { data } = response.data;
-
         setShowEditBookingModal(false);
-        dispatch(fetchBookingsByUser(currentUser.login.id));
-        return data;
+        dispatch(fetchBookingsByUser(userId));
+        return response.data.data;
       }
     } catch (error) {
       dispatch(setErrorMessage(error));

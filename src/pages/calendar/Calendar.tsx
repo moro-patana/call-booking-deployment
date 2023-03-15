@@ -4,19 +4,32 @@ import { Calendar, dateFnsLocalizer, Views } from "react-big-calendar";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import { format, getDay, parse, startOfWeek } from "date-fns";
 import { useCookies } from "react-cookie";
-import { enUS } from 'date-fns/locale';
-import { fetchBookingsByUser } from "../../redux/actions/bookings";
+import { enUS } from "date-fns/locale";
+import {
+  fetchBookingsByUser,
+  updateSelectedBooking,
+} from "../../redux/actions/bookings";
 import { fetchRooms } from "../../redux/actions/rooms";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { bookingsData } from "../../redux/reducers/bookingsSlice";
 import { roomsData } from "../../redux/reducers/roomsSlice";
-import { dateStringConverter, getCurrentDay, getEndingDay } from "../../utils/dateUtils";
-import { Booking, IEvent, IResource, RoomType } from "../../utils/types";
+import {
+  dateStringConverter,
+  getCurrentDay,
+  getEndingDay,
+} from "../../utils/dateUtils";
+import {
+  Booking,
+  IEvent,
+  IResource,
+  newBookingType,
+  RoomType,
+} from "../../utils/types";
 
 import EditBookingModal from "../../components/modals/editBookingModal/EditBookingModal";
 import BookingModal from "../../components/modals/bookingModal/BookingModal";
 import ExpendableMenu from "../../components/menu/ExpendableMenu";
-import styles from './calendar.module.css';
+import styles from "./calendar.module.css";
 
 const DragAndDropCalendar = withDragAndDrop<IEvent, IResource>(Calendar);
 
@@ -43,20 +56,25 @@ const CalendarPage = () => {
   const userBookings = useAppSelector(bookingsData);
   const [cookies] = useCookies(["currentUser"]);
   const { currentUser } = cookies;
+  const { access_token } = currentUser.login;
+  const userId = currentUser.login.id;
   const dispatch = useAppDispatch();
   const selectedDate = new Date();
   const startDay = getCurrentDay(selectedDate);
   const endDay = getEndingDay(selectedDate);
-
-  const [bookings, setBookings] = useState([]);
-  const [openBookingModal, setOpenBookingModal] = useState(false);
-  const [slot, setSlot] = useState<{ resourceId: string } | null>(null);
-  const [selectedRoom, setSelectedRoom] = useState<string>(slot?.resourceId || "");
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [startDate, setStartDate] = useState(selectedDate);
-  const [endDate, setEndDate] = useState(selectedDate);
   const [currentDay, setCurrentDay] = useState<Date>(startDay);
   const [endingDay, setEndingDay] = useState<Date>(endDay);
+
+  // Add new booking modal states
+  const [openBookingModal, setOpenBookingModal] = useState(false);
+  const [newBooking, setNewBooking] = useState<newBookingType>({
+    title: "",
+    description: "",
+    start: selectedDate,
+    end: selectedDate,
+    resourceId: "",
+  });
 
   // Edit modal states
   const [showEditBookingModal, setShowEditBookingModal] = useState(false);
@@ -67,6 +85,7 @@ const CalendarPage = () => {
     end: new Date(),
     resourceId: "",
   });
+
   const { container } = styles;
 
   const resources = rooms?.map((room: RoomType) => {
@@ -88,13 +107,11 @@ const CalendarPage = () => {
   useEffect(() => {
     if (currentUser?.login) {
       dispatch(fetchRooms());
-      dispatch(fetchBookingsByUser(currentUser.login.id));
+      dispatch(fetchBookingsByUser(userId));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser]);
+  }, [currentUser, dispatch, userId]);
 
   const handleSelectEvent = (slot: any) => {
-    setSlot(slot);
     const { box, start, end, resourceId } = slot;
     const screenWidth = window.screen.width;
     const xPercentage = Math.floor((box.x / screenWidth) * 100);
@@ -102,11 +119,8 @@ const CalendarPage = () => {
       x: xPercentage,
       y: box.y,
     });
-    setSelectedRoom(resourceId);
+    setNewBooking({ ...newBooking, resourceId, start, end });
     setOpenBookingModal(!openBookingModal);
-    setStartDate(start);
-    setEndDate(end);
-    return bookings;
   };
 
   const { defaultDate, scrollToTime } = useMemo(
@@ -115,18 +129,25 @@ const CalendarPage = () => {
   );
 
   const moveEvent = useCallback(
-    ({ event, start, end, resourceId }: any) => {
-      setBookings((prev): any => {
-        const existing = prev.find((ev: any) => ev.id === event.id) ?? {};
-        const filtered = prev.filter((ev: any) => ev.id !== event.id);
-        return [...filtered, { ...existing, start, end, resourceId }];
-      });
+    async ({ event, start, end, resourceId }: any) => {
+      const { id, title } = event;
+      dispatch(
+        updateSelectedBooking(
+          id,
+          resourceId,
+          title,
+          start,
+          end,
+          userId,
+          access_token
+        )
+      );
     },
-    [setBookings]
+    [access_token, userId, dispatch]
   );
 
   const resizeEvent = useCallback(
-    ({
+    async ({
       event,
       start,
       end,
@@ -135,13 +156,21 @@ const CalendarPage = () => {
       start: Date | string;
       end: Date | string;
     }) => {
-      setBookings((prev): any => {
-        const existing = prev.find((ev: any) => ev.id === event.id) ?? {};
-        const filtered = prev.filter((ev: any) => ev.id !== event.id);
-        return [...filtered, { ...existing, start, end }];
-      });
+      const { id, title, resourceId } = event;
+
+      dispatch(
+        updateSelectedBooking(
+          id,
+          resourceId,
+          title,
+          start,
+          end,
+          userId,
+          access_token
+        )
+      );
     },
-    [setBookings]
+    [access_token, userId, dispatch]
   );
 
   const openEditModal = (booking: IEvent, event: any) => {
@@ -209,16 +238,12 @@ const CalendarPage = () => {
       {openBookingModal && (
         <BookingModal
           rooms={rooms}
-          repeatData={[{ name: "Daily", id: "1" }]}
           openBookingModal={openBookingModal}
           closeBookingModal={() => setOpenBookingModal(false)}
           position={position}
-          day={new Date()}
-          date={new Date()}
-          startDate={startDate}
-          endDate={endDate}
-          selectedRoom={selectedRoom}
-          setSelectedRoom={setSelectedRoom}
+          newBooking={newBooking}
+          setNewBooking={setNewBooking}
+          repeatData={[{ name: "Daily", id: "1" }]}
         />
       )}
     </Box>
