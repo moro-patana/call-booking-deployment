@@ -88,7 +88,7 @@ const CalendarPage = () => {
   useEffect(() => {
     if (currentUser?.login) {
       dispatch(fetchRooms());
-      dispatch(fetchBookingsByUser(currentUser.id));
+      dispatch(fetchBookingsByUser(currentUser.login.id));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser]);

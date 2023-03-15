@@ -14,14 +14,14 @@ interface UsersState {
     username: string;
     email?: string;
     id?: string;
-    token?: string;
+    access_token?: string;
     isLogin: boolean;
     registerError: fetchUserRegisterError | null;
     loginError: FetchUserLoginError | null;
     login: {
       email: string;
       id: string;
-      token: string;
+      access_token: string;
       username: string;
     };
   };
@@ -33,11 +33,11 @@ const initialState: UsersState = {
     id: "",
     username: "",
     email: "",
-    token: "",
+    access_token: "",
     isLogin: false,
     registerError: null,
     loginError: null,
-    login: { email: "", id: "", token: "", username: "" },
+    login: { email: "", id: "", access_token: "", username: "" },
   },
 };
 

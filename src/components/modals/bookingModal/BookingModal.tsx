@@ -79,22 +79,21 @@ const BookingModal: FC<BookingModalProps> = ({
   const handleSubmitBooking = useCallback(async () => {
     const newStartDate = String(newDateGenerator(start, startTime));
     const newEndDate = String(newDateGenerator(end, endTime));
-    const { id, token } = currentUser.login;
+    const { id, access_token } = currentUser.login;
 
       try {
-        if (token && roomId) {
+        if (access_token && roomId) {
           const response = await sendAuthorizedQuery(
             bookingMutation(roomId, label, newStartDate, newEndDate, id),
-            token
+            access_token
           );
           dispatch(fetchBookingsByUser(id));
+          closeBookingModal();
           return response.data.data;
         }
       } catch (error) {
         dispatch(setErrorMessage(error));
       }
-
-      closeBookingModal();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [label, roomId, startTime, endTime]);
 

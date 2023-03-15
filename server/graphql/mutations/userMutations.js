@@ -24,7 +24,7 @@ const generateToken = (user) => {
   return jwt.sign(
     { id: user.id, email: user.email, username: user.username },
     JWT_SECRET,
-    { expiresIn: "1h" }
+    { expiresIn: "24h" }
   );
 };
 
@@ -50,7 +50,7 @@ module.exports = {
 
       if (existingUser) {
         const token = generateToken(existingUser);
-        const userData = { ...existingUser._doc, id: existingUser._id, token };
+        const userData = { ...existingUser._doc, id: existingUser._id, access_token: token };
         return userData;
       } else {
         const hashedPassword = await bcrypt.hash(password, 12);
