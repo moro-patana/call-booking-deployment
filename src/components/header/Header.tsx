@@ -42,9 +42,9 @@ const Header = () => {
   useEffect(() => {
     if(cookies?.currentUser?.login) {
       const { login } = cookies?.currentUser;
-      dispatch(setCurrentUser({ isLogin: true, login }))
+      dispatch(setCurrentUser({ isLogin: true, login }));
     }
-  }, [])
+  }, []);
 
   return (
     <AppBar className={headerBar}>
