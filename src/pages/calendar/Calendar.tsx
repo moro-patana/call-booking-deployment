@@ -66,6 +66,7 @@ const CalendarPage = () => {
     start: new Date(),
     end: new Date(),
     resourceId: "",
+    participants: []
   });
   const { container } = styles;
 
@@ -150,9 +151,8 @@ const CalendarPage = () => {
     const screenWidth = window.screen.width;
     const x = Math.floor((event.pageX / screenWidth) * 100);
     const y = event.pageY;
-
     setSelectedBooking({
-      ...selectedBooking,
+      ...booking,
       id,
       title,
       start,
@@ -197,7 +197,7 @@ const CalendarPage = () => {
 
       {showEditBookingModal && (
         <EditBookingModal
-          showEditBookingModal={showEditBookingModal}
+          showEditBookingModal
           setShowEditBookingModal={setShowEditBookingModal}
           position={position}
           selectedBooking={selectedBooking}
@@ -210,7 +210,7 @@ const CalendarPage = () => {
         <BookingModal
           rooms={rooms}
           repeatData={[{ name: "Daily", id: "1" }]}
-          openBookingModal={openBookingModal}
+          openBookingModal
           closeBookingModal={() => setOpenBookingModal(false)}
           position={position}
           day={new Date()}

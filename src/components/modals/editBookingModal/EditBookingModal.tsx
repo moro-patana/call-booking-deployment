@@ -48,7 +48,7 @@ const EditBookingModal: FC<EditModalProps> = ({
   const { currentUser } = useAppSelector((state) => state.users);
   const rooms = useAppSelector(roomsData);
 
-  const { title, start, end, resourceId } = selectedBooking;
+  const { title, start, end, resourceId, participants } = selectedBooking;
   const getHours = (time: Date) => timeConverter(time.getHours());
   const getMinutes = (time: Date) => timeConverter(time.getMinutes());
 
@@ -82,6 +82,7 @@ const EditBookingModal: FC<EditModalProps> = ({
   };
 
   const isPastBooking = isBefore(newDateGenerator(start, startTime), new Date()) && isBefore(newDateGenerator(end, endTime), new Date());
+  const showDeleteButton = !isDeletionConfirmed && participants?.includes(currentUser?.login?.id);
 
   return (
     <div>
@@ -153,7 +154,7 @@ const EditBookingModal: FC<EditModalProps> = ({
               </Button>
             )}
 
-            {!isDeletionConfirmed && (
+            {showDeleteButton && (
               <Button
                 className={deleteButton}
                 onClick={() => setIsDeletionConfirmed(true)}
