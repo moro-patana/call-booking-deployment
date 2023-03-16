@@ -48,13 +48,13 @@
   place-content: flex-end;
   margin-top: auto;
   margin-left: auto;
+  gap: 1rem;
 }
 
 .buttonContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
 }
 
 .buttonContainer button {
