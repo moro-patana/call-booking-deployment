@@ -44,6 +44,7 @@ const Header = () => {
       const { login } = cookies?.currentUser;
       dispatch(setCurrentUser({ isLogin: true, login }));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

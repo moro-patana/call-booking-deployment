@@ -8,7 +8,7 @@ export const sendQuery = (query: any): Promise<any> => {
 };
 
 export const getRooms = () => {
-    return `{
+  return `{
     getRooms{
       id,
       name,
@@ -17,8 +17,22 @@ export const getRooms = () => {
   }`;
 };
 
+export const getBookings = () => {
+  return `{
+    getBookings{
+      id,
+      participants,
+      resourceId,
+      title,
+      description,
+      start,
+      end
+    }
+  }`;
+};
+
 export const getBookingsByUser = (userId: string) => {
-    return `{
+  return `{
     getBookingsByUser(participantId: "${userId}"){
       id,
       participants,
@@ -32,7 +46,7 @@ export const getBookingsByUser = (userId: string) => {
 };
 
 export const getUsers = () => {
-    return `{
+  return `{
     getUsers{
       id,
       email,

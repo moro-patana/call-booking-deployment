@@ -5,10 +5,10 @@ import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import { format, getDay, parse, startOfWeek } from "date-fns";
 import { useCookies } from "react-cookie";
 import { enUS } from 'date-fns/locale';
-import { fetchBookingsByUser } from "../../redux/actions/bookings";
+
+import { fetchAllBookings } from "../../redux/actions/bookings";
 import { fetchRooms } from "../../redux/actions/rooms";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { bookingsData } from "../../redux/reducers/bookingsSlice";
 import { roomsData } from "../../redux/reducers/roomsSlice";
 import { dateStringConverter, getCurrentDay, getEndingDay } from "../../utils/dateUtils";
 import { Booking, IEvent, IResource, RoomType } from "../../utils/types";
@@ -40,7 +40,7 @@ const calendarStyle = () => {
 
 const CalendarPage = () => {
   const rooms = useAppSelector(roomsData);
-  const userBookings = useAppSelector(bookingsData);
+  const { allBookings } = useAppSelector((state) => state.bookings);
   const [cookies] = useCookies(["currentUser"]);
   const { currentUser } = cookies;
   const dispatch = useAppDispatch();
@@ -78,18 +78,18 @@ const CalendarPage = () => {
     };
   });
 
-  const events = userBookings?.map((booking: Booking) => {
+  const events = useMemo(() => allBookings?.map((booking: Booking) => {
     return {
       ...booking,
       start: dateStringConverter(booking?.start),
       end: dateStringConverter(booking?.end),
     };
-  });
+  }), [allBookings]);
 
   useEffect(() => {
     if (currentUser?.login) {
       dispatch(fetchRooms());
-      dispatch(fetchBookingsByUser(currentUser.login.id));
+      dispatch(fetchAllBookings());
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser]);

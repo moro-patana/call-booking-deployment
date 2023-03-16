@@ -43,6 +43,7 @@ const BookingModal: FC<BookingModalProps> = ({
 }) => {
   const { currentUser } = useAppSelector(state => state.users);
   const dispatch = useAppDispatch();
+  
   const start = new Date(startDate);
   const end = new Date(endDate);
   const selectedHour = timeConverter(start?.getHours());
