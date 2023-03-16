@@ -3,7 +3,7 @@ import { Box, Button, Modal, SelectChangeEvent, TextField, Typography } from "@m
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { isBefore } from "date-fns";
 
-import { fetchBookingsByUser } from "../../../redux/actions/bookings";
+import { fetchAllBookings, fetchBookingsByUser } from "../../../redux/actions/bookings";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { setErrorMessage } from "../../../redux/reducers/errorMessage";
 import { RoomType } from "../../../utils/types";
@@ -14,6 +14,7 @@ import SelectInput from "../../UIs/Select/SelectInput";
 import DatePicker from "../../UIs/datePicker/DatePicker";
 
 import styles from './bookingModal.module.css';
+import { setBookings } from "../../../redux/reducers/bookingsSlice";
 
 interface BookingModalProps {
     rooms: RoomType[];
@@ -42,6 +43,8 @@ const BookingModal: FC<BookingModalProps> = ({
     setSelectedRoom
 }) => {
   const { currentUser } = useAppSelector(state => state.users);
+  const { allBookings } = useAppSelector(state => state.bookings);
+
   const dispatch = useAppDispatch();
   
   const start = new Date(startDate);
@@ -74,7 +77,15 @@ const BookingModal: FC<BookingModalProps> = ({
           bookingMutation(roomId, label, newStartDate, newEndDate, id),
           access_token
         );
-        dispatch(fetchBookingsByUser(id));
+        const newBooking = {
+          roomId,
+          label,
+          startDate: newStartDate,
+          endDate: newEndDate,
+          userId: id
+        };
+        dispatch(setBookings([...allBookings, newBooking]));
+        dispatch(fetchAllBookings());
         closeBookingModal();
         return response.data.data;
       }
