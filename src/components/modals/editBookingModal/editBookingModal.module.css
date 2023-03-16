@@ -47,6 +47,7 @@
   display: flex;
   place-content: flex-end;
   margin-top: auto;
+  margin-left: auto;
 }
 
 .buttonContainer {
