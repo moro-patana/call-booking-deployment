@@ -1,4 +1,9 @@
-import { eachDayOfInterval, eachHourOfInterval, endOfWeek, startOfWeek } from "date-fns";
+import {
+  eachDayOfInterval,
+  eachHourOfInterval,
+  endOfWeek,
+  startOfWeek,
+} from "date-fns";
 
 export const timeConverter = (time: number) => {
   return time < 10 ? `0${time}` : time;
@@ -9,9 +14,11 @@ export const dateStringConverter = (date: string) => {
 };
 
 export const covertTONormalDate = (date: any) => {
-  const newDate = new Date(date)
-  return `${newDate.getDate()}/${newDate.getMonth() + 1}/${newDate.getFullYear()}`;
-}
+  const newDate = new Date(date);
+  return `${newDate.getDate()}/${
+    newDate.getMonth() + 1
+  }/${newDate.getFullYear()}`;
+};
 
 export const getSelectedTimeMinutes = (date: Date, params: number) => {
   return timeConverter(new Date(date?.setMinutes(params)).getMinutes());
@@ -23,7 +30,7 @@ export const newDateGenerator = (date: Date, time: string) => {
   const day = Number(date?.getDate());
   const hour = Number(time.split(":")[0]);
   const minute = Number(time.split(":")[1]);
-  return new Date(year, month, day, hour, minute, 0)
+  return new Date(year, month, day, hour, minute, 0);
 };
 
 export const getCurrentDay = (selectedDate: Date) => {
@@ -50,3 +57,12 @@ export const getAvailableHours = (selectedDate: Date) => {
   });
   return availableHours;
 };
+
+export const changeDateTime = (date: Date, time: string) => {
+  const timeElement = time.split(":");
+  const modifiedHour = new Date(date.setHours(Number(timeElement[0])));
+  return new Date(modifiedHour.setMinutes(Number(timeElement[1])));
+};
+
+export const isValidTime = (startDate: Date, endDate: Date) =>
+  startDate.getTime() < endDate.getTime();

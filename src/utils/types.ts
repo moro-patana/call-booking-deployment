@@ -47,7 +47,7 @@ export interface IResource {
 }
 
 export interface Booking {
-  id: string;
+  id: string | number;
   roomId: string;
   title: string;
   label: string;
@@ -60,11 +60,18 @@ export interface Booking {
 }
 
 export interface newBookingType {
+  id: string | number;
   title: string;
-  description: string;
   start: Date;
   end: Date;
   resourceId: string;
 }
 
 export type ErrorMessage = string | unknown | {} | null;
+
+export interface SelectDatePropsType {
+  value: any;
+  setBooking: (value: IEvent | newBookingType) => void;
+  startTime: string;
+  endTime: string;
+}

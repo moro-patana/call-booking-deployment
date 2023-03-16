@@ -8,12 +8,13 @@ import {
   Typography,
 } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import { areIntervalsOverlapping } from "date-fns";
 import { fetchBookingsByUser } from "../../../redux/actions/bookings";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { setErrorMessage } from "../../../redux/reducers/errorMessage";
-import { newBookingType, RoomType } from "../../../utils/types";
+import { IEvent, newBookingType, RoomType } from "../../../utils/types";
 import {
-  getSelectedTimeMinutes,
+  isValidTime,
   newDateGenerator,
   timeConverter,
 } from "../../../utils/dateUtils";
@@ -32,6 +33,14 @@ interface BookingModalProps {
   position: { x: number; y: number };
   newBooking: newBookingType;
   setNewBooking: (value: newBookingType) => void;
+  events: IEvent[];
+  handleSelectDate: (
+    value: any,
+    booking: IEvent | newBookingType,
+    setBooking: (value: newBookingType) => void,
+    startTime: string,
+    endTime: string
+  ) => void;
 }
 
 const BookingModal: FC<BookingModalProps> = ({
@@ -42,23 +51,23 @@ const BookingModal: FC<BookingModalProps> = ({
   position,
   newBooking,
   setNewBooking,
+  handleSelectDate,
+  events,
 }) => {
   const dispatch = useAppDispatch();
   const { currentUser } = useAppSelector((state) => state.users);
   const { resourceId, start, end, title } = newBooking;
-  const currentTime = new Date();
+
   const startDate = new Date(start);
   const endDate = new Date(end);
-  const selectedHour = timeConverter(startDate?.getHours());
   const [startTime, setStartTime] = useState(
-    `${selectedHour}:${getSelectedTimeMinutes(currentTime, 0)}`
+    `${timeConverter(start.getHours())}:${timeConverter(start.getMinutes())}`
   );
   const [endTime, setEndTime] = useState(
-    `${selectedHour}:${getSelectedTimeMinutes(
-      currentTime,
-      currentTime?.getMinutes() + 15
-    )}`
+    `${timeConverter(end.getHours())}:${timeConverter(end.getMinutes())}`
   );
+  const newStartDate = newDateGenerator(startDate, startTime);
+  const newEndDate = newDateGenerator(endDate, endTime);
 
   const {
     modal,
@@ -83,29 +92,61 @@ const BookingModal: FC<BookingModalProps> = ({
     setEndTime(event.target.value);
   };
 
-  const handleChange = (value: Date | null) => value;
-
   const handleRepeatEventChange = (event: SelectChangeEvent<any>) => {
     return event.target.value;
   };
 
-  const handleSubmitBooking = async () => {
-    const newStartDate = String(newDateGenerator(startDate, startTime));
-    const newEndDate = String(newDateGenerator(endDate, endTime));
-    const { id, access_token } = currentUser.login;
+  const isBookingOverlapping = () => {
+    const bookingOnTheSelectedDay = events.filter((booking: IEvent) => {
+      const startDate = booking.start;
+      return (
+        booking.resourceId === resourceId &&
+        startDate.getDate() === start.getDate() &&
+        startDate.getMonth() === start.getMonth() &&
+        startDate.getFullYear() === start.getFullYear()
+      );
+    });
 
-    try {
-      if (access_token && resourceId) {
-        const response = await sendAuthorizedQuery(
-          bookingMutation(resourceId, title, newStartDate, newEndDate, id),
-          access_token
-        );
-        dispatch(fetchBookingsByUser(id));
-        closeBookingModal();
-        return response.data.data;
+    if (isValidTime(newStartDate, newEndDate)) {
+      const bookingOnTheSameHour = bookingOnTheSelectedDay.filter(
+        (booking: IEvent) =>
+          areIntervalsOverlapping(
+            { start: newStartDate, end: newEndDate },
+            { start: booking.start, end: booking.end }
+          )
+      );
+      return bookingOnTheSameHour.length > 0;
+    }
+  };
+
+  const handleSubmitBooking = async () => {
+    const { id, access_token } = currentUser.login;
+    if (!isBookingOverlapping()) {
+      try {
+        if (access_token && resourceId) {
+          const response = await sendAuthorizedQuery(
+            bookingMutation(
+              resourceId,
+              title,
+              String(newStartDate),
+              String(newEndDate),
+              id
+            ),
+            access_token
+          );
+          dispatch(fetchBookingsByUser(id));
+          closeBookingModal();
+          return response.data.data;
+        }
+      } catch (error) {
+        dispatch(setErrorMessage(error));
       }
-    } catch (error) {
-      dispatch(setErrorMessage(error));
+    } else {
+      dispatch(
+        setErrorMessage(
+          "There's already somebody booked in the chosen timeslot"
+        )
+      );
     }
   };
 
@@ -141,7 +182,15 @@ const BookingModal: FC<BookingModalProps> = ({
             <AccessTimeIcon />
             <DatePicker
               value={start}
-              handleChange={handleChange}
+              handleChange={(value) =>
+                handleSelectDate(
+                  value,
+                  newBooking,
+                  setNewBooking,
+                  startTime,
+                  endTime
+                )
+              }
               startTime={startTime}
               endTime={endTime}
               startTimeOnChange={handleStartTimeEvent}
@@ -165,7 +214,12 @@ const BookingModal: FC<BookingModalProps> = ({
           />
           <Box className={buttonWrapper}>
             <Button onClick={closeBookingModal}>Cancel</Button>
-            <Button onClick={handleSubmitBooking}>Book</Button>
+            <Button
+              disabled={isBookingOverlapping()}
+              onClick={handleSubmitBooking}
+            >
+              Book
+            </Button>
           </Box>
         </Box>
       </Modal>

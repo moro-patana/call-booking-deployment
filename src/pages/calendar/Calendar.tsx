@@ -14,6 +14,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { bookingsData } from "../../redux/reducers/bookingsSlice";
 import { roomsData } from "../../redux/reducers/roomsSlice";
 import {
+  changeDateTime,
   dateStringConverter,
   getCurrentDay,
   getEndingDay,
@@ -69,8 +70,8 @@ const CalendarPage = () => {
   // Add new booking modal states
   const [openBookingModal, setOpenBookingModal] = useState(false);
   const [newBooking, setNewBooking] = useState<newBookingType>({
+    id: "",
     title: "",
-    description: "",
     start: selectedDate,
     end: selectedDate,
     resourceId: "",
@@ -115,6 +116,7 @@ const CalendarPage = () => {
     const { box, start, end, resourceId } = slot;
     const screenWidth = window.screen.width;
     const xPercentage = Math.floor((box.x / screenWidth) * 100);
+
     setPosition({
       x: xPercentage,
       y: box.y,
@@ -193,6 +195,21 @@ const CalendarPage = () => {
     setPosition({ x, y });
   };
 
+  const handleSelectDate = (
+    value: any,
+    booking: IEvent | newBookingType,
+    setBooking: (value: IEvent | newBookingType) => void,
+    startTime: string,
+    endTime: string
+  ) => {
+    changeDateTime(new Date(value), startTime);
+    setBooking({
+      ...booking,
+      start: changeDateTime(new Date(value), startTime),
+      end: changeDateTime(new Date(value), endTime),
+    });
+  };
+
   return (
     <Box className={container}>
       <ExpendableMenu
@@ -231,7 +248,9 @@ const CalendarPage = () => {
           position={position}
           selectedBooking={selectedBooking}
           setSelectedBooking={setSelectedBooking}
+          handleSelectDate={handleSelectDate}
           repeatData={[{ name: "Daily", id: "1" }]}
+          events={events}
         />
       )}
 
@@ -243,7 +262,9 @@ const CalendarPage = () => {
           position={position}
           newBooking={newBooking}
           setNewBooking={setNewBooking}
+          handleSelectDate={handleSelectDate}
           repeatData={[{ name: "Daily", id: "1" }]}
+          events={events}
         />
       )}
     </Box>

@@ -16,8 +16,12 @@ import {
   updateSelectedBooking,
 } from "../../../redux/actions/bookings";
 import { setErrorMessage } from "../../../redux/reducers/errorMessage";
-import { newDateGenerator, timeConverter } from "../../../utils/dateUtils";
-import { IEvent } from "../../../utils/types";
+import {
+  isValidTime,
+  newDateGenerator,
+  timeConverter,
+} from "../../../utils/dateUtils";
+import { IEvent, newBookingType } from "../../../utils/types";
 import { deleteBooking, sendAuthorizedQuery } from "../../../graphqlHelper";
 
 import SelectInput from "../../UIs/Select/SelectInput";
@@ -32,6 +36,14 @@ interface EditModalProps {
   repeatData: { name: string; id: string }[];
   setShowEditBookingModal: (value: boolean) => void;
   setSelectedBooking: (value: IEvent) => void;
+  events: IEvent[];
+  handleSelectDate: (
+    value: any,
+    booking: newBookingType | IEvent,
+    setBooking: (value: IEvent) => void,
+    startTime: string,
+    endTime: string
+  ) => void;
 }
 
 const EditBookingModal: FC<EditModalProps> = ({
@@ -41,6 +53,8 @@ const EditBookingModal: FC<EditModalProps> = ({
   repeatData,
   setShowEditBookingModal,
   setSelectedBooking,
+  handleSelectDate,
+  events,
 }) => {
   const {
     modal,
@@ -59,6 +73,7 @@ const EditBookingModal: FC<EditModalProps> = ({
   const { access_token } = currentUser.login;
   const rooms = useAppSelector(roomsData);
   const { title, start, end, resourceId, id } = selectedBooking;
+
   const getHours = (time: Date) => timeConverter(time.getHours());
   const getMinutes = (time: Date) => timeConverter(time.getMinutes());
 
@@ -68,22 +83,36 @@ const EditBookingModal: FC<EditModalProps> = ({
   );
   const [endTime, setEndTime] = useState(`${getHours(end)}:${getMinutes(end)}`);
 
+  const newStartDate = newDateGenerator(start, startTime);
+  const newEndDate = newDateGenerator(end, endTime);
+
   const boxPosition = {
     left: position.x > 70 ? "70%" : `${position.x}%`,
     top: position.y > 518 ? 518 : position.y > 18 ? position.y : 18,
   };
 
-  const handleEditBooking = async () => {
-    const newStartDate = String(newDateGenerator(start, startTime));
-    const newEndDate = String(newDateGenerator(end, endTime));
+  const isDisabledButton = () => {
+    const savedBooking = events.find((event: IEvent) => event.id === id);
 
+    const isDateEdited =
+      JSON.stringify(newStartDate) === JSON.stringify(savedBooking?.start) &&
+      resourceId === savedBooking?.resourceId &&
+      JSON.stringify(newEndDate) === JSON.stringify(savedBooking?.end);
+
+    return (
+      (title === savedBooking?.title && isDateEdited) ||
+      !isValidTime(newStartDate, newEndDate)
+    );
+  };
+
+  const handleEditBooking = async () => {
     dispatch(
       updateSelectedBooking(
         id,
         resourceId,
         title,
-        newStartDate,
-        newEndDate,
+        String(newStartDate),
+        String(newEndDate),
         userId,
         access_token
       )
@@ -140,7 +169,15 @@ const EditBookingModal: FC<EditModalProps> = ({
             <AccessTimeIcon />
             <DatePicker
               value={start}
-              handleChange={(value) => value}
+              handleChange={(value) =>
+                handleSelectDate(
+                  value,
+                  selectedBooking,
+                  setSelectedBooking,
+                  startTime,
+                  endTime
+                )
+              }
               startTime={startTime}
               endTime={endTime}
               startTimeOnChange={(event) => setStartTime(event.target.value)}
@@ -188,7 +225,9 @@ const EditBookingModal: FC<EditModalProps> = ({
               <Button onClick={() => setShowEditBookingModal(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleEditBooking}>Save</Button>
+              <Button disabled={isDisabledButton()} onClick={handleEditBooking}>
+                Save
+              </Button>
             </Box>
           </Box>
         </Box>
