@@ -5,6 +5,8 @@ import styles from './Header.module.css';
 import MenuIcon from '@mui/icons-material/Menu';
 import { AppBar, Container, MenuItem, Link, Box, Toolbar, IconButton, Typography, Menu } from '@mui/material'
 import onjaLogo from '../../icons/onja-logo.svg';
+import { useAppDispatch } from '../../redux/hooks';
+import { setCurrentUser } from '../../redux/reducers/usersSlice';
 
 const {
   headerBar,
@@ -30,11 +32,20 @@ const Header = () => {
   const [cookies] = useCookies();
   const { currentUser } = cookies;
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (!currentUser?.login) navigate('/login');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, navigate]);
+
+  useEffect(() => {
+    if(cookies?.currentUser?.login) {
+      const { login } = cookies?.currentUser;
+      dispatch(setCurrentUser({ isLogin: true, login }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <AppBar className={headerBar}>

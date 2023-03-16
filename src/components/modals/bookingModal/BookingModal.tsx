@@ -8,7 +8,8 @@ import {
   Typography,
 } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { areIntervalsOverlapping } from "date-fns";
+import { areIntervalsOverlapping, isBefore } from "date-fns";
+
 import { fetchBookingsByUser } from "../../../redux/actions/bookings";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { setErrorMessage } from "../../../redux/reducers/errorMessage";
@@ -24,6 +25,7 @@ import SelectInput from "../../UIs/Select/SelectInput";
 import DatePicker from "../../UIs/datePicker/DatePicker";
 
 import styles from "./bookingModal.module.css";
+import { setBookings } from "../../../redux/reducers/bookingsSlice";
 
 interface BookingModalProps {
   rooms: RoomType[];
@@ -57,9 +59,9 @@ const BookingModal: FC<BookingModalProps> = ({
   const dispatch = useAppDispatch();
   const { currentUser } = useAppSelector((state) => state.users);
   const { resourceId, start, end, title } = newBooking;
-
   const startDate = new Date(start);
   const endDate = new Date(end);
+  const { allBookings } = useAppSelector((state) => state.bookings);
   const [startTime, setStartTime] = useState(
     `${timeConverter(start.getHours())}:${timeConverter(start.getMinutes())}`
   );
@@ -77,6 +79,7 @@ const BookingModal: FC<BookingModalProps> = ({
     datePickerWrapper,
     buttonWrapper,
     textField,
+    spanError,
   } = styles;
 
   const boxPosition = {
@@ -90,10 +93,6 @@ const BookingModal: FC<BookingModalProps> = ({
 
   const handleEndTimeEvent = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEndTime(event.target.value);
-  };
-
-  const handleRepeatEventChange = (event: SelectChangeEvent<any>) => {
-    return event.target.value;
   };
 
   const isBookingOverlapping = () => {
@@ -136,19 +135,18 @@ const BookingModal: FC<BookingModalProps> = ({
           );
           dispatch(fetchBookingsByUser(id));
           closeBookingModal();
+          dispatch(setBookings([...allBookings, newBooking]));
           return response.data.data;
         }
       } catch (error) {
         dispatch(setErrorMessage(error));
       }
-    } else {
-      dispatch(
-        setErrorMessage(
-          "There's already somebody booked in the chosen timeslot"
-        )
-      );
     }
   };
+
+  const isPastBooking =
+    isBefore(newDateGenerator(start, startTime), new Date()) &&
+    isBefore(newDateGenerator(end, endTime), new Date());
 
   return (
     <div>
@@ -178,25 +176,38 @@ const BookingModal: FC<BookingModalProps> = ({
             }}
             size="small"
           />
-          <Box className={datePickerWrapper}>
-            <AccessTimeIcon />
-            <DatePicker
-              value={start}
-              handleChange={(value) =>
-                handleSelectDate(
-                  value,
-                  newBooking,
-                  setNewBooking,
-                  startTime,
-                  endTime
-                )
-              }
-              startTime={startTime}
-              endTime={endTime}
-              startTimeOnChange={handleStartTimeEvent}
-              endTimeOnChange={handleEndTimeEvent}
-            />
+          <Box>
+            <Box className={datePickerWrapper}>
+              <AccessTimeIcon />
+              <DatePicker
+                value={start}
+                handleChange={(value) =>
+                  handleSelectDate(
+                    value,
+                    newBooking,
+                    setNewBooking,
+                    startTime,
+                    endTime
+                  )
+                }
+                startTime={startTime}
+                endTime={endTime}
+                startTimeOnChange={handleStartTimeEvent}
+                endTimeOnChange={handleEndTimeEvent}
+              />
+            </Box>
+            {isPastBooking && (
+              <Typography className={spanError} variant="body2">
+                Booking for a past time slot is not allowed.
+              </Typography>
+            )}
+            {isBookingOverlapping() && (
+              <Typography className={spanError} variant="body2">
+                This chosen time is overlapping with another booking time.
+              </Typography>
+            )}
           </Box>
+
           <SelectInput
             handleChange={(event: SelectChangeEvent<any>) => {
               setNewBooking({ ...newBooking, resourceId: event.target.value });
@@ -207,7 +218,7 @@ const BookingModal: FC<BookingModalProps> = ({
             note="There are available rooms"
           />
           <SelectInput
-            handleChange={handleRepeatEventChange}
+            handleChange={(event: SelectChangeEvent<any>) => event.target.value}
             data={repeatData}
             value={repeatData[0].id}
             note="Select repeat options"
@@ -215,7 +226,8 @@ const BookingModal: FC<BookingModalProps> = ({
           <Box className={buttonWrapper}>
             <Button onClick={closeBookingModal}>Cancel</Button>
             <Button
-              disabled={isBookingOverlapping()}
+              disabled={isPastBooking || isBookingOverlapping()}
+              variant="contained"
               onClick={handleSubmitBooking}
             >
               Book

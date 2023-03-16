@@ -38,6 +38,7 @@ export interface IEvent {
   start: Date;
   end: Date;
   resourceId: string;
+  participants: string[];
 }
 
 export interface IResource {
@@ -57,6 +58,7 @@ export interface Booking {
   start: string;
   end: string;
   resourceId: string;
+  participants: string[];
 }
 
 export interface newBookingType {
@@ -65,6 +67,7 @@ export interface newBookingType {
   start: Date;
   end: Date;
   resourceId: string;
+  participants: string[];
 }
 
 export type ErrorMessage = string | unknown | {} | null;

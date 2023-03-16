@@ -6,12 +6,11 @@ import { format, getDay, parse, startOfWeek } from "date-fns";
 import { useCookies } from "react-cookie";
 import { enUS } from "date-fns/locale";
 import {
-  fetchBookingsByUser,
+  fetchAllBookings,
   updateSelectedBooking,
 } from "../../redux/actions/bookings";
 import { fetchRooms } from "../../redux/actions/rooms";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { bookingsData } from "../../redux/reducers/bookingsSlice";
 import { roomsData } from "../../redux/reducers/roomsSlice";
 import {
   changeDateTime,
@@ -54,7 +53,7 @@ const calendarStyle = () => {
 
 const CalendarPage = () => {
   const rooms = useAppSelector(roomsData);
-  const userBookings = useAppSelector(bookingsData);
+  const { allBookings } = useAppSelector((state) => state.bookings);
   const [cookies] = useCookies(["currentUser"]);
   const { currentUser } = cookies;
   const { access_token } = currentUser.login;
@@ -75,6 +74,7 @@ const CalendarPage = () => {
     start: selectedDate,
     end: selectedDate,
     resourceId: "",
+    participants: [],
   });
 
   // Edit modal states
@@ -85,6 +85,7 @@ const CalendarPage = () => {
     start: new Date(),
     end: new Date(),
     resourceId: "",
+    participants: [],
   });
 
   const { container } = styles;
@@ -97,18 +98,22 @@ const CalendarPage = () => {
     };
   });
 
-  const events = userBookings?.map((booking: Booking) => {
-    return {
-      ...booking,
-      start: dateStringConverter(booking?.start),
-      end: dateStringConverter(booking?.end),
-    };
-  });
+  const events = useMemo(
+    () =>
+      allBookings?.map((booking: Booking) => {
+        return {
+          ...booking,
+          start: dateStringConverter(booking?.start),
+          end: dateStringConverter(booking?.end),
+        };
+      }),
+    [allBookings]
+  );
 
   useEffect(() => {
     if (currentUser?.login) {
       dispatch(fetchRooms());
-      dispatch(fetchBookingsByUser(userId));
+      dispatch(fetchAllBookings());
     }
   }, [currentUser, dispatch, userId]);
 
@@ -181,9 +186,8 @@ const CalendarPage = () => {
     const screenWidth = window.screen.width;
     const x = Math.floor((event.pageX / screenWidth) * 100);
     const y = event.pageY;
-
     setSelectedBooking({
-      ...selectedBooking,
+      ...booking,
       id,
       title,
       start,
@@ -243,7 +247,7 @@ const CalendarPage = () => {
 
       {showEditBookingModal && (
         <EditBookingModal
-          showEditBookingModal={showEditBookingModal}
+          showEditBookingModal
           setShowEditBookingModal={setShowEditBookingModal}
           position={position}
           selectedBooking={selectedBooking}
@@ -257,7 +261,7 @@ const CalendarPage = () => {
       {openBookingModal && (
         <BookingModal
           rooms={rooms}
-          openBookingModal={openBookingModal}
+          openBookingModal
           closeBookingModal={() => setOpenBookingModal(false)}
           position={position}
           newBooking={newBooking}

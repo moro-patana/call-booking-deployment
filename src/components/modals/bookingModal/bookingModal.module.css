@@ -46,10 +46,16 @@
     display: flex;
     place-content: flex-end;
     margin-top: auto;
+    gap: 16px;
 }
 
 .buttonWrapper > button {
-    padding: 9px 7px;
-    color: #6200ee;
     font-size: 14px;
+    height: 40px;
+}
+
+.spanError {
+  color: #d32f2f;
+  margin: -8px 0 16px 0;
+  padding: 0;
 }

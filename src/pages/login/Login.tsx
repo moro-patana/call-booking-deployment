@@ -9,6 +9,7 @@ import { setCurrentUser, setUserLoggedIn } from '../../redux/reducers/usersSlice
 
 import styles from './login.module.css';
 import { setErrorMessage } from '../../redux/reducers/errorMessage';
+import { add } from 'date-fns';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const Login = () => {
           const res = await sendQuery(loginMutation(name, email, sub, access_token, picture, hd, expires_in));
           dispatch(setCurrentUser(res.data.data));
           dispatch(setUserLoggedIn(true));
-          setCookie('currentUser', res.data.data, { path: '/' });
+          setCookie('currentUser', res.data.data, { path: '/', expires: add(new Date(), { weeks: 1 }) });
           navigate("/");
         } else {
           dispatch(setErrorMessage('Email domain not allowed. You must be under onja.org domain in order to log in. Please try again!'));

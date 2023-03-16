@@ -8,6 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import { isBefore } from "date-fns";
 
 import { roomsData } from "../../../redux/reducers/roomsSlice";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
@@ -66,13 +67,14 @@ const EditBookingModal: FC<EditModalProps> = ({
     textField,
     buttonContainer,
     deleteButton,
+    spanError,
   } = styles;
   const dispatch = useAppDispatch();
   const { currentUser } = useAppSelector((state) => state.users);
   const userId = currentUser.login.id;
   const { access_token } = currentUser.login;
   const rooms = useAppSelector(roomsData);
-  const { title, start, end, resourceId, id } = selectedBooking;
+  const { title, start, end, resourceId, id, participants } = selectedBooking;
 
   const getHours = (time: Date) => timeConverter(time.getHours());
   const getMinutes = (time: Date) => timeConverter(time.getMinutes());
@@ -136,6 +138,13 @@ const EditBookingModal: FC<EditModalProps> = ({
     }
   };
 
+  const isPastBooking =
+    isBefore(newDateGenerator(start, startTime), new Date()) &&
+    isBefore(newDateGenerator(end, endTime), new Date());
+
+  const showDeleteButton =
+    !isDeletionConfirmed && participants?.includes(userId);
+
   return (
     <div>
       <Modal
@@ -165,24 +174,31 @@ const EditBookingModal: FC<EditModalProps> = ({
             size="small"
           />
 
-          <Box className={datePickerWrapper}>
-            <AccessTimeIcon />
-            <DatePicker
-              value={start}
-              handleChange={(value) =>
-                handleSelectDate(
-                  value,
-                  selectedBooking,
-                  setSelectedBooking,
-                  startTime,
-                  endTime
-                )
-              }
-              startTime={startTime}
-              endTime={endTime}
-              startTimeOnChange={(event) => setStartTime(event.target.value)}
-              endTimeOnChange={(event) => setEndTime(event.target.value)}
-            />
+          <Box>
+            <Box className={datePickerWrapper}>
+              <AccessTimeIcon />
+              <DatePicker
+                value={start}
+                handleChange={(value) =>
+                  handleSelectDate(
+                    value,
+                    selectedBooking,
+                    setSelectedBooking,
+                    startTime,
+                    endTime
+                  )
+                }
+                startTime={startTime}
+                endTime={endTime}
+                startTimeOnChange={(event) => setStartTime(event.target.value)}
+                endTimeOnChange={(event) => setEndTime(event.target.value)}
+              />
+            </Box>
+            {isPastBooking && (
+              <Typography className={spanError} variant="body2">
+                Booking for a past time slot is not allowed.
+              </Typography>
+            )}
           </Box>
 
           <SelectInput
@@ -212,7 +228,7 @@ const EditBookingModal: FC<EditModalProps> = ({
               </Button>
             )}
 
-            {!isDeletionConfirmed && (
+            {showDeleteButton && (
               <Button
                 className={deleteButton}
                 onClick={() => setIsDeletionConfirmed(true)}
@@ -225,7 +241,12 @@ const EditBookingModal: FC<EditModalProps> = ({
               <Button onClick={() => setShowEditBookingModal(false)}>
                 Cancel
               </Button>
-              <Button disabled={isDisabledButton()} onClick={handleEditBooking}>
+
+              <Button
+                disabled={isPastBooking || isDisabledButton()}
+                variant="contained"
+                onClick={handleEditBooking}
+              >
                 Save
               </Button>
             </Box>

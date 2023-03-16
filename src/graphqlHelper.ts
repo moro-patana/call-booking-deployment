@@ -17,6 +17,20 @@ export const getRooms = () => {
   }`;
 };
 
+export const getBookings = () => {
+  return `{
+    getBookings{
+      id,
+      participants,
+      resourceId,
+      title,
+      description,
+      start,
+      end
+    }
+  }`;
+};
+
 export const getBookingsByUser = (userId: string) => {
   return `{
     getBookingsByUser(participantId: "${userId}"){
