@@ -8,12 +8,13 @@ import {
   Typography,
 } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import { isBefore } from "date-fns";
 
 import { roomsData } from "../../../redux/reducers/roomsSlice";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { fetchBookingsByUser } from "../../../redux/actions/bookings";
 import { setErrorMessage } from "../../../redux/reducers/errorMessage";
-import { timeConverter } from "../../../utils/dateUtils";
+import { newDateGenerator, timeConverter } from "../../../utils/dateUtils";
 import { IEvent } from "../../../utils/types";
 import { deleteBooking, sendAuthorizedQuery } from "../../../graphqlHelper";
 
@@ -40,15 +41,8 @@ const EditBookingModal: FC<EditModalProps> = ({
   setSelectedBooking,
 }) => {
   const {
-    modal,
-    box,
-    typography,
-    backdrop,
-    datePickerWrapper,
-    buttonWrapper,
-    textField,
-    buttonContainer,
-    deleteButton,
+    modal, box, typography, backdrop, datePickerWrapper, buttonWrapper,
+    textField, buttonContainer, deleteButton, spanError
   } = styles;
   const dispatch = useAppDispatch();
   const { currentUser } = useAppSelector((state) => state.users);
@@ -78,17 +72,16 @@ const EditBookingModal: FC<EditModalProps> = ({
           deleteBooking(selectedBooking.id),
           currentUser.login.access_token
         );
-
-        const { data } = response.data;
-
         setShowEditBookingModal(false);
         dispatch(fetchBookingsByUser(currentUser.login.id));
-        return data;
+        return response.data.data;
       }
     } catch (error) {
       dispatch(setErrorMessage(error));
     }
   };
+
+  const isPastBooking = isBefore(newDateGenerator(start, startTime), new Date()) && isBefore(newDateGenerator(end, endTime), new Date());
 
   return (
     <div>
@@ -119,18 +112,20 @@ const EditBookingModal: FC<EditModalProps> = ({
             size="small"
           />
 
-          <Box className={datePickerWrapper}>
-            <AccessTimeIcon />
-            <DatePicker
-              value={start}
-              handleChange={(value) => value}
-              startTime={startTime}
-              endTime={endTime}
-              startTimeOnChange={(event) => setStartTime(event.target.value)}
-              endTimeOnChange={(event) => setEndTime(event.target.value)}
-            />
+          <Box>
+            <Box className={datePickerWrapper}>
+              <AccessTimeIcon />
+              <DatePicker
+                value={start}
+                handleChange={(value) => value}
+                startTime={startTime}
+                endTime={endTime}
+                startTimeOnChange={(event) => setStartTime(event.target.value)}
+                endTimeOnChange={(event) => setEndTime(event.target.value)}
+              />
+            </Box>
+            {isPastBooking && <Typography className={spanError} variant="body2">Booking for a past time slot is not allowed.</Typography>}
           </Box>
-
           <SelectInput
             handleChange={(event: SelectChangeEvent<any>) => {
               setSelectedBooking({
@@ -171,7 +166,13 @@ const EditBookingModal: FC<EditModalProps> = ({
               <Button onClick={() => setShowEditBookingModal(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleEditBooking}>Save</Button>
+              <Button 
+                disabled={isPastBooking} 
+                variant="contained" 
+                onClick={handleEditBooking}
+              >
+                Save
+              </Button>
             </Box>
           </Box>
         </Box>

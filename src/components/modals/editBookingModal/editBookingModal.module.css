@@ -49,21 +49,25 @@
   margin-top: auto;
 }
 
-.buttonWrapper button {
-  color: #6200ee;
-}
-
 .buttonContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
 }
 
 .buttonContainer button {
   padding: 9px 7px;
   font-size: 14px;
+  height: 40px;
 }
 
 .deleteButton {
   color: #d35191;
+}
+
+.spanError {
+  color: #d32f2f;
+  margin: -8px 0 16px 0;
+  padding: 0;
 }
