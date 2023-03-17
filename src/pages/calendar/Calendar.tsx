@@ -164,6 +164,18 @@ const CalendarPage = () => {
     setPosition({ x, y });
   };
 
+  const eventStyleGetter = (event: IEvent) => {
+    const isMyEvent = event.participants.includes(currentUser?.login?.id);
+    const backgroundColor = isMyEvent ? '#fcb900' : '#2196f3' ;
+    const style = {
+        backgroundColor: backgroundColor,
+        borderRadius: '0px',
+        border: '1px solid #fff',
+        display: 'block',
+    };
+    return { style };
+  }
+
   return (
     <Box className={container}>
       <ExpendableMenu
@@ -193,6 +205,7 @@ const CalendarPage = () => {
         dayPropGetter={calendarStyle}
         step={15}
         onSelectEvent={openEditModal}
+        eventPropGetter={eventStyleGetter}
       />
 
       {showEditBookingModal && (
