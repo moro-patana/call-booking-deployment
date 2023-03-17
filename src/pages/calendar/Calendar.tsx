@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
 import { Calendar, dateFnsLocalizer, Views } from "react-big-calendar";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
@@ -59,6 +60,8 @@ const CalendarPage = () => {
   const { access_token } = currentUser.login;
   const userId = currentUser.login.id;
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const selectedDate = new Date();
   const startDay = getCurrentDay(selectedDate);
   const endDay = getEndingDay(selectedDate);
@@ -116,6 +119,11 @@ const CalendarPage = () => {
       dispatch(fetchAllBookings());
     }
   }, [currentUser, dispatch, userId]);
+
+  useEffect(() => {
+    if (!currentUser?.login) navigate("/login");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, navigate]);
 
   const handleSelectEvent = (slot: any) => {
     const { box, start, end, resourceId } = slot;
@@ -213,6 +221,18 @@ const CalendarPage = () => {
     });
   };
 
+  const eventStyleGetter = (event: IEvent) => {
+    const isMyEvent = event.participants.includes(currentUser?.login?.id);
+    const backgroundColor = isMyEvent ? "#fcb900" : "#2196f3";
+    const style = {
+      backgroundColor: backgroundColor,
+      borderRadius: "0px",
+      border: "1px solid #fff",
+      display: "block",
+    };
+    return { style };
+  };
+
   return (
     <Box className={container}>
       <ExpendableMenu
@@ -242,6 +262,7 @@ const CalendarPage = () => {
         dayPropGetter={calendarStyle}
         step={15}
         onSelectEvent={openEditModal}
+        eventPropGetter={eventStyleGetter}
       />
 
       {showEditBookingModal && (

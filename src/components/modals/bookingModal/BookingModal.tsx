@@ -10,6 +10,7 @@ import {
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { isBefore } from "date-fns";
 
+import { fetchAllBookings } from "../../../redux/actions/bookings";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { setBookings } from "../../../redux/reducers/bookingsSlice";
 import { setErrorMessage } from "../../../redux/reducers/errorMessage";
@@ -25,7 +26,6 @@ import SelectInput from "../../UIs/Select/SelectInput";
 import DatePicker from "../../UIs/datePicker/DatePicker";
 
 import styles from "./bookingModal.module.css";
-import { fetchAllBookings } from "../../../redux/actions/bookings";
 
 interface BookingModalProps {
   rooms: RoomType[];

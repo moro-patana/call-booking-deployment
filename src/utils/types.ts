@@ -70,11 +70,10 @@ export interface newBookingType {
   participants: string[];
 }
 
-export type ErrorMessage = string | unknown | {} | null;
-
 export interface SelectDatePropsType {
   value: any;
   setBooking: (value: IEvent | newBookingType) => void;
   startTime: string;
   endTime: string;
 }
+export type ErrorMessage = string | unknown | {} | null;
