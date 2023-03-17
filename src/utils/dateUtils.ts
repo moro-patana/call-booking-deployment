@@ -1,9 +1,5 @@
-import {
-  eachDayOfInterval,
-  eachHourOfInterval,
-  endOfWeek,
-  startOfWeek,
-} from "date-fns";
+import { areIntervalsOverlapping, endOfWeek, startOfWeek } from "date-fns";
+import { IEvent, newBookingType } from "./types";
 
 export const timeConverter = (time: number) => {
   return time < 10 ? `0${time}` : time;
@@ -13,7 +9,7 @@ export const dateStringConverter = (date: string) => {
   return new Date(Date.parse(date));
 };
 
-export const covertTONormalDate = (date: any) => {
+export const covertToNormalDate = (date: any) => {
   const newDate = new Date(date);
   return `${newDate.getDate()}/${
     newDate.getMonth() + 1
@@ -41,23 +37,6 @@ export const getEndingDay = (selectedDate: Date) => {
   return endOfWeek(selectedDate, { weekStartsOn: 1 });
 };
 
-export const getWeekDays = (selectedDate: Date) => {
-  const startDay = getCurrentDay(selectedDate);
-  const endDay = getEndingDay(selectedDate);
-  const weekDays = eachDayOfInterval({ start: startDay, end: endDay });
-  return weekDays;
-};
-
-export const getAvailableHours = (selectedDate: Date) => {
-  const startHour = new Date().setHours(selectedDate.getHours() - 2);
-  const endHour = new Date().setHours(selectedDate.getHours() + 6);
-  const availableHours = eachHourOfInterval({
-    start: startHour,
-    end: endHour,
-  });
-  return availableHours;
-};
-
 export const changeDateTime = (date: Date, time: string) => {
   const timeElement = time.split(":");
   const modifiedHour = new Date(date.setHours(Number(timeElement[0])));
@@ -66,3 +45,32 @@ export const changeDateTime = (date: Date, time: string) => {
 
 export const isValidTime = (startDate: Date, endDate: Date) =>
   startDate.getTime() < endDate.getTime();
+
+export const isTimeOverlapping = (
+  booking: IEvent | newBookingType,
+  startTime: Date,
+  endTime: Date,
+  events: IEvent[]
+) => {
+  const { resourceId, start, end } = booking;
+  const bookingOnTheSelectedDay = events.filter((booking: IEvent) => {
+    const startDate = booking.start;
+    return (
+      booking.resourceId === resourceId &&
+      startDate.getDate() === start.getDate() &&
+      startDate.getMonth() === start.getMonth() &&
+      startDate.getFullYear() === start.getFullYear()
+    );
+  });
+
+  if (isValidTime(startTime, endTime)) {
+    const bookingOnTheSameHour = bookingOnTheSelectedDay.filter(
+      (booking: IEvent) =>
+        areIntervalsOverlapping(
+          { start: startTime, end: endTime },
+          { start: booking.start, end: booking.end }
+        )
+    );
+    return bookingOnTheSameHour.length > 0;
+  }
+};

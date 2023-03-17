@@ -8,14 +8,14 @@ import {
   Typography,
 } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { areIntervalsOverlapping, isBefore } from "date-fns";
+import { isBefore } from "date-fns";
 
-import { fetchBookingsByUser } from "../../../redux/actions/bookings";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
+import { setBookings } from "../../../redux/reducers/bookingsSlice";
 import { setErrorMessage } from "../../../redux/reducers/errorMessage";
 import { IEvent, newBookingType, RoomType } from "../../../utils/types";
 import {
-  isValidTime,
+  isTimeOverlapping,
   newDateGenerator,
   timeConverter,
 } from "../../../utils/dateUtils";
@@ -25,7 +25,7 @@ import SelectInput from "../../UIs/Select/SelectInput";
 import DatePicker from "../../UIs/datePicker/DatePicker";
 
 import styles from "./bookingModal.module.css";
-import { setBookings } from "../../../redux/reducers/bookingsSlice";
+import { fetchAllBookings } from "../../../redux/actions/bookings";
 
 interface BookingModalProps {
   rooms: RoomType[];
@@ -95,32 +95,16 @@ const BookingModal: FC<BookingModalProps> = ({
     setEndTime(event.target.value);
   };
 
-  const isBookingOverlapping = () => {
-    const bookingOnTheSelectedDay = events.filter((booking: IEvent) => {
-      const startDate = booking.start;
-      return (
-        booking.resourceId === resourceId &&
-        startDate.getDate() === start.getDate() &&
-        startDate.getMonth() === start.getMonth() &&
-        startDate.getFullYear() === start.getFullYear()
-      );
-    });
-
-    if (isValidTime(newStartDate, newEndDate)) {
-      const bookingOnTheSameHour = bookingOnTheSelectedDay.filter(
-        (booking: IEvent) =>
-          areIntervalsOverlapping(
-            { start: newStartDate, end: newEndDate },
-            { start: booking.start, end: booking.end }
-          )
-      );
-      return bookingOnTheSameHour.length > 0;
-    }
-  };
+  const isBookingOverlapping = isTimeOverlapping(
+    newBooking,
+    newStartDate,
+    newEndDate,
+    events
+  );
 
   const handleSubmitBooking = async () => {
     const { id, access_token } = currentUser.login;
-    if (!isBookingOverlapping()) {
+    if (!isBookingOverlapping) {
       try {
         if (access_token && resourceId) {
           const response = await sendAuthorizedQuery(
@@ -133,9 +117,9 @@ const BookingModal: FC<BookingModalProps> = ({
             ),
             access_token
           );
-          dispatch(fetchBookingsByUser(id));
           closeBookingModal();
           dispatch(setBookings([...allBookings, newBooking]));
+          dispatch(fetchAllBookings());
           return response.data.data;
         }
       } catch (error) {
@@ -201,7 +185,7 @@ const BookingModal: FC<BookingModalProps> = ({
                 Booking for a past time slot is not allowed.
               </Typography>
             )}
-            {isBookingOverlapping() && (
+            {isBookingOverlapping && (
               <Typography className={spanError} variant="body2">
                 This chosen time is overlapping with another booking time.
               </Typography>
@@ -226,7 +210,7 @@ const BookingModal: FC<BookingModalProps> = ({
           <Box className={buttonWrapper}>
             <Button onClick={closeBookingModal}>Cancel</Button>
             <Button
-              disabled={isPastBooking || isBookingOverlapping()}
+              disabled={isPastBooking || isBookingOverlapping}
               variant="contained"
               onClick={handleSubmitBooking}
             >

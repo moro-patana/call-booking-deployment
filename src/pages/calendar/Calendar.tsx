@@ -182,7 +182,6 @@ const CalendarPage = () => {
 
   const openEditModal = (booking: IEvent, event: any) => {
     const { start, end, resourceId, title, id } = booking;
-
     const screenWidth = window.screen.width;
     const x = Math.floor((event.pageX / screenWidth) * 100);
     const y = event.pageY;
