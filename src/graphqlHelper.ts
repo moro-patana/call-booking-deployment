@@ -1,10 +1,10 @@
 import axios from "axios";
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:4000';
+const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:4000";
 
 export const sendQuery = (query: any): Promise<any> => {
-    return axios.post(`${BACKEND_URL}/graphql?`, {
-        query,
-    });
+  return axios.post(`${BACKEND_URL}/graphql?`, {
+    query,
+  });
 };
 
 export const getRooms = () => {
@@ -58,29 +58,29 @@ export const getUsers = () => {
 };
 
 export const sendAuthorizedQuery = (
-    query: string,
-    token: string
+  query: string,
+  token: string
 ): Promise<any> => {
-    const config = {
-        headers: { Authorization: `Bearer ${token}` },
-    };
-    return axios.post(
-        `${BACKEND_URL}/graphql?`,
-        {
-            query,
-        },
-        config
-    );
+  const config = {
+    headers: { Authorization: `Bearer ${token}` },
+  };
+  return axios.post(
+    `${BACKEND_URL}/graphql?`,
+    {
+      query,
+    },
+    config
+  );
 };
 
 export const loginMutation = (
-    username: string,
-    email: string,
-    password: string,
-    access_token: string,
-    picture: string,
-    hd: string,
-    expires_in: number
+  username: string,
+  email: string,
+  password: string,
+  access_token: string,
+  picture: string,
+  hd: string,
+  expires_in: number
 ) => {
   return `mutation {
     login(
@@ -102,7 +102,7 @@ export const loginMutation = (
         expires_in
     }
   }`;
-}
+};
 
 export const bookingMutation = (
   roomId: String,
@@ -130,4 +130,33 @@ export const bookingMutation = (
     }
   }`;
 };
+
 export const deleteBooking = (id: string | number) => `mutation{deleteBooking(id:"${id}"){title}}`;
+
+export const updateBooking = (
+  id: String | number,
+  roomId: String,
+  label: String,
+  startDate: String | Date,
+  endDate: String | Date,
+  userId: String
+) => {
+  return `mutation{
+    updateBooking(
+      id: "${id}",
+      resourceId: "${roomId}",
+      title: "${label}",
+      description: "${label}",
+      start: "${startDate}",
+      end: "${endDate}",
+      participants: ["${userId}"]
+      ){
+        id,
+        participants, 
+        resourceId,
+        title,
+        description,
+        start,
+        end
+      }}`;
+};

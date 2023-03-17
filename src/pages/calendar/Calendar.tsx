@@ -5,19 +5,32 @@ import { Calendar, dateFnsLocalizer, Views } from "react-big-calendar";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import { format, getDay, parse, startOfWeek } from "date-fns";
 import { useCookies } from "react-cookie";
-import { enUS } from 'date-fns/locale';
-
-import { fetchAllBookings } from "../../redux/actions/bookings";
+import { enUS } from "date-fns/locale";
+import {
+  fetchAllBookings,
+  updateSelectedBooking,
+} from "../../redux/actions/bookings";
 import { fetchRooms } from "../../redux/actions/rooms";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { roomsData } from "../../redux/reducers/roomsSlice";
-import { dateStringConverter, getCurrentDay, getEndingDay } from "../../utils/dateUtils";
-import { Booking, IEvent, IResource, RoomType } from "../../utils/types";
+import {
+  changeDateTime,
+  dateStringConverter,
+  getCurrentDay,
+  getEndingDay,
+} from "../../utils/dateUtils";
+import {
+  Booking,
+  IEvent,
+  IResource,
+  newBookingType,
+  RoomType,
+} from "../../utils/types";
 
 import EditBookingModal from "../../components/modals/editBookingModal/EditBookingModal";
 import BookingModal from "../../components/modals/bookingModal/BookingModal";
 import ExpendableMenu from "../../components/menu/ExpendableMenu";
-import styles from './calendar.module.css';
+import styles from "./calendar.module.css";
 
 const DragAndDropCalendar = withDragAndDrop<IEvent, IResource>(Calendar);
 
@@ -44,22 +57,28 @@ const CalendarPage = () => {
   const { allBookings } = useAppSelector((state) => state.bookings);
   const [cookies] = useCookies(["currentUser"]);
   const { currentUser } = cookies;
+  const { access_token } = currentUser.login;
+  const userId = currentUser.login.id;
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const selectedDate = new Date();
   const startDay = getCurrentDay(selectedDate);
   const endDay = getEndingDay(selectedDate);
-
-  const [bookings, setBookings] = useState([]);
-  const [openBookingModal, setOpenBookingModal] = useState(false);
-  const [slot, setSlot] = useState<{ resourceId: string } | null>(null);
-  const [selectedRoom, setSelectedRoom] = useState<string>(slot?.resourceId || "");
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [startDate, setStartDate] = useState(selectedDate);
-  const [endDate, setEndDate] = useState(selectedDate);
   const [currentDay, setCurrentDay] = useState<Date>(startDay);
   const [endingDay, setEndingDay] = useState<Date>(endDay);
+
+  // Add new booking modal states
+  const [openBookingModal, setOpenBookingModal] = useState(false);
+  const [newBooking, setNewBooking] = useState<newBookingType>({
+    id: "",
+    title: "",
+    start: selectedDate,
+    end: selectedDate,
+    resourceId: "",
+    participants: [],
+  });
 
   // Edit modal states
   const [showEditBookingModal, setShowEditBookingModal] = useState(false);
@@ -69,8 +88,9 @@ const CalendarPage = () => {
     start: new Date(),
     end: new Date(),
     resourceId: "",
-    participants: []
+    participants: [],
   });
+
   const { container } = styles;
 
   const resources = rooms?.map((room: RoomType) => {
@@ -81,41 +101,41 @@ const CalendarPage = () => {
     };
   });
 
-  const events = useMemo(() => allBookings?.map((booking: Booking) => {
-    return {
-      ...booking,
-      start: dateStringConverter(booking?.start),
-      end: dateStringConverter(booking?.end),
-    };
-  }), [allBookings]);
+  const events = useMemo(
+    () =>
+      allBookings?.map((booking: Booking) => {
+        return {
+          ...booking,
+          start: dateStringConverter(booking?.start),
+          end: dateStringConverter(booking?.end),
+        };
+      }),
+    [allBookings]
+  );
 
   useEffect(() => {
     if (currentUser?.login) {
       dispatch(fetchRooms());
       dispatch(fetchAllBookings());
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser]);
+  }, [currentUser, dispatch, userId]);
 
   useEffect(() => {
-    if (!currentUser?.login) navigate('/login');
+    if (!currentUser?.login) navigate("/login");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, navigate]);
 
   const handleSelectEvent = (slot: any) => {
-    setSlot(slot);
     const { box, start, end, resourceId } = slot;
     const screenWidth = window.screen.width;
     const xPercentage = Math.floor((box.x / screenWidth) * 100);
+
     setPosition({
       x: xPercentage,
       y: box.y,
     });
-    setSelectedRoom(resourceId);
+    setNewBooking({ ...newBooking, resourceId, start, end });
     setOpenBookingModal(!openBookingModal);
-    setStartDate(start);
-    setEndDate(end);
-    return bookings;
   };
 
   const { defaultDate, scrollToTime } = useMemo(
@@ -124,18 +144,25 @@ const CalendarPage = () => {
   );
 
   const moveEvent = useCallback(
-    ({ event, start, end, resourceId }: any) => {
-      setBookings((prev): any => {
-        const existing = prev.find((ev: any) => ev.id === event.id) ?? {};
-        const filtered = prev.filter((ev: any) => ev.id !== event.id);
-        return [...filtered, { ...existing, start, end, resourceId }];
-      });
+    async ({ event, start, end, resourceId }: any) => {
+      const { id, title } = event;
+      dispatch(
+        updateSelectedBooking(
+          id,
+          resourceId,
+          title,
+          start,
+          end,
+          userId,
+          access_token
+        )
+      );
     },
-    [setBookings]
+    [access_token, userId, dispatch]
   );
 
   const resizeEvent = useCallback(
-    ({
+    async ({
       event,
       start,
       end,
@@ -144,18 +171,25 @@ const CalendarPage = () => {
       start: Date | string;
       end: Date | string;
     }) => {
-      setBookings((prev): any => {
-        const existing = prev.find((ev: any) => ev.id === event.id) ?? {};
-        const filtered = prev.filter((ev: any) => ev.id !== event.id);
-        return [...filtered, { ...existing, start, end }];
-      });
+      const { id, title, resourceId } = event;
+
+      dispatch(
+        updateSelectedBooking(
+          id,
+          resourceId,
+          title,
+          start,
+          end,
+          userId,
+          access_token
+        )
+      );
     },
-    [setBookings]
+    [access_token, userId, dispatch]
   );
 
   const openEditModal = (booking: IEvent, event: any) => {
     const { start, end, resourceId, title, id } = booking;
-
     const screenWidth = window.screen.width;
     const x = Math.floor((event.pageX / screenWidth) * 100);
     const y = event.pageY;
@@ -172,17 +206,32 @@ const CalendarPage = () => {
     setPosition({ x, y });
   };
 
+  const handleSelectDate = (
+    value: any,
+    booking: IEvent | newBookingType,
+    setBooking: (value: IEvent | newBookingType) => void,
+    startTime: string,
+    endTime: string
+  ) => {
+    changeDateTime(new Date(value), startTime);
+    setBooking({
+      ...booking,
+      start: changeDateTime(new Date(value), startTime),
+      end: changeDateTime(new Date(value), endTime),
+    });
+  };
+
   const eventStyleGetter = (event: IEvent) => {
     const isMyEvent = event.participants.includes(currentUser?.login?.id);
-    const backgroundColor = isMyEvent ? '#fcb900' : '#2196f3' ;
+    const backgroundColor = isMyEvent ? "#fcb900" : "#2196f3";
     const style = {
-        backgroundColor: backgroundColor,
-        borderRadius: '0px',
-        border: '1px solid #fff',
-        display: 'block',
+      backgroundColor: backgroundColor,
+      borderRadius: "0px",
+      border: "1px solid #fff",
+      display: "block",
     };
     return { style };
-  }
+  };
 
   return (
     <Box className={container}>
@@ -223,23 +272,23 @@ const CalendarPage = () => {
           position={position}
           selectedBooking={selectedBooking}
           setSelectedBooking={setSelectedBooking}
+          handleSelectDate={handleSelectDate}
           repeatData={[{ name: "Daily", id: "1" }]}
+          events={events}
         />
       )}
 
       {openBookingModal && (
         <BookingModal
           rooms={rooms}
-          repeatData={[{ name: "Daily", id: "1" }]}
           openBookingModal
           closeBookingModal={() => setOpenBookingModal(false)}
           position={position}
-          day={new Date()}
-          date={new Date()}
-          startDate={startDate}
-          endDate={endDate}
-          selectedRoom={selectedRoom}
-          setSelectedRoom={setSelectedRoom}
+          newBooking={newBooking}
+          setNewBooking={setNewBooking}
+          handleSelectDate={handleSelectDate}
+          repeatData={[{ name: "Daily", id: "1" }]}
+          events={events}
         />
       )}
     </Box>

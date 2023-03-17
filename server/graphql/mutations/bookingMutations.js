@@ -14,22 +14,15 @@ const argType = {
   description: { type: GraphQLString },
   start: { type: new GraphQLNonNull(GraphQLString) },
   end: { type: new GraphQLNonNull(GraphQLString) },
-  participants: { type: GraphQLList(new GraphQLNonNull(GraphQLID)) }
-}
+  participants: { type: GraphQLList(new GraphQLNonNull(GraphQLID)) },
+};
 
 module.exports = {
   createBooking: {
     type: bookingType.bookingType,
     args: argType,
     resolve: async (root, args, context) => {
-      const {
-        resourceId,
-        title,
-        description,
-        start,
-        end,
-        participants
-      } = args;
+      const { resourceId, title, description, start, end, participants } = args;
 
       const uModel = new bookingModel({
         participants,
@@ -41,11 +34,14 @@ module.exports = {
       });
 
       const newBooking = await uModel.save();
-      const populatedBooking = newBooking.populate("booking").populate("room").populate("user");
+      const populatedBooking = newBooking
+        .populate("booking")
+        .populate("room")
+        .populate("user");
       if (!newBooking) {
         throw new Error(getErrorForCode(ERROR_CODES.EA1));
       }
-      return populatedBooking
+      return populatedBooking;
     },
   },
   deleteBooking: {
@@ -58,7 +54,7 @@ module.exports = {
     resolve: async (root, args, context) => {
       const user = checkAuth(context);
       const bookingToRemove = await bookingModel.findById(args.id);
-      
+
       const { participants } = bookingToRemove;
 
       if (!bookingToRemove) {
@@ -68,9 +64,9 @@ module.exports = {
       try {
         if (user.id && participants?.includes(user.id)) {
           await bookingToRemove.delete();
-          } else {
-            throw new Error(getErrorForCode(ERROR_CODES.EG1));
-          }
+        } else {
+          throw new Error(getErrorForCode(ERROR_CODES.EG1));
+        }
       } catch (error) {
         throw new Error(error);
       }
@@ -80,17 +76,7 @@ module.exports = {
     type: bookingType.bookingType,
     args: {
       id: { type: new GraphQLNonNull(GraphQLString) },
-      resourceId: { type: new GraphQLNonNull(GraphQLID) },
-      title: { type: new GraphQLNonNull(GraphQLString) },
-      description: { type: GraphQLString },
-      start: { type: new GraphQLNonNull(GraphQLString) },
-      end: { type: new GraphQLNonNull(GraphQLString) },
-      participants: { type: new GraphQLNonNull(new GraphQLInputObjectType({
-        name: 'UserId',
-        fields: () => ({
-          id: { type: GraphQLID },
-        })
-      })) }
+      ...argType
     },
     resolve: async (root, args, context) => {
       const user = checkAuth(context);
@@ -103,17 +89,17 @@ module.exports = {
       };
 
       try {
-        if (user.id === bookingToUpdate.user.id) {
+        if (user.id && bookingToUpdate?.participants?.includes(user.id)) {
           const updatedBooking = await bookingModel
-          .findByIdAndUpdate(args.id, updatedArgs, {
+            .findByIdAndUpdate(args.id, updatedArgs, {
               new: true,
-          })
-          .populate("booking")
-          .populate("room")
-          .populate("user");
-  
+            })
+            .populate("booking")
+            .populate("room")
+            .populate("user");
+
           if (!updatedBooking) {
-              throw new Error(getErrorForCode(ERROR_CODES.EA2));
+            throw new Error(getErrorForCode(ERROR_CODES.EA2));
           }
           return updatedBooking;
         } else {

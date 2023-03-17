@@ -7,7 +7,7 @@ import MenuIcon from "../../icons/menu-icon.png"
 import ArrowUpIcon from "../../icons/up.svg"
 import ArrowDownIcon from "../../icons/down.svg"
 import LogoutIcon from "../../icons/logout.svg"
-import { covertTONormalDate } from '../../utils/dateUtils';
+import { covertToNormalDate } from '../../utils/dateUtils';
 import styles from '../menu/expendablemenu.module.css';
 
 interface MenuProps {
@@ -109,7 +109,7 @@ const ExpendableMenu: FC<MenuProps> = ({
               className={selectButton}
               onClick={handleSelectWeek}
             >
-              {covertTONormalDate(currentDay)} - {covertTONormalDate(endingDay)}
+              {covertToNormalDate(currentDay)} - {covertToNormalDate(endingDay)}
             </Button>
           </div>
           <MenuItem
