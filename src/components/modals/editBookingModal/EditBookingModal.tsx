@@ -216,7 +216,7 @@ const EditBookingModal: FC<EditModalProps> = ({
             )}
             {isBookingOverlapping && (
               <Typography className={spanError} variant="body2">
-                This chosen time is overlapping with another booking time.
+                Someone has booked this room for the time you selected.
               </Typography>
             )}
           </Box>
