@@ -3,7 +3,7 @@ import { Box, Button, Modal, SelectChangeEvent, TextField, Typography } from "@m
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { isBefore } from "date-fns";
 
-import { fetchAllBookings, fetchBookingsByUser } from "../../../redux/actions/bookings";
+import { fetchAllBookings } from "../../../redux/actions/bookings";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { setErrorMessage } from "../../../redux/reducers/errorMessage";
 import { RoomType } from "../../../utils/types";

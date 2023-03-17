@@ -61,4 +61,4 @@ export type Booking = {
   participants: string[];
 }
 
-export type ErrorMessage = string | unknown | {} | null
+export type ErrorMessage = string | unknown | {} | null;

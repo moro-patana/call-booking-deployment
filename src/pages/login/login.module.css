@@ -56,6 +56,10 @@
   width: 100%;
 }
 
+.logoutText {
+  margin-top: 5rem;
+}
+
 @media (min-width: 375px) {
   .buttonWrapper {
     width: 400px;

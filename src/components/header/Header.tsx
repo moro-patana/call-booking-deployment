@@ -1,43 +1,43 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
-import styles from './Header.module.css';
-import MenuIcon from '@mui/icons-material/Menu';
-import { AppBar, Container, MenuItem, Link, Box, Toolbar, IconButton, Typography, Menu } from '@mui/material'
-import onjaLogo from '../../icons/onja-logo.svg';
-import { useAppDispatch } from '../../redux/hooks';
-import { setCurrentUser } from '../../redux/reducers/usersSlice';
 
-const {
-  headerBar,
-  container,
-  title,
-  wrapper,
-  desktopContainer,
-  mobileContainer,
-  menuAppBar,
-  menuItem
-} = styles;
+import { 
+  AppBar, Container, Box, Toolbar, IconButton, 
+  Typography, Menu, Avatar, MenuItem, Tooltip 
+} from '@mui/material';
+import onjaLogo from '../../icons/onja-logo.svg';
+import { setCurrentUser } from '../../redux/reducers/usersSlice';
+import { useAppDispatch } from '../../redux/hooks';
+
+import styles from './Header.module.css';
 
 const basePath = '/';
 
-const menu = [
+const settings = [
   { name: 'Login', url: 'login' },
   { name: 'Logout', url: 'logout' }
 ];
 
 const Header = () => {
-  const menuRef = useRef(null);
-  const [openMenu, setOpenMenu] = useState<boolean>(false);
-  const [cookies] = useCookies();
-  const { currentUser } = cookies;
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const [cookies, addCookie, removeCookie] = useCookies(['currentUser', 'isLoggedOut']);
+  const { currentUser } = cookies;
+  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const { headerBar, container, title, avatar, avatarBatton } = styles;
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!currentUser?.login) navigate('/login');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentUser, navigate]);
+  const changePath = (path: string) => {
+    navigate(`${basePath}${path}`)
+    if(path === 'logout') logOut();
+    setAnchorElUser(null);
+  };
+
+  const logOut = async () => {
+    removeCookie('currentUser', { path: '/' });
+    addCookie('isLoggedOut', true, { path: '/' });
+    navigate("/logout");
+  };
 
   useEffect(() => {
     if(cookies?.currentUser?.login) {
@@ -47,58 +47,46 @@ const Header = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const renderAvatarMenu = (className: string) => {
+    return (
+      <Box className={className}>
+        <Tooltip arrow title="Open settings">
+          <IconButton onClick={(event) => setAnchorElUser(event.currentTarget)} className={avatarBatton}>
+            <Avatar alt={currentUser?.login?.username} src={currentUser?.login?.picture ? currentUser.login.picture : ''} />
+          </IconButton>
+        </Tooltip>
+        <Menu
+          id="menu-appbar"
+          anchorEl={anchorElUser}
+          anchorOrigin={{ vertical: 38, horizontal: 'center' }}
+          keepMounted
+          transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+          open={Boolean(anchorElUser)}
+          onClose={() => setAnchorElUser(null)}
+        >
+          {settings.map((setting) => (
+            <MenuItem key={setting.name} onClick={() => changePath(setting.url)}>
+              <Typography textAlign="center">{setting.name}</Typography>
+            </MenuItem>
+          ))}
+        </Menu>
+      </Box>
+    );
+  };
+
   return (
     <AppBar className={headerBar}>
       <Container className={container}>
         <Toolbar disableGutters>
-          <Typography variant="h1" noWrap component="a" href={basePath} className={title}>
+          <MenuItem onClick={() => navigate(basePath)} className={title}>
             <img src={onjaLogo} alt="logo" />
             <span>Booking Calendar</span>
-          </Typography>
-
-          <Box className={`${wrapper} ${desktopContainer}`}>
-            {menu.map((item) => (
-              <MenuItem key={item.name} className={menuItem}>
-                <Link href={`${basePath}${item.url}`}>{item.name}</Link>
-              </MenuItem>
-            ))}
-          </Box>
-
-          <Box className={`${wrapper} ${mobileContainer}`}>
-            <IconButton
-              ref={menuRef}
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={() => setOpenMenu(true)}>
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              className={menuAppBar}
-              anchorEl={menuRef.current}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left'
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left'
-              }}
-              open={openMenu}
-              onClose={() => setOpenMenu(false)}>
-              {menu.map((item) => (
-                <MenuItem onClick={() => setOpenMenu(false)} key={item.name} className={menuItem}>
-                  <Link href={`${basePath}${item.url}`}>{item.name}</Link>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
+          </MenuItem>
+          {renderAvatarMenu(avatar)}
         </Toolbar>
       </Container>
     </AppBar>
   );
 };
+
 export default Header;

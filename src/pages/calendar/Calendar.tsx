@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
 import { Calendar, dateFnsLocalizer, Views } from "react-big-calendar";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
@@ -44,6 +45,8 @@ const CalendarPage = () => {
   const [cookies] = useCookies(["currentUser"]);
   const { currentUser } = cookies;
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const selectedDate = new Date();
   const startDay = getCurrentDay(selectedDate);
   const endDay = getEndingDay(selectedDate);
@@ -93,6 +96,11 @@ const CalendarPage = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser]);
+
+  useEffect(() => {
+    if (!currentUser?.login) navigate('/login');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser, navigate]);
 
   const handleSelectEvent = (slot: any) => {
     setSlot(slot);

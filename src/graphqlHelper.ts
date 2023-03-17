@@ -87,7 +87,7 @@ export const loginMutation = (
       loginInput:{
         username:"${username}", 
         email:"${email}", 
-        password:"${password}", 
+        password:"${password}",
         access_token:"${access_token}", 
         picture:"${picture}", 
         hd: "${hd}", 

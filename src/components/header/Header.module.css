@@ -1,9 +1,5 @@
 @import "../../constant.css";
 
-span {
-  font-size: 20px;
-}
-
 .headerBar {
     position: sticky;
     background-color: var(--blue);
@@ -21,47 +17,21 @@ span {
   line-height: 25px;
   align-items: center;
   margin-right: 16px;
-  font-size: 20px
+  font-size: 20px;
+  padding-left: 0;
 }
 
 .title img {
   margin-right: 10px;
 }
 
-.menuItem a {
-  text-decoration: none;
+.avatar {
+  flex-grow: 0;
+  margin-left: auto;
 }
 
-.wrapper {
-  flex-grow: 1;
-  justify-content: flex-end;
-}
-
-.wrapper li a,
-.wrapper button {
-  color: var(--white);
-}
-
-.desktopContainer {
-  display: none;
-}
-
-.desktopContainer li {
-  display: block;
-  margin: 16px 0;
-}
-
-.mobileContainer {
-  display: flex;
-}
-
-.menuAppBar {
-  display: block;
-  text-align: center;
-}
-
-.menuAppBar a {
-  color: var(--black);
+.avatarBatton {
+  padding: 0;
 }
 
 @media (min-width: 900px) {
