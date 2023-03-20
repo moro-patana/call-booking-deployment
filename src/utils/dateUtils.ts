@@ -52,7 +52,7 @@ export const isTimeOverlapping = (
   endTime: Date,
   events: IEvent[]
 ) => {
-  const { resourceId, start, end } = booking;
+  const { resourceId, start } = booking;
   const bookingOnTheSelectedDay = events.filter((booking: IEvent) => {
     const startDate = booking.start;
     return (

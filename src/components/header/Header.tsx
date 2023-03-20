@@ -50,7 +50,7 @@ const Header = () => {
   const renderAvatarMenu = (className: string) => {
     return (
       <Box className={className}>
-        <Tooltip arrow title="Open settings">
+        <Tooltip arrow title="Open menu">
           <IconButton onClick={(event) => setAnchorElUser(event.currentTarget)} className={avatarBatton}>
             <Avatar alt={currentUser?.login?.username} src={currentUser?.login?.picture ? currentUser.login.picture : ''} />
           </IconButton>

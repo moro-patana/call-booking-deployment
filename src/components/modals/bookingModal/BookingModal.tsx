@@ -10,7 +10,6 @@ import {
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { isBefore } from "date-fns";
 
-import { fetchAllBookings } from "../../../redux/actions/bookings";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { setBookings } from "../../../redux/reducers/bookingsSlice";
 import { setErrorMessage } from "../../../redux/reducers/errorMessage";
@@ -87,6 +86,17 @@ const BookingModal: FC<BookingModalProps> = ({
     top: position.y > 518 ? 518 : position.y > 18 ? position.y : 18,
   };
 
+  const isBookingOverlapping = isTimeOverlapping(
+    newBooking,
+    newStartDate,
+    newEndDate,
+    events
+  );
+
+  const isPastBooking =
+    isBefore(newDateGenerator(start, startTime), new Date()) &&
+    isBefore(newDateGenerator(end, endTime), new Date());
+
   const handleStartTimeEvent = (event: React.ChangeEvent<HTMLInputElement>) => {
     setStartTime(event.target.value);
   };
@@ -94,13 +104,6 @@ const BookingModal: FC<BookingModalProps> = ({
   const handleEndTimeEvent = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEndTime(event.target.value);
   };
-
-  const isBookingOverlapping = isTimeOverlapping(
-    newBooking,
-    newStartDate,
-    newEndDate,
-    events
-  );
 
   const handleSubmitBooking = async () => {
     const { id, access_token } = currentUser.login;
@@ -118,8 +121,17 @@ const BookingModal: FC<BookingModalProps> = ({
             access_token
           );
           closeBookingModal();
-          dispatch(setBookings([...allBookings, newBooking]));
-          dispatch(fetchAllBookings());
+          dispatch(
+            setBookings([
+              ...allBookings,
+              {
+                ...newBooking,
+                start: String(start),
+                end: String(end),
+                participants: [id],
+              },
+            ])
+          );
           return response.data.data;
         }
       } catch (error) {
@@ -127,10 +139,6 @@ const BookingModal: FC<BookingModalProps> = ({
       }
     }
   };
-
-  const isPastBooking =
-    isBefore(newDateGenerator(start, startTime), new Date()) &&
-    isBefore(newDateGenerator(end, endTime), new Date());
 
   return (
     <div>

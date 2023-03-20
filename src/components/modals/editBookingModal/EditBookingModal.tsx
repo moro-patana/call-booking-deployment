@@ -12,18 +12,16 @@ import { isBefore } from "date-fns";
 
 import { roomsData } from "../../../redux/reducers/roomsSlice";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
-import {
-  fetchAllBookings,
-  updateSelectedBooking,
-} from "../../../redux/actions/bookings";
+import { updateSelectedBooking } from "../../../redux/actions/bookings";
 import { setErrorMessage } from "../../../redux/reducers/errorMessage";
+import { setBookings } from "../../../redux/reducers/bookingsSlice";
 import {
   isTimeOverlapping,
   isValidTime,
   newDateGenerator,
   timeConverter,
 } from "../../../utils/dateUtils";
-import { IEvent, newBookingType } from "../../../utils/types";
+import { Booking, IEvent, newBookingType } from "../../../utils/types";
 import { deleteBooking, sendAuthorizedQuery } from "../../../graphqlHelper";
 
 import SelectInput from "../../UIs/Select/SelectInput";
@@ -79,6 +77,7 @@ const EditBookingModal: FC<EditModalProps> = ({
   const { title, start, end, resourceId, id, participants } = selectedBooking;
   const dispatch = useAppDispatch();
 
+  const { allBookings } = useAppSelector((state) => state.bookings);
   const { currentUser } = useAppSelector((state) => state.users);
   const userId = currentUser.login.id;
   const { access_token } = currentUser.login;
@@ -113,14 +112,18 @@ const EditBookingModal: FC<EditModalProps> = ({
     bookings
   );
 
-  const isBookingEdited = () => {
-    return (
-      (resourceId === savedBooking?.resourceId &&
-        title === savedBooking?.title &&
-        !isTimeEdited) ||
-      !isValidTime(newStartDate, newEndDate)
-    );
-  };
+  const isPastBooking =
+    isBefore(newDateGenerator(start, startTime), new Date()) &&
+    isBefore(newDateGenerator(end, endTime), new Date());
+
+  const showDeleteButton =
+    !isDeletionConfirmed && participants?.includes(userId);
+
+  const isBookingEdited =
+    (resourceId === savedBooking?.resourceId &&
+      title === savedBooking?.title &&
+      !isTimeEdited) ||
+    !isValidTime(newStartDate, newEndDate);
 
   const handleEditBooking = () => {
     dispatch(
@@ -134,6 +137,21 @@ const EditBookingModal: FC<EditModalProps> = ({
         access_token
       )
     );
+
+    const updatedBookings = allBookings.map((booking: Booking) => {
+      if (booking?.id === id) {
+        return {
+          ...booking,
+          resourceId,
+          title,
+          start: String(newStartDate),
+          end: String(newEndDate),
+        };
+      }
+      return booking;
+    });
+
+    dispatch(setBookings(updatedBookings));
     setShowEditBookingModal(false);
   };
 
@@ -145,20 +163,18 @@ const EditBookingModal: FC<EditModalProps> = ({
           access_token
         );
         setShowEditBookingModal(false);
-        dispatch(fetchAllBookings());
+
+        const bookings = allBookings.filter(
+          (booking: Booking) => booking.id !== id
+        );
+
+        dispatch(setBookings(bookings));
         return response.data.data;
       }
     } catch (error) {
       dispatch(setErrorMessage(error));
     }
   };
-
-  const isPastBooking =
-    isBefore(newDateGenerator(start, startTime), new Date()) &&
-    isBefore(newDateGenerator(end, endTime), new Date());
-
-  const showDeleteButton =
-    !isDeletionConfirmed && participants?.includes(userId);
 
   return (
     <div>
@@ -209,7 +225,7 @@ const EditBookingModal: FC<EditModalProps> = ({
                 endTimeOnChange={(event) => setEndTime(event.target.value)}
               />
             </Box>
-            {isPastBooking && (
+            {isPastBooking && !isBookingEdited && (
               <Typography className={spanError} variant="body2">
                 Booking for a past time slot is not allowed.
               </Typography>
@@ -264,7 +280,7 @@ const EditBookingModal: FC<EditModalProps> = ({
 
               <Button
                 disabled={
-                  isPastBooking || isBookingEdited() || isBookingOverlapping
+                  isPastBooking || isBookingEdited || isBookingOverlapping
                 }
                 variant="contained"
                 onClick={handleEditBooking}

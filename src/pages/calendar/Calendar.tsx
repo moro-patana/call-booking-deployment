@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
 import { Calendar, dateFnsLocalizer, Views } from "react-big-calendar";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
-import { format, getDay, parse, startOfWeek } from "date-fns";
+import { format, getDay, isBefore, parse, startOfWeek } from "date-fns";
 import { useCookies } from "react-cookie";
 import { enUS } from "date-fns/locale";
 import {
@@ -13,11 +13,13 @@ import {
 import { fetchRooms } from "../../redux/actions/rooms";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { roomsData } from "../../redux/reducers/roomsSlice";
+import { setBookings } from "../../redux/reducers/bookingsSlice";
 import {
   changeDateTime,
   dateStringConverter,
   getCurrentDay,
   getEndingDay,
+  isTimeOverlapping,
 } from "../../utils/dateUtils";
 import {
   Booking,
@@ -59,6 +61,7 @@ const CalendarPage = () => {
   const { currentUser } = cookies;
   const { access_token } = currentUser.login;
   const userId = currentUser.login.id;
+  const isUserBooking = (event: IEvent) => event.participants.includes(userId);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
@@ -101,9 +104,7 @@ const CalendarPage = () => {
     };
   });
 
-  const events = useMemo(
-    () =>
-      allBookings?.map((booking: Booking) => {
+  const events = useMemo(() => allBookings?.map((booking: Booking) => {
         return {
           ...booking,
           start: dateStringConverter(booking?.start),
@@ -143,49 +144,90 @@ const CalendarPage = () => {
     []
   );
 
-  const moveEvent = useCallback(
-    async ({ event, start, end, resourceId }: any) => {
-      const { id, title } = event;
-      dispatch(
-        updateSelectedBooking(
-          id,
-          resourceId,
-          title,
-          start,
-          end,
-          userId,
-          access_token
-        )
-      );
+  const updateBooking = useCallback(
+    (
+      id: string | number,
+      resourceId: string,
+      start: Date | string,
+      end: Date | string,
+      title: string
+    ) => {
+      const updatedBookings = allBookings.map((booking: any) => {
+        if (booking?.id === id) {
+          return {
+            ...booking,
+            resourceId,
+            title,
+            start: String(start),
+            end: String(end),
+          };
+        }
+        return booking;
+      });
+      dispatch(setBookings(updatedBookings));
     },
-    [access_token, userId, dispatch]
+    [allBookings, dispatch]
+  );
+
+  const moveEvent = useCallback(
+    async (selectedEvent: any) => {
+      const { event, start, end, resourceId } = selectedEvent;
+      const { id, title } = event;
+
+      const isPastBooking = isBefore(start, new Date()) && isBefore(end, new Date());
+
+      const bookings = events.filter(
+        (booking: IEvent) => booking.id !== event.id
+      );
+
+      const isBookingOverlapping = isTimeOverlapping(selectedEvent, start, end, bookings)
+
+      if (!isBookingOverlapping && !isPastBooking) {
+        dispatch(
+          updateSelectedBooking(
+            id,
+            resourceId,
+            title,
+            start,
+            end,
+            userId,
+            access_token
+          )
+        );
+        updateBooking(id, resourceId, start, end, title);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [access_token, userId, events]
   );
 
   const resizeEvent = useCallback(
-    async ({
-      event,
-      start,
-      end,
-    }: {
-      event: IEvent;
-      start: Date | string;
-      end: Date | string;
-    }) => {
+    async ({ event, start, end }: { event: IEvent; start: any; end: any }) => {
       const { id, title, resourceId } = event;
 
-      dispatch(
-        updateSelectedBooking(
-          id,
-          resourceId,
-          title,
-          start,
-          end,
-          userId,
-          access_token
-        )
+      const bookings = events.filter(
+        (booking: IEvent) => booking.id !== event.id
       );
+
+      const isBookingOverlapping = !isTimeOverlapping(event, start, end, bookings);
+
+      if (!isBookingOverlapping) {
+        dispatch(
+          updateSelectedBooking(
+            id,
+            resourceId,
+            title,
+            start,
+            end,
+            userId,
+            access_token
+          )
+        );
+        updateBooking(id, resourceId, start, end, title);
+      }
     },
-    [access_token, userId, dispatch]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [access_token, userId, events]
   );
 
   const openEditModal = (booking: IEvent, event: any) => {
@@ -193,6 +235,7 @@ const CalendarPage = () => {
     const screenWidth = window.screen.width;
     const x = Math.floor((event.pageX / screenWidth) * 100);
     const y = event.pageY;
+    
     setSelectedBooking({
       ...booking,
       id,
@@ -261,8 +304,11 @@ const CalendarPage = () => {
         views={[Views.WEEK, Views.DAY]}
         dayPropGetter={calendarStyle}
         step={15}
-        onSelectEvent={openEditModal}
+        onSelectEvent={(event, booking) =>
+          isUserBooking(event) && openEditModal(event, booking)
+        }
         eventPropGetter={eventStyleGetter}
+        draggableAccessor={(event) => isUserBooking(event)}
       />
 
       {showEditBookingModal && (

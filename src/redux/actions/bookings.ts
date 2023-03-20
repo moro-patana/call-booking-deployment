@@ -5,7 +5,7 @@ import {
   updateBooking,
   getBookings,
 } from "../../graphqlHelper";
-import { FetchBookingsByUserAction, updateBookingAction } from "../actionTypes";
+import { FetchBookingsByUserAction } from "../actionTypes";
 import {
   setBookings,
   getBookingsByUserAction,
@@ -45,21 +45,18 @@ export const updateSelectedBooking = (
   userId: string,
   access_token: string
 ) => {
-  return async (
-    fetchBookingDispatch: updateBookingAction,
-    errorMessageDispatch: FetchBookingsByUserAction
-  ) => {
+  return async (dispatch: FetchBookingsByUserAction) => {
     try {
       if (access_token) {
         const response = await sendAuthorizedQuery(
           updateBooking(id, resourceId, title, start, end, userId),
           access_token
         );
-        fetchBookingDispatch(fetchAllBookings());
+
         return response.data.data;
       }
     } catch (error) {
-      errorMessageDispatch(setErrorMessage(error));
+      dispatch(setErrorMessage(error));
     }
   };
 };
