@@ -2,7 +2,6 @@ const roomType = require("../types/room");
 const roomModel = require("../models/room");
 const GraphQLString = require("graphql").GraphQLString;
 const GraphQLNonNull = require("graphql").GraphQLNonNull;
-const checkAuth = require("../../utils/check-auth");
 const { getErrorForCode, ERROR_CODES } = require("../../utils/errorCodes");
 
 module.exports = {

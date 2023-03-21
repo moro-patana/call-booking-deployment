@@ -1,10 +1,6 @@
 const bookingType = require("../types/booking");
 const bookingModel = require("../models/booking");
-const GraphQLString = require("graphql").GraphQLString;
-const GraphQLNonNull = require("graphql").GraphQLNonNull;
-const GraphQLInputObjectType = require("graphql").GraphQLInputObjectType;
-const GraphQLID = require("graphql").GraphQLID;
-const GraphQLList = require("graphql").GraphQLList;
+const { GraphQLString, GraphQLNonNull, GraphQLID, GraphQLList } = require("graphql");
 const checkAuth = require("../../utils/check-auth");
 const { getErrorForCode, ERROR_CODES } = require("../../utils/errorCodes");
 

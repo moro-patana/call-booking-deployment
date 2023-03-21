@@ -11,9 +11,7 @@ export const dateStringConverter = (date: string) => {
 
 export const covertToNormalDate = (date: any) => {
   const newDate = new Date(date);
-  return `${newDate.getDate()}/${
-    newDate.getMonth() + 1
-  }/${newDate.getFullYear()}`;
+  return `${newDate.getDate()}/${newDate.getMonth() + 1}/${newDate.getFullYear()}`;
 };
 
 export const getSelectedTimeMinutes = (date: Date, params: number) => {
@@ -64,12 +62,11 @@ export const isTimeOverlapping = (
   });
 
   if (isValidTime(startTime, endTime)) {
-    const bookingOnTheSameHour = bookingOnTheSelectedDay.filter(
-      (booking: IEvent) =>
-        areIntervalsOverlapping(
-          { start: startTime, end: endTime },
-          { start: booking.start, end: booking.end }
-        )
+    const bookingOnTheSameHour = bookingOnTheSelectedDay.filter((booking: IEvent) => (
+      areIntervalsOverlapping(
+        { start: startTime, end: endTime },
+        { start: booking.start, end: booking.end }
+      ))
     );
     return bookingOnTheSameHour.length > 0;
   }

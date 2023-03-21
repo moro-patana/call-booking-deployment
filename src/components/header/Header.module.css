@@ -1,8 +1,8 @@
 @import "../../constant.css";
 
 .headerBar {
-    position: sticky;
-    background-color: var(--blue);
+  position: sticky;
+  background-color: var(--blue);
 }
 
 .container {

@@ -9,7 +9,7 @@ export const sendQuery = (query: any): Promise<any> => {
 
 export const getRooms = () => {
   return `{
-    getRooms{
+    getRooms {
       id,
       name,
       description
@@ -19,7 +19,7 @@ export const getRooms = () => {
 
 export const getBookings = () => {
   return `{
-    getBookings{
+    getBookings {
       id,
       participants,
       resourceId,
@@ -33,7 +33,7 @@ export const getBookings = () => {
 
 export const getBookingsByUser = (userId: string) => {
   return `{
-    getBookingsByUser(participantId: "${userId}"){
+    getBookingsByUser(participantId: "${userId}") {
       id,
       participants,
       resourceId,
@@ -47,7 +47,7 @@ export const getBookingsByUser = (userId: string) => {
 
 export const getUsers = () => {
   return `{
-    getUsers{
+    getUsers {
       id,
       email,
       password,
@@ -59,7 +59,7 @@ export const getUsers = () => {
 
 export const getUserById = (id: string) => {
   return `{
-    getUserById(id: "${id}"){
+    getUserById(id: "${id}") {
       id,
       email,
       password,
@@ -123,7 +123,7 @@ export const bookingMutation = (
   endDate: String,
   userId: String
 ) => {
-  return `mutation{
+  return `mutation {
     createBooking(
       participants: ["${userId}"],
       resourceId: "${roomId}",
@@ -153,7 +153,7 @@ export const updateBooking = (
   endDate: String | Date,
   userId: String
 ) => {
-  return `mutation{
+  return `mutation {
     updateBooking(
       id: "${id}",
       resourceId: "${roomId}",

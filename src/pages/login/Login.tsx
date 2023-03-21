@@ -14,13 +14,16 @@ import { setErrorMessage } from '../../redux/reducers/errorMessage';
 
 import styles from './login.module.css';
 
+const {
+  container, heading, alert, paragraph, buttonWrapper,
+  googleButton, divider, googleIcon, logoutText
+} = styles;
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const location = useLocation();
   const [cookies, setCookie, removeCookie] = useCookies(['currentUser', 'isLoggedOut']);
-  const { container, heading, alert, paragraph, buttonWrapper, googleButton, divider, googleIcon, logoutText } = styles;
   const { errorMessage } = useAppSelector((state) => state.errorMessage);
 
   const onLoginResolve = async ({ data }: IResolveParams) => {

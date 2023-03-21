@@ -22,6 +22,8 @@ import ExpendableMenu from "../../components/menu/ExpendableMenu";
 import styles from "./calendar.module.css";
 import { getUserById, sendQuery } from "../../graphqlHelper";
 
+const { container } = styles;
+
 const DragAndDropCalendar = withDragAndDrop<IEvent, IResource>(Calendar);
 
 const locales = { "en-US": enUS };
@@ -41,8 +43,6 @@ const calendarStyle = () => {
     },
   };
 };
-
-const { container } = styles;
 
 const CalendarPage = () => {
   const rooms = useAppSelector(roomsData);
@@ -189,9 +189,9 @@ const CalendarPage = () => {
   const resizeEvent = useCallback(
     async ({ event, start, end }: { event: IEvent; start: any; end: any }) => {
       const { id, title, resourceId } = event;
-      
+
       const bookings = events.filter((booking: IEvent) => booking.id !== event.id);
-      
+
       const isBookingOverlapping = !isTimeOverlapping(event, start, end, bookings);
 
       if (!isBookingOverlapping) {
@@ -232,7 +232,7 @@ const CalendarPage = () => {
       end,
       resourceId,
     });
-    if(participants[0] !== currentUser?.login?.id) {
+    if (participants[0] !== currentUser?.login?.id) {
       getCurrentBookingParticipant(participants);
     };
     setShowEditBookingModal(true);

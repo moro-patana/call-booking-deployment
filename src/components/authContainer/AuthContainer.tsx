@@ -11,12 +11,8 @@ const AuthContainer: FC<AuthContainerProps> = ({ heading, children }) => {
   const { container, box, typography } = styles;
   
   return (
-    <Container
-      className={container}
-    >
-      <Box
-       className={box}
-      >
+    <Container className={container}>
+      <Box className={box}>
         <Typography variant='h3' className={typography}>
           {heading}
         </Typography>

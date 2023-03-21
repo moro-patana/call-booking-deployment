@@ -3,6 +3,8 @@ import { Box, MenuItem, Select, SelectChangeEvent, Typography } from "@mui/mater
 import styles from './selectInput.module.css';
 import { RoomType } from "../../../utils/types";
 
+const  { wrapper, typography } = styles;
+
 interface SelectInputProps {
   data: RoomType[] | { name: string; id: string }[];
   value: string;
@@ -18,7 +20,6 @@ const SelectInput: FC<SelectInputProps> = ({
   handleChange,
   defaultValue
 }) => {
-  const  { wrapper, typography } = styles;
 
   return (
     <Box className={wrapper}>

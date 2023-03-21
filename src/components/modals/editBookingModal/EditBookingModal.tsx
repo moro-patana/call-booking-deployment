@@ -34,18 +34,9 @@ interface EditModalProps {
   bookingOwner: UserType | null;
 }
 
-const {
-  modal,
-  box,
-  typography,
-  backdrop,
-  datePickerWrapper,
-  buttonWrapper,
-  textField,
-  buttonContainer,
-  deleteButton,
-  spanError,
-  cancelButtonWrapper
+const { 
+  modal, box, typography, backdrop, datePickerWrapper, buttonWrapper,
+  textField, buttonContainer, deleteButton, spanError, cancelButtonWrapper
 } = styles;
 
 const EditBookingModal: FC<EditModalProps> = ({

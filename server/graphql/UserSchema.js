@@ -1,7 +1,6 @@
-const GraphQLSchema = require("graphql").GraphQLSchema;
-const GraphQLObjectType = require("graphql").GraphQLObjectType;
 const queryType = require("./queries/userQuery").UserQuery;
 const mutations = require("./mutations/userMutations");
+const { GraphQLObjectType, GraphQLSchema } = require('graphql');
 
 exports.UserSchema = new GraphQLSchema({
   query: queryType,

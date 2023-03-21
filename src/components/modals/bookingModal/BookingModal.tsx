@@ -43,15 +43,9 @@ interface BookingModalProps {
   ) => void;
 }
 
-const {
-  modal,
-  box,
-  typography,
-  backdrop,
-  datePickerWrapper,
-  buttonWrapper,
-  textField,
-  spanError,
+const { 
+  modal, box, typography, backdrop, datePickerWrapper,
+  buttonWrapper, textField, spanError,
 } = styles;
 
 

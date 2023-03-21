@@ -1,10 +1,7 @@
-const GraphQLObjectType = require("graphql").GraphQLObjectType;
-const GraphQLList = require("graphql").GraphQLList;
-const GraphQLNonNull = require("graphql").GraphQLNonNull;
-const GraphQLID = require("graphql").GraphQLID;
 const RoomModel = require("../models/room");
 const roomType = require("../types/room").roomType;
 const { getErrorForCode, ERROR_CODES } = require("../../utils/errorCodes");
+const { GraphQLObjectType, GraphQLList, GraphQLNonNull, GraphQLID } = require('graphql');
 
 // Query
 exports.RoomQuery = new GraphQLObjectType({

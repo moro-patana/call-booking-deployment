@@ -1,14 +1,13 @@
 .wrapper {
-    width: 100%;
-    margin-bottom: 16px;
-  }
-  
-  .wrapper svg {
-    display: none;
-  }
-  
-  .typography {
-    display: block;
-    margin-top: 6px;
-  }
-  
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.wrapper svg {
+  display: none;
+}
+
+.typography {
+  display: block;
+  margin-top: 6px;
+}

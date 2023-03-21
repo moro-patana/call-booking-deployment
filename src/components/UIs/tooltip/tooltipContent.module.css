@@ -1,16 +1,16 @@
 .wrapper {
-    column-gap: 1;
+  column-gap: 1;
 }
 
 .heading {
-    font-size: 16px;
-    text-decoration: underline;
-    margin-top: 0;
-    font-weight: 400;
+  font-size: 16px;
+  text-decoration: underline;
+  margin-top: 0;
+  font-weight: 400;
 }
 
 .smallText {
-    font-size: 12px;
+  font-size: 12px;
 }
 
 .span {

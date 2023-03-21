@@ -76,4 +76,5 @@ export interface SelectDatePropsType {
   startTime: string;
   endTime: string;
 }
+
 export type ErrorMessage = string | unknown | {} | null;
