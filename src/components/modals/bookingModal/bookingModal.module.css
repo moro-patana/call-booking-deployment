@@ -1,57 +1,57 @@
 .modal {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .backdrop {
-    background-color  : transparent;  
-    flex-direction: column;
-    cursor: pointer;
-} 
+  background-color: transparent;
+  flex-direction: column;
+  cursor: pointer;
+}
 
 .box {
-    width: 100%;
-    max-width: 364px;
-    background-color: #fff;
-    padding: 24px;
-    margin: auto;
-    outline: 0;
-    box-shadow: 0px 3px 3px -2px rgb(0 0 0 / 20%), 0px 3px 4px 0px rgb(0 0 0 / 14%), 0px 1px 8px 0px rgb(0 0 0 / 12%);
-    display: flex;
-    flex-direction: column;
-    position: absolute;
+  width: 100%;
+  max-width: 364px;
+  background-color: #fff;
+  padding: 24px;
+  margin: auto;
+  outline: 0;
+  box-shadow: 0px 3px 3px -2px rgb(0 0 0 / 20%), 0px 3px 4px 0px rgb(0 0 0 / 14%), 0px 1px 8px 0px rgb(0 0 0 / 12%);
+  display: flex;
+  flex-direction: column;
+  position: absolute;
 }
 
 .typography {
-    font-size: 14px;
-    margin-bottom: 18px;
+  font-size: 18px;
+  margin-bottom: 18px;
 }
 
 .textField {
-    margin-bottom: 16px;
+  margin-bottom: 16px;
 }
 
 .datePickerWrapper {
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
 }
 
-.datePickerWrapper > svg {
-    margin-right: 16px;
-    height: 20px;
+.datePickerWrapper>svg {
+  margin-right: 16px;
+  height: 20px;
 }
 
 .buttonWrapper {
-    display: flex;
-    place-content: flex-end;
-    margin-top: auto;
-    gap: 16px;
+  display: flex;
+  place-content: flex-end;
+  margin-top: auto;
+  gap: 16px;
 }
 
-.buttonWrapper > button {
-    font-size: 14px;
-    height: 40px;
+.buttonWrapper>button {
+  font-size: 14px;
+  height: 40px;
 }
 
 .spanError {

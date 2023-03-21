@@ -1,27 +1,15 @@
 import { FC, useState } from "react";
-import {
-  Box,
-  Button,
-  Modal,
-  SelectChangeEvent,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Modal, SelectChangeEvent, TextField, Typography } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { isBefore } from "date-fns";
+import { format, isBefore } from "date-fns";
 
 import { roomsData } from "../../../redux/reducers/roomsSlice";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { updateSelectedBooking } from "../../../redux/actions/bookings";
 import { setErrorMessage } from "../../../redux/reducers/errorMessage";
 import { setBookings } from "../../../redux/reducers/bookingsSlice";
-import {
-  isTimeOverlapping,
-  isValidTime,
-  newDateGenerator,
-  timeConverter,
-} from "../../../utils/dateUtils";
-import { Booking, IEvent, newBookingType } from "../../../utils/types";
+import { isTimeOverlapping, isValidTime, newDateGenerator, timeConverter } from "../../../utils/dateUtils";
+import { Booking, IEvent, newBookingType, RoomType, UserType } from "../../../utils/types";
 import { deleteBooking, sendAuthorizedQuery } from "../../../graphqlHelper";
 
 import SelectInput from "../../UIs/Select/SelectInput";
@@ -33,7 +21,6 @@ interface EditModalProps {
   position: { x: number; y: number };
   showEditBookingModal: boolean;
   selectedBooking: IEvent;
-  repeatData: { name: string; id: string }[];
   setShowEditBookingModal: (value: boolean) => void;
   setSelectedBooking: (value: IEvent) => void;
   events: IEvent[];
@@ -44,29 +31,22 @@ interface EditModalProps {
     startTime: string,
     endTime: string
   ) => void;
+  bookingOwner: UserType | null;
 }
 
 const EditBookingModal: FC<EditModalProps> = ({
   position,
   showEditBookingModal,
   selectedBooking,
-  repeatData,
   setShowEditBookingModal,
   setSelectedBooking,
   handleSelectDate,
   events,
+  bookingOwner
 }) => {
   const {
-    modal,
-    box,
-    typography,
-    backdrop,
-    datePickerWrapper,
-    buttonWrapper,
-    textField,
-    buttonContainer,
-    deleteButton,
-    spanError,
+    modal, box, typography, backdrop, datePickerWrapper, buttonWrapper,
+    textField, buttonContainer, deleteButton, spanError, cancelButtonWrapper
   } = styles;
 
   const boxPosition = {
@@ -82,7 +62,7 @@ const EditBookingModal: FC<EditModalProps> = ({
   const userId = currentUser.login.id;
   const { access_token } = currentUser.login;
 
-  const rooms = useAppSelector(roomsData);
+  const rooms: RoomType[] = useAppSelector(roomsData);
 
   const savedBooking = events.find((event: IEvent) => event.id === id);
   const bookings = events.filter((booking: IEvent) => booking.id !== id);
@@ -93,9 +73,7 @@ const EditBookingModal: FC<EditModalProps> = ({
   const getHours = (time: Date) => timeConverter(time.getHours());
   const getMinutes = (time: Date) => timeConverter(time.getMinutes());
 
-  const [startTime, setStartTime] = useState(
-    `${getHours(start)}:${getMinutes(start)}`
-  );
+  const [startTime, setStartTime] = useState(`${getHours(start)}:${getMinutes(start)}`);
   const [endTime, setEndTime] = useState(`${getHours(end)}:${getMinutes(end)}`);
 
   const newStartDate = newDateGenerator(start, startTime);
@@ -116,13 +94,8 @@ const EditBookingModal: FC<EditModalProps> = ({
     isBefore(newDateGenerator(start, startTime), new Date()) &&
     isBefore(newDateGenerator(end, endTime), new Date());
 
-  const showDeleteButton =
-    !isDeletionConfirmed && participants?.includes(userId);
-
   const isBookingEdited =
-    (resourceId === savedBooking?.resourceId &&
-      title === savedBooking?.title &&
-      !isTimeEdited) ||
+    (resourceId === savedBooking?.resourceId && title === savedBooking?.title && !isTimeEdited) ||
     !isValidTime(newStartDate, newEndDate);
 
   const handleEditBooking = () => {
@@ -158,22 +131,38 @@ const EditBookingModal: FC<EditModalProps> = ({
   const onDeleteEvent = async () => {
     try {
       if (id) {
-        const response = await sendAuthorizedQuery(
-          deleteBooking(id),
-          access_token
-        );
+        const response = await sendAuthorizedQuery(deleteBooking(id), access_token);
         setShowEditBookingModal(false);
-
-        const bookings = allBookings.filter(
-          (booking: Booking) => booking.id !== id
-        );
-
+        const bookings = allBookings.filter((booking: Booking) => booking.id !== id);
         dispatch(setBookings(bookings));
         return response.data.data;
       }
     } catch (error) {
       dispatch(setErrorMessage(error));
     }
+  };
+
+  const isMyBooking = participants?.includes(currentUser?.login?.id);
+
+  const renderBookingDetails = () => {
+    const roomName = rooms.find((room) => room?.id === resourceId)?.name;
+
+    return (
+      <Box className={box} sx={boxPosition}>
+        <Typography variant="h3" className={typography}>
+          Booking details
+        </Typography>
+        <Typography variant="body2">Booking by {bookingOwner?.username}</Typography>
+        <Typography variant="body2">Date: {format(start, "dd/MM/yyyy")} {`from ${startTime} to ${endTime}`} </Typography>
+        <Typography variant="body2">Room: {roomName}</Typography>
+        <Typography variant="body2">Reason: {title ? title : 'Not precised'}</Typography>
+        <Box className={cancelButtonWrapper}>
+          <Button onClick={() => setShowEditBookingModal(false)}>
+            Close
+          </Button>
+        </Box>
+      </Box>
+    );
   };
 
   return (
@@ -184,112 +173,116 @@ const EditBookingModal: FC<EditModalProps> = ({
         className={modal}
         slotProps={{ backdrop: { className: backdrop } }}
       >
-        <Box className={box} sx={boxPosition}>
-          <Typography variant="h3" className={typography}>
-            Edit booking
-          </Typography>
-
-          <TextField
-            label="label"
-            className={textField}
-            defaultValue={title}
-            onChange={(event) =>
-              setSelectedBooking({
-                ...selectedBooking,
-                title: event.target.value,
-              })
-            }
-            InputLabelProps={{
-              shrink: true,
-            }}
-            size="small"
-          />
-
-          <Box>
-            <Box className={datePickerWrapper}>
-              <AccessTimeIcon />
-              <DatePicker
-                value={start}
-                handleChange={(value) =>
-                  handleSelectDate(
-                    value,
-                    selectedBooking,
-                    setSelectedBooking,
-                    startTime,
-                    endTime
-                  )
-                }
-                startTime={startTime}
-                endTime={endTime}
-                startTimeOnChange={(event) => setStartTime(event.target.value)}
-                endTimeOnChange={(event) => setEndTime(event.target.value)}
-              />
+        {isMyBooking ? (
+          <Box className={box} sx={boxPosition}>
+            <Typography variant="h3" className={typography}>
+              {isMyBooking ? "Edit booking" : "Booking details"}
+            </Typography>
+            <TextField
+              label="label"
+              className={textField}
+              defaultValue={title}
+              onChange={(event) =>
+                setSelectedBooking({
+                  ...selectedBooking,
+                  title: event.target.value,
+                })
+              }
+              InputLabelProps={{
+                shrink: true,
+              }}
+              size="small"
+            />
+            <Box>
+              <Box className={datePickerWrapper}>
+                <AccessTimeIcon />
+                <DatePicker
+                  value={start}
+                  handleChange={(value) =>
+                    handleSelectDate(
+                      value,
+                      selectedBooking,
+                      setSelectedBooking,
+                      startTime,
+                      endTime
+                    )
+                  }
+                  startTime={startTime}
+                  endTime={endTime}
+                  startTimeOnChange={(event) => setStartTime(event.target.value)}
+                  endTimeOnChange={(event) => setEndTime(event.target.value)}
+                />
+              </Box>
+              {isPastBooking && (
+                <Typography className={spanError} variant="body2">
+                  Booking for a past time slot is not allowed.
+                </Typography>
+              )}
             </Box>
-            {isPastBooking && !isBookingEdited && (
-              <Typography className={spanError} variant="body2">
-                Booking for a past time slot is not allowed.
-              </Typography>
-            )}
-            {isBookingOverlapping && (
-              <Typography className={spanError} variant="body2">
-                Someone has booked this room for the time you selected.
-              </Typography>
-            )}
-          </Box>
-
-          <SelectInput
-            handleChange={(event: SelectChangeEvent<any>) => {
-              setSelectedBooking({
-                ...selectedBooking,
-                resourceId: event.target.value,
-              });
-            }}
-            data={rooms}
-            defaultValue={resourceId}
-            value={resourceId}
-            note="There are available rooms"
-          />
-
-          <SelectInput
-            handleChange={(event) => event}
-            data={repeatData}
-            value={repeatData[0].id}
-            note="Select repeat options"
-          />
-
-          <Box className={buttonContainer}>
-            {isDeletionConfirmed && (
-              <Button className={deleteButton} onClick={onDeleteEvent}>
-                Confirm deletion
-              </Button>
-            )}
-
-            {showDeleteButton && (
+            <SelectInput
+              handleChange={(event: SelectChangeEvent<any>) => {
+                setSelectedBooking({
+                  ...selectedBooking,
+                  resourceId: event.target.value,
+                });
+              }}
+              data={rooms}
+              defaultValue={resourceId}
+              value={resourceId}
+              note="There are available rooms"
+            />
+            <Box className={buttonContainer}>
+              {isPastBooking && !isBookingEdited && (
+                <Typography className={spanError} variant="body2">
+                  Booking for a past time slot is not allowed.
+                </Typography>
+              )}
+              {isBookingOverlapping && (
+                <Typography className={spanError} variant="body2">
+                  Someone has booked this room for the time you selected.
+                </Typography>
+              )}
+            </Box>
+            <SelectInput
+              handleChange={(event: SelectChangeEvent<any>) => {
+                setSelectedBooking({
+                  ...selectedBooking,
+                  resourceId: event.target.value,
+                });
+              }}
+              data={rooms}
+              defaultValue={resourceId}
+              value={resourceId}
+              note="There are available rooms"
+            />
+            <Box className={buttonContainer}>
               <Button
                 className={deleteButton}
-                onClick={() => setIsDeletionConfirmed(true)}
+                onClick={() => {
+                  isDeletionConfirmed ? onDeleteEvent() : setIsDeletionConfirmed(true)
+                }}
               >
-                Delete
+                {!isDeletionConfirmed ? "Delete" : "Confirm deletion"}
               </Button>
-            )}
-
-            <Box className={buttonWrapper}>
-              <Button onClick={() => setShowEditBookingModal(false)}>
-                Cancel
-              </Button>
-
-              <Button
-                disabled={
-                  isPastBooking || isBookingEdited || isBookingOverlapping
-                }
-                variant="contained"
-                onClick={handleEditBooking}
-              >
-                Save
-              </Button>
+              <Box className={buttonWrapper}>
+                <Button onClick={() => setShowEditBookingModal(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  disabled={
+                    !isMyBooking || isPastBooking || isBookingEdited || isBookingOverlapping
+                  }
+                  variant="contained"
+                  onClick={handleEditBooking}
+                >
+                  Save
+                </Button>
+              </Box>
             </Box>
           </Box>
-        </Box>
+        ) :
+          renderBookingDetails()
+        }
       </Modal>
     </div>
   );

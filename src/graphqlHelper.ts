@@ -57,6 +57,18 @@ export const getUsers = () => {
   }`;
 };
 
+export const getUserById = (id: string) => {
+  return `{
+    getUserById(id: "${id}"){
+      id,
+      email,
+      password,
+      username,
+      picture
+    }
+  }`;
+};
+
 export const sendAuthorizedQuery = (
   query: string,
   token: string

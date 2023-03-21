@@ -6,33 +6,19 @@ import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import { format, getDay, isBefore, parse, startOfWeek } from "date-fns";
 import { useCookies } from "react-cookie";
 import { enUS } from "date-fns/locale";
-import {
-  fetchAllBookings,
-  updateSelectedBooking,
-} from "../../redux/actions/bookings";
+import { fetchAllBookings, updateSelectedBooking } from "../../redux/actions/bookings";
 import { fetchRooms } from "../../redux/actions/rooms";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { roomsData } from "../../redux/reducers/roomsSlice";
 import { setBookings } from "../../redux/reducers/bookingsSlice";
-import {
-  changeDateTime,
-  dateStringConverter,
-  getCurrentDay,
-  getEndingDay,
-  isTimeOverlapping,
-} from "../../utils/dateUtils";
-import {
-  Booking,
-  IEvent,
-  IResource,
-  newBookingType,
-  RoomType,
-} from "../../utils/types";
+import { changeDateTime, dateStringConverter, getCurrentDay, getEndingDay, isTimeOverlapping } from "../../utils/dateUtils";
+import { Booking, IEvent, IResource, newBookingType, RoomType, UserType } from "../../utils/types";
 
 import EditBookingModal from "../../components/modals/editBookingModal/EditBookingModal";
 import BookingModal from "../../components/modals/bookingModal/BookingModal";
 import ExpendableMenu from "../../components/menu/ExpendableMenu";
 import styles from "./calendar.module.css";
+import { getUserById, sendQuery } from "../../graphqlHelper";
 
 const DragAndDropCalendar = withDragAndDrop<IEvent, IResource>(Calendar);
 
@@ -59,8 +45,8 @@ const CalendarPage = () => {
   const { allBookings } = useAppSelector((state) => state.bookings);
   const [cookies] = useCookies(["currentUser"]);
   const { currentUser } = cookies;
-  const { access_token } = currentUser.login;
-  const userId = currentUser.login.id;
+  const access_token = currentUser?.login?.access_token;
+  const userId = currentUser?.login?.id;
   const isUserBooking = (event: IEvent) => event.participants.includes(userId);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -71,6 +57,7 @@ const CalendarPage = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [currentDay, setCurrentDay] = useState<Date>(startDay);
   const [endingDay, setEndingDay] = useState<Date>(endDay);
+  const [currentBookingParticipant, setCurrentBookingParticipant] = useState<UserType | null>(null);
 
   // Add new booking modal states
   const [openBookingModal, setOpenBookingModal] = useState(false);
@@ -139,10 +126,7 @@ const CalendarPage = () => {
     setOpenBookingModal(!openBookingModal);
   };
 
-  const { defaultDate, scrollToTime } = useMemo(
-    () => ({ defaultDate: new Date(), scrollToTime: new Date() }),
-    []
-  );
+  const { defaultDate, scrollToTime } = useMemo(() => ({ defaultDate: new Date(), scrollToTime: new Date() }), []);
 
   const updateBooking = useCallback(
     (
@@ -230,8 +214,13 @@ const CalendarPage = () => {
     [access_token, userId, events]
   );
 
+  const getCurrentBookingParticipant = async (participants: string[]) => {
+    const user = await sendQuery(getUserById(participants[0]));
+    setCurrentBookingParticipant(user.data.data.getUserById);
+  };
+
   const openEditModal = (booking: IEvent, event: any) => {
-    const { start, end, resourceId, title, id } = booking;
+    const { start, end, resourceId, title, id, participants } = booking;
     const screenWidth = window.screen.width;
     const x = Math.floor((event.pageX / screenWidth) * 100);
     const y = event.pageY;
@@ -244,7 +233,9 @@ const CalendarPage = () => {
       end,
       resourceId,
     });
-
+    if(participants[0] !== currentUser?.login?.id) {
+      getCurrentBookingParticipant(participants);
+    };
     setShowEditBookingModal(true);
     setPosition({ x, y });
   };
@@ -266,7 +257,7 @@ const CalendarPage = () => {
 
   const eventStyleGetter = (event: IEvent) => {
     const isMyEvent = event.participants.includes(currentUser?.login?.id);
-    const backgroundColor = isMyEvent ? "#fcb900" : "#2196f3";
+    const backgroundColor = isMyEvent ? "#fcb900" : "#56b3d8";
     const style = {
       backgroundColor: backgroundColor,
       borderRadius: "0px",
@@ -304,9 +295,9 @@ const CalendarPage = () => {
         views={[Views.WEEK, Views.DAY]}
         dayPropGetter={calendarStyle}
         step={15}
-        onSelectEvent={(event, booking) =>
-          isUserBooking(event) && openEditModal(event, booking)
-        }
+        onSelectEvent={(event, booking) => {
+          openEditModal(event, booking)
+        }}
         eventPropGetter={eventStyleGetter}
         draggableAccessor={(event) => isUserBooking(event)}
       />
@@ -319,8 +310,8 @@ const CalendarPage = () => {
           selectedBooking={selectedBooking}
           setSelectedBooking={setSelectedBooking}
           handleSelectDate={handleSelectDate}
-          repeatData={[{ name: "Daily", id: "1" }]}
           events={events}
+          bookingOwner={currentBookingParticipant}
         />
       )}
 
@@ -333,7 +324,6 @@ const CalendarPage = () => {
           newBooking={newBooking}
           setNewBooking={setNewBooking}
           handleSelectDate={handleSelectDate}
-          repeatData={[{ name: "Daily", id: "1" }]}
           events={events}
         />
       )}

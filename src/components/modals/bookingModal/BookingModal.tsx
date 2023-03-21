@@ -28,7 +28,6 @@ import styles from "./bookingModal.module.css";
 
 interface BookingModalProps {
   rooms: RoomType[];
-  repeatData: { name: string; id: string }[];
   openBookingModal: boolean;
   closeBookingModal: () => void;
   position: { x: number; y: number };
@@ -46,7 +45,6 @@ interface BookingModalProps {
 
 const BookingModal: FC<BookingModalProps> = ({
   rooms,
-  repeatData,
   openBookingModal,
   closeBookingModal,
   position,
@@ -208,12 +206,6 @@ const BookingModal: FC<BookingModalProps> = ({
             defaultValue={resourceId}
             value={resourceId}
             note="There are available rooms"
-          />
-          <SelectInput
-            handleChange={(event: SelectChangeEvent<any>) => event.target.value}
-            data={repeatData}
-            value={repeatData[0].id}
-            note="Select repeat options"
           />
           <Box className={buttonWrapper}>
             <Button onClick={closeBookingModal}>Cancel</Button>
