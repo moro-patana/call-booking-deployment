@@ -3,11 +3,11 @@
   margin-bottom: 16px;
 }
 
-.wrapper svg {
-  display: none;
-}
-
 .typography {
   display: block;
   margin-top: 6px;
+}
+
+.select {
+  width: 100%;
 }
