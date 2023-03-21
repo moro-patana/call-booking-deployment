@@ -222,11 +222,18 @@ const EditBookingModal: FC<EditModalProps> = ({
                   endTimeOnChange={(event) => setEndTime(event.target.value)}
                 />
               </Box>
-              {isPastBooking && (
-                <Typography className={spanError} variant="body2">
-                  Booking for a past time slot is not allowed.
-                </Typography>
-              )}
+                <Box className={buttonContainer}>
+                  {isPastBooking && !isBookingEdited && (
+                    <Typography className={spanError} variant="body2">
+                      Booking for a past time slot is not allowed.
+                    </Typography>
+                  )}
+                  {isBookingOverlapping && (
+                    <Typography className={spanError} variant="body2">
+                      Someone has booked this room for the time you selected.
+                    </Typography>
+                  )}
+              </Box>
             </Box>
             <SelectInput
               handleChange={(event: SelectChangeEvent<any>) => {
@@ -238,31 +245,7 @@ const EditBookingModal: FC<EditModalProps> = ({
               data={rooms}
               defaultValue={resourceId}
               value={resourceId}
-              note="There are available rooms"
-            />
-            <Box className={buttonContainer}>
-              {isPastBooking && !isBookingEdited && (
-                <Typography className={spanError} variant="body2">
-                  Booking for a past time slot is not allowed.
-                </Typography>
-              )}
-              {isBookingOverlapping && (
-                <Typography className={spanError} variant="body2">
-                  Someone has booked this room for the time you selected.
-                </Typography>
-              )}
-            </Box>
-            <SelectInput
-              handleChange={(event: SelectChangeEvent<any>) => {
-                setSelectedBooking({
-                  ...selectedBooking,
-                  resourceId: event.target.value,
-                });
-              }}
-              data={rooms}
-              defaultValue={resourceId}
-              value={resourceId}
-              note="There are available rooms"
+              note=""
             />
             <Box className={buttonContainer}>
               <Button
