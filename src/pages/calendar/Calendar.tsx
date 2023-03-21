@@ -29,6 +29,8 @@ import {
   RoomType,
 } from "../../utils/types";
 
+import { LOGIN } from "../../constants/path";
+
 import EditBookingModal from "../../components/modals/editBookingModal/EditBookingModal";
 import BookingModal from "../../components/modals/bookingModal/BookingModal";
 import ExpendableMenu from "../../components/menu/ExpendableMenu";
@@ -53,6 +55,8 @@ const calendarStyle = () => {
     },
   };
 };
+
+const { container } = styles;
 
 const CalendarPage = () => {
   const rooms = useAppSelector(roomsData);
@@ -94,8 +98,6 @@ const CalendarPage = () => {
     participants: [],
   });
 
-  const { container } = styles;
-
   const resources = rooms?.map((room: RoomType) => {
     return {
       id: room?.id,
@@ -105,12 +107,12 @@ const CalendarPage = () => {
   });
 
   const events = useMemo(() => allBookings?.map((booking: Booking) => {
-        return {
-          ...booking,
-          start: dateStringConverter(booking?.start),
-          end: dateStringConverter(booking?.end),
-        };
-      }),
+    return {
+      ...booking,
+      start: dateStringConverter(booking?.start),
+      end: dateStringConverter(booking?.end),
+    };
+  }),
     [allBookings]
   );
 
@@ -122,7 +124,7 @@ const CalendarPage = () => {
   }, [currentUser, dispatch, userId]);
 
   useEffect(() => {
-    if (!currentUser?.login) navigate("/login");
+    if (!currentUser?.login) navigate(LOGIN);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentUser, navigate]);
 
@@ -152,7 +154,7 @@ const CalendarPage = () => {
       end: Date | string,
       title: string
     ) => {
-      const updatedBookings = allBookings.map((booking: any) => {
+      const updatedBookings = allBookings.map((booking: Booking) => {
         if (booking?.id === id) {
           return {
             ...booking,
@@ -172,13 +174,12 @@ const CalendarPage = () => {
   const moveEvent = useCallback(
     async (selectedEvent: any) => {
       const { event, start, end, resourceId } = selectedEvent;
+
       const { id, title } = event;
 
       const isPastBooking = isBefore(start, new Date()) && isBefore(end, new Date());
 
-      const bookings = events.filter(
-        (booking: IEvent) => booking.id !== event.id
-      );
+      const bookings = events.filter((booking: IEvent) => booking.id !== event.id);
 
       const isBookingOverlapping = isTimeOverlapping(selectedEvent, start, end, bookings)
 
@@ -204,11 +205,9 @@ const CalendarPage = () => {
   const resizeEvent = useCallback(
     async ({ event, start, end }: { event: IEvent; start: any; end: any }) => {
       const { id, title, resourceId } = event;
-
-      const bookings = events.filter(
-        (booking: IEvent) => booking.id !== event.id
-      );
-
+      
+      const bookings = events.filter((booking: IEvent) => booking.id !== event.id);
+      
       const isBookingOverlapping = !isTimeOverlapping(event, start, end, bookings);
 
       if (!isBookingOverlapping) {
@@ -235,7 +234,7 @@ const CalendarPage = () => {
     const screenWidth = window.screen.width;
     const x = Math.floor((event.pageX / screenWidth) * 100);
     const y = event.pageY;
-    
+
     setSelectedBooking({
       ...booking,
       id,

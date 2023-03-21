@@ -44,6 +44,18 @@ interface BookingModalProps {
   ) => void;
 }
 
+const {
+  modal,
+  box,
+  typography,
+  backdrop,
+  datePickerWrapper,
+  buttonWrapper,
+  textField,
+  spanError,
+} = styles;
+
+
 const BookingModal: FC<BookingModalProps> = ({
   rooms,
   repeatData,
@@ -69,17 +81,6 @@ const BookingModal: FC<BookingModalProps> = ({
   );
   const newStartDate = newDateGenerator(startDate, startTime);
   const newEndDate = newDateGenerator(endDate, endTime);
-
-  const {
-    modal,
-    box,
-    typography,
-    backdrop,
-    datePickerWrapper,
-    buttonWrapper,
-    textField,
-    spanError,
-  } = styles;
 
   const boxPosition = {
     left: position.x > 70 ? "70%" : `${position.x}%`,

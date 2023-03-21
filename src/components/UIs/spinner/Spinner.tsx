@@ -1,23 +1,18 @@
-import { FC } from 'react';
-import { Box, CircularProgress } from '@mui/material';
+import { FC } from "react";
+import { Box, CircularProgress } from "@mui/material";
+import styles from "./spinner.module.css";
 
-interface SpinnerPropType {
-    action?: string
+interface SpinnerProp {
+  action?: string;
 }
 
-const Spinner: FC<SpinnerPropType> = ({ action }) => {
+const { wrapper } = styles;
+
+const Spinner: FC<SpinnerProp> = ({ action }) => {
   return (
-    <Box sx={{
-        marginTop: "120px",
-        display: "flex",
-        justifyContent: "center",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: "74px",
-        }}
-    >
-        <div>{action}...</div>
-        <CircularProgress />
+    <Box className={wrapper}>
+      <div>{action}...</div>
+      <CircularProgress />
     </Box>
   );
 };

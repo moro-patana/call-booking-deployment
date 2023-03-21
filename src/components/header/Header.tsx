@@ -6,25 +6,29 @@ import {
   AppBar, Container, Box, Toolbar, IconButton, 
   Typography, Menu, Avatar, MenuItem, Tooltip 
 } from '@mui/material';
+
+import { HOME, LOGOUT } from '../../constants/path';
+
 import onjaLogo from '../../icons/onja-logo.svg';
 import { setCurrentUser } from '../../redux/reducers/usersSlice';
 import { useAppDispatch } from '../../redux/hooks';
 
 import styles from './Header.module.css';
 
-const basePath = '/';
+const basePath = HOME;
 
-const settings = [
+const menu = [
   { name: 'Login', url: 'login' },
   { name: 'Logout', url: 'logout' }
 ];
+
+const { headerBar, container, title, avatar, avatarBatton } = styles;
 
 const Header = () => {
   const dispatch = useAppDispatch();
   const [cookies, addCookie, removeCookie] = useCookies(['currentUser', 'isLoggedOut']);
   const { currentUser } = cookies;
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-  const { headerBar, container, title, avatar, avatarBatton } = styles;
   const navigate = useNavigate();
 
   const changePath = (path: string) => {
@@ -34,9 +38,9 @@ const Header = () => {
   };
 
   const logOut = async () => {
-    removeCookie('currentUser', { path: '/' });
-    addCookie('isLoggedOut', true, { path: '/' });
-    navigate("/logout");
+    removeCookie('currentUser', { path: HOME });
+    addCookie('isLoggedOut', true, { path: HOME });
+    navigate(LOGOUT);
   };
 
   useEffect(() => {
@@ -64,9 +68,9 @@ const Header = () => {
           open={Boolean(anchorElUser)}
           onClose={() => setAnchorElUser(null)}
         >
-          {settings.map((setting) => (
-            <MenuItem key={setting.name} onClick={() => changePath(setting.url)}>
-              <Typography textAlign="center">{setting.name}</Typography>
+          {menu.map((menuItem) => (
+            <MenuItem key={menuItem.name} onClick={() => changePath(menuItem.url)}>
+              <Typography textAlign="center">{menuItem.name}</Typography>
             </MenuItem>
           ))}
         </Menu>

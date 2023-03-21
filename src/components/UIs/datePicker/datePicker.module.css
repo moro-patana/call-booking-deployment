@@ -1,0 +1,99 @@
+.form {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  
+  .wrapper fieldset {
+    border-radius: 0;
+    border-color: transparent;
+    border: 0;
+    margin: 0;
+  }
+  
+  .wrapper label,
+  .wrapper i,
+  .wrapper legend {
+    display: none;
+  }
+  
+  .wrapper span {
+    margin: 0 8px;
+  }
+  
+  @-moz-document url-prefix() {
+    .wrapper span {
+      display: none;
+    }
+  }
+  
+  .wrapper input {
+    position: relative;
+    padding: 0;
+    width: 100%;
+  }
+  
+  .wrapper input[type="time" i]::-webkit-calendar-picker-indicator {
+    display: block;
+    width: 100px;
+    position: absolute;
+    background-image: none;
+  }
+  
+  .wrapper .button-wrapper {
+    display: flex;
+    place-content: flex-end;
+    margin-top: auto;
+  }
+  
+  /* Date picker */
+  .datePickerWrapper {
+    position: relative;
+    max-width: 185px;
+    margin-right: 8px;
+  }
+  
+  .datePickerWrapper input {
+    max-width: 180px;
+  }
+  
+  .datePickerWrapper button {
+    position: absolute;
+    left: 0;
+    top: -2px;
+    width: 100%;
+    border-radius: 0;
+    padding: 11.5px 0;
+  }
+  
+  .datePickerWrapper button:focus,
+  .datePickerWrapper button:focus-within {
+    border-bottom: 2px solid #1d76d2;
+  }
+  
+  .datePickerWrapper button svg {
+    display: none;
+  }
+  
+  .datePicker div {
+    padding-right: 0;
+  }
+  
+  /* Time picker */
+  .time {
+    border: 0;
+    padding: 0;
+  }
+  
+  .timePickerWrapper {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 0;
+  }
+  
+  @-moz-document url-prefix() {
+    .timePickerWrapper {
+      max-width: 110px;
+    }
+  }

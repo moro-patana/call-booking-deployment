@@ -1,7 +1,7 @@
 import React from "react";
 
 export interface RoomType {
-  id: any;
+  id: string;
   name: string;
   description: string;
 }
@@ -71,7 +71,7 @@ export interface newBookingType {
 }
 
 export interface SelectDatePropsType {
-  value: any;
+  value: Date | string;
   setBooking: (value: IEvent | newBookingType) => void;
   startTime: string;
   endTime: string;

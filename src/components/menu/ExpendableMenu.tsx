@@ -18,6 +18,18 @@ interface MenuProps {
   setWeek: (value: Date[]) => void;
 }
 
+const {
+  container,
+  wrapper,
+  button,
+  buttonFlex,
+  buttonFlexContainer,
+  iconStyle,
+  selectButton,
+  menuItem,
+  menu
+} = styles;
+
 const ExpendableMenu: FC<MenuProps> = ({
   currentDay,
   endingDay,
@@ -25,17 +37,6 @@ const ExpendableMenu: FC<MenuProps> = ({
   setEndingDay,
   setWeek,
 }) => {
-  const {
-    container,
-    wrapper,
-    button,
-    buttonFlex,
-    buttonFlexContainer,
-    iconStyle,
-    selectButton,
-    menuItem,
-    menu
-  } = styles;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
