@@ -34,7 +34,7 @@ interface EditModalProps {
   bookingOwner: UserType | null;
 }
 
-const { 
+const {
   modal, box, typography, backdrop, datePickerWrapper, buttonWrapper,
   textField, buttonContainer, deleteButton, spanError, cancelButtonWrapper
 } = styles;
@@ -179,7 +179,7 @@ const EditBookingModal: FC<EditModalProps> = ({
               {isMyBooking ? "Edit booking" : "Booking details"}
             </Typography>
             <TextField
-              label="label"
+              label="Title"
               className={textField}
               defaultValue={title}
               onChange={(event) =>
@@ -213,17 +213,17 @@ const EditBookingModal: FC<EditModalProps> = ({
                   endTimeOnChange={(event) => setEndTime(event.target.value)}
                 />
               </Box>
-                <Box className={buttonContainer}>
-                  {isPastBooking && !isBookingEdited && (
-                    <Typography className={spanError} variant="body2">
-                      Booking for a past time slot is not allowed.
-                    </Typography>
-                  )}
-                  {isBookingOverlapping && (
-                    <Typography className={spanError} variant="body2">
-                      Someone has booked this room for the time you selected.
-                    </Typography>
-                  )}
+              <Box className={buttonContainer}>
+                {isPastBooking && !isBookingEdited && (
+                  <Typography className={spanError} variant="body2">
+                    Booking for a past time slot is not allowed.
+                  </Typography>
+                )}
+                {isBookingOverlapping && (
+                  <Typography className={spanError} variant="body2">
+                    Someone has booked this room for the time you selected.
+                  </Typography>
+                )}
               </Box>
             </Box>
             <SelectInput
@@ -236,7 +236,6 @@ const EditBookingModal: FC<EditModalProps> = ({
               data={rooms}
               defaultValue={resourceId}
               value={resourceId}
-              note=""
             />
             <Box className={buttonContainer}>
               <Button

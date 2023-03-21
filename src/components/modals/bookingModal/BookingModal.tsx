@@ -43,7 +43,7 @@ interface BookingModalProps {
   ) => void;
 }
 
-const { 
+const {
   modal, box, typography, backdrop, datePickerWrapper,
   buttonWrapper, textField, spanError,
 } = styles;
@@ -149,9 +149,8 @@ const BookingModal: FC<BookingModalProps> = ({
           >
             Book a room
           </Typography>
-
           <TextField
-            label="label"
+            label="Title"
             className={textField}
             onChange={(event) =>
               setNewBooking({ ...newBooking, title: event.target.value })
@@ -200,7 +199,6 @@ const BookingModal: FC<BookingModalProps> = ({
             data={rooms}
             defaultValue={resourceId}
             value={resourceId}
-            note="There are available rooms"
           />
           <Box className={buttonWrapper}>
             <Button onClick={closeBookingModal}>Cancel</Button>
