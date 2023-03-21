@@ -33,6 +33,8 @@ export const HtmlTooltip = materialStyle(
   },
 }));
 
+const { wrapper, heading, smallText, span } = styles;
+
 const TooltipContent: FC<TooltipContentProps> = ({
     room,
     startTime,
@@ -40,7 +42,6 @@ const TooltipContent: FC<TooltipContentProps> = ({
     user,
     description,
 }) => {
-    const { wrapper, heading, smallText, span } = styles;
 
     return (
         <Stack className={wrapper}>

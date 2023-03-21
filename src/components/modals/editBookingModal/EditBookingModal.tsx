@@ -34,6 +34,20 @@ interface EditModalProps {
   bookingOwner: UserType | null;
 }
 
+const {
+  modal,
+  box,
+  typography,
+  backdrop,
+  datePickerWrapper,
+  buttonWrapper,
+  textField,
+  buttonContainer,
+  deleteButton,
+  spanError,
+  cancelButtonWrapper
+} = styles;
+
 const EditBookingModal: FC<EditModalProps> = ({
   position,
   showEditBookingModal,
@@ -44,11 +58,6 @@ const EditBookingModal: FC<EditModalProps> = ({
   events,
   bookingOwner
 }) => {
-  const {
-    modal, box, typography, backdrop, datePickerWrapper, buttonWrapper,
-    textField, buttonContainer, deleteButton, spanError, cancelButtonWrapper
-  } = styles;
-
   const boxPosition = {
     left: position.x > 70 ? "70%" : `${position.x}%`,
     top: position.y > 518 ? 518 : position.y > 18 ? position.y : 18,
