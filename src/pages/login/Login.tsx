@@ -5,12 +5,15 @@ import GoogleIcon from '@mui/icons-material/Google';
 import { useCookies } from 'react-cookie';
 import { add } from 'date-fns';
 
+import { HOME, LOGIN } from '../../constants/path';
+
 import { loginMutation, sendQuery } from "../../graphqlHelper";
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { setCurrentUser, setUserLoggedIn } from '../../redux/reducers/usersSlice';
 import { setErrorMessage } from '../../redux/reducers/errorMessage';
 
 import styles from './login.module.css';
+
 
 const Login = () => {
   const navigate = useNavigate();
@@ -24,13 +27,13 @@ const Login = () => {
     try {
       if (data) {
         const { name, email, sub, access_token, picture, hd, expires_in } = data;
-        if(hd === 'onja.org') {
+        if (hd === 'onja.org') {
           const res = await sendQuery(loginMutation(name, email, sub, access_token, picture, hd, expires_in));
           dispatch(setCurrentUser(res.data.data));
           dispatch(setUserLoggedIn(true));
-          setCookie('currentUser', res.data.data, { path: '/', expires: add(new Date(), { weeks: 1 }) });
-          removeCookie('isLoggedOut', { path: '/' });
-          navigate("/");
+          setCookie('currentUser', res.data.data, { path: HOME, expires: add(new Date(), { weeks: 1 }) });
+          removeCookie('isLoggedOut', { path: HOME });
+          navigate(HOME);
         } else {
           dispatch(setErrorMessage('Email domain not allowed. You must be under onja.org domain in order to log in. Please try again!'));
         }
@@ -41,10 +44,10 @@ const Login = () => {
   };
 
   const renderLoginText = () => {
-    if(cookies.isLoggedOut) {
+    if (cookies.isLoggedOut) {
       return (
-        <Typography 
-          className={`${location.pathname !== '/login' ? logoutText : ''} ${paragraph}`}
+        <Typography
+          className={`${location.pathname !== LOGIN ? logoutText : ''} ${paragraph}`}
         >
           You are currently logged out. In order to use this app, log in with your Onja google account.
         </Typography>
@@ -53,9 +56,9 @@ const Login = () => {
 
     return (
       <Typography className={paragraph}>
-        Welcome to Onja Call Booking App. 
-        { cookies?.currentUser?.login ? 
-          `You are currently logged in with ${cookies.currentUser?.login?.email}. You can create another account using a different Onja Google account` 
+        Welcome to Onja Call Booking App.
+        {cookies?.currentUser?.login ?
+          `You are currently logged in with ${cookies.currentUser?.login?.email}. You can create another account using a different Onja Google account`
           : `Before you see the calendar, please sign in with your Onja google account.`
         }
       </Typography>
@@ -64,7 +67,7 @@ const Login = () => {
 
   return (
     <Box className={container}>
-      {location.pathname === '/login' && <Typography className={heading} variant='h3'>Log in</Typography>}
+      {location.pathname === LOGIN && <Typography className={heading} variant='h3'>Log in</Typography>}
       {renderLoginText()}
       <Box className={buttonWrapper}>
         <LoginSocialGoogle
@@ -84,7 +87,7 @@ const Login = () => {
           </Button>
         </LoginSocialGoogle>
       </Box>
-      <Divider orientation='horizontal' className={divider}/>
+      <Divider orientation='horizontal' className={divider} />
       <Typography className={paragraph}>
         If you don’t have a Google account yet, please
         contact the Onja google workspace administrators to create one for you.
