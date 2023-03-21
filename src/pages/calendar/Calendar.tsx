@@ -281,7 +281,7 @@ const CalendarPage = () => {
         events={events}
         defaultDate={defaultDate}
         defaultView={Views.DAY}
-        style={{ height: "100vh" }}
+        style={{ height: "90vh", padding: '1rem' }}
         selectable
         onSelectSlot={(e) => handleSelectEvent(e)}
         resources={resources}
