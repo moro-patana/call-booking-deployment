@@ -179,7 +179,7 @@ const EditBookingModal: FC<EditModalProps> = ({
               {isMyBooking ? "Edit booking" : "Booking details"}
             </Typography>
             <TextField
-              label="label"
+              label="Title"
               className={textField}
               defaultValue={title}
               onChange={(event) =>
