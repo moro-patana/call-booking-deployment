@@ -23,12 +23,12 @@ const SelectInput: FC<SelectInputProps> = ({
   return (
     <Box className={wrapper}>
       <FormControl fullWidth size="small">
-        <InputLabel id="select-label">Available Rooms</InputLabel>
+        <InputLabel id="room-select-label">Available Rooms</InputLabel>
         <Select
           value={value}
           onChange={handleChange}
-          id="select"
-          labelId="select-label"
+          id="rooms-select"
+          labelId="room-select-label"
           label="Available Rooms"
           className={select}
           defaultValue={defaultValue}
