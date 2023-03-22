@@ -1,0 +1,5 @@
+.rbcBtnGroup {
+    display: flex;
+    flex-direction: row-reverse;
+    margin-left: 20px;
+  }

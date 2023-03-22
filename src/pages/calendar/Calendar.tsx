@@ -21,7 +21,7 @@ import BookingModal from "../../components/modals/bookingModal/BookingModal";
 import ExpendableMenu from "../../components/menu/ExpendableMenu";
 import styles from "./calendar.module.css";
 import { getUserById, sendQuery } from "../../graphqlHelper";
-import CustomToolbar from "./CustomToolBar";
+import CustomToolbar from "../../components/customToolBar/CustomToolBar";
 
 const { container } = styles;
 
@@ -271,17 +271,24 @@ const CalendarPage = () => {
     return { style };
   };
 
-  function Components() {
-    const { components, defaultDate, scrollToTime }: ComponentsProps = useMemo(
-      () => ({
-        components: {
-          toolbar: CustomToolbar,
-        },
-        defaultDate: new Date(),
-        scrollToTime: new Date()
-      }), [])
+  const { components, defaultDate, scrollToTime }: ComponentsProps = useMemo(
+    () => ({
+      components: {
+        toolbar: CustomToolbar,
+      },
+      defaultDate: new Date(),
+      scrollToTime: new Date()
+    }), [])
 
-    return (
+  return (
+    <Box className={container}>
+      <ExpendableMenu
+        currentDay={currentDay}
+        endingDay={endingDay}
+        setCurrentDay={setCurrentDay}
+        setEndingDay={setEndingDay}
+        setWeek={() => null} // Still needs to be implemented
+      />
       <DragAndDropCalendar
         localizer={localizer}
         events={events}
@@ -308,19 +315,6 @@ const CalendarPage = () => {
         draggableAccessor={(event) => isUserBooking(event)}
         components={components}
       />
-    )
-  }
-
-  return (
-    <Box className={container}>
-      <ExpendableMenu
-        currentDay={currentDay}
-        endingDay={endingDay}
-        setCurrentDay={setCurrentDay}
-        setEndingDay={setEndingDay}
-        setWeek={() => null} // Still needs to be implemented
-      />
-      {Components()}
       {showEditBookingModal && (
         <EditBookingModal
           showEditBookingModal

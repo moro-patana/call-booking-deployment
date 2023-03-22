@@ -6,8 +6,13 @@ body {
     display: none;
 }
 
-#button:focus {
+#button, #active-btn {
   color: black;
+  background-color: #e6e6e6;
+}
+
+.rbc-toolbar {
+  margin-block-start: 70px;
 }
 
 .rbc-header {
@@ -25,4 +30,9 @@ body {
 
 .rbc-label {
   line-height: 37px;
+}
+
+.rbc-time-content {
+  overflow-y: scroll;
+  max-height: 100vh;
 }
