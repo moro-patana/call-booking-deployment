@@ -1,13 +1,14 @@
 .wrapper {
   width: 100%;
   margin-bottom: 16px;
-}
-
-.wrapper svg {
-  display: none;
+  margin-top: 16px;
 }
 
 .typography {
   display: block;
   margin-top: 6px;
+}
+
+.select {
+  width: 100%;
 }

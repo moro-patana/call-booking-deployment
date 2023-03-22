@@ -13,64 +13,54 @@ import { isBefore } from "date-fns";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { setBookings } from "../../../redux/reducers/bookingsSlice";
 import { setErrorMessage } from "../../../redux/reducers/errorMessage";
-import { IEvent, newBookingType, RoomType } from "../../../utils/types";
+import { IEvent, NewBookingType } from "../../../utils/types";
 import {
+  getValidTime,
   isTimeOverlapping,
   newDateGenerator,
   timeConverter,
 } from "../../../utils/dateUtils";
+import { getAvailableRooms, getAvailableRoomsNote, handleSelectDate } from "../../../utils/modalUtils";
 import { bookingMutation, sendAuthorizedQuery } from "../../../graphqlHelper";
 
 import SelectInput from "../../UIs/Select/SelectInput";
 import DatePicker from "../../UIs/datePicker/DatePicker";
 
 import styles from "./bookingModal.module.css";
+import { roomsData } from "../../../redux/reducers/roomsSlice";
 
 interface BookingModalProps {
-  rooms: RoomType[];
   openBookingModal: boolean;
   closeBookingModal: () => void;
   position: { x: number; y: number };
-  newBooking: newBookingType;
-  setNewBooking: (value: newBookingType) => void;
+  newBooking: NewBookingType;
+  setNewBooking: (value: NewBookingType) => void;
   events: IEvent[];
-  handleSelectDate: (
-    value: any,
-    booking: IEvent | newBookingType,
-    setBooking: (value: newBookingType) => void,
-    startTime: string,
-    endTime: string
-  ) => void;
 }
 
-const { 
+const {
   modal, box, typography, backdrop, datePickerWrapper,
   buttonWrapper, textField, spanError,
 } = styles;
 
 
 const BookingModal: FC<BookingModalProps> = ({
-  rooms,
-  openBookingModal,
-  closeBookingModal,
+  events,
   position,
   newBooking,
+  openBookingModal,
   setNewBooking,
-  handleSelectDate,
-  events,
+  closeBookingModal,
 }) => {
   const dispatch = useAppDispatch();
+  const rooms = useAppSelector(roomsData);
   const { currentUser } = useAppSelector((state) => state.users);
+  const { allBookings } = useAppSelector((state) => state.bookings);
   const { resourceId, start, end, title } = newBooking;
   const startDate = new Date(start);
   const endDate = new Date(end);
-  const { allBookings } = useAppSelector((state) => state.bookings);
-  const [startTime, setStartTime] = useState(
-    `${timeConverter(start.getHours())}:${timeConverter(start.getMinutes())}`
-  );
-  const [endTime, setEndTime] = useState(
-    `${timeConverter(end.getHours())}:${timeConverter(end.getMinutes())}`
-  );
+  const [startTime, setStartTime] = useState(`${timeConverter(start.getHours())}:${timeConverter(start.getMinutes())}`);
+  const [endTime, setEndTime] = useState(`${timeConverter(end.getHours())}:${timeConverter(end.getMinutes())}`);
   const newStartDate = newDateGenerator(startDate, startTime);
   const newEndDate = newDateGenerator(endDate, endTime);
 
@@ -78,6 +68,12 @@ const BookingModal: FC<BookingModalProps> = ({
     left: position.x > 70 ? "70%" : `${position.x}%`,
     top: position.y > 518 ? 518 : position.y > 18 ? position.y : 18,
   };
+
+  const availableRooms = getAvailableRooms({ events, selectedRoom: resourceId, start, newStartDate, newEndDate, rooms });
+
+  const availableRoomsNote = getAvailableRoomsNote(availableRooms?.length);
+
+  const isValidTime = getValidTime(newStartDate, newEndDate);
 
   const isBookingOverlapping = isTimeOverlapping(
     newBooking,
@@ -119,8 +115,8 @@ const BookingModal: FC<BookingModalProps> = ({
               ...allBookings,
               {
                 ...newBooking,
-                start: String(start),
-                end: String(end),
+                start: String(newStartDate),
+                end: String(newEndDate),
                 participants: [id],
               },
             ])
@@ -149,9 +145,8 @@ const BookingModal: FC<BookingModalProps> = ({
           >
             Book a room
           </Typography>
-
           <TextField
-            label="label"
+            label="Title"
             className={textField}
             onChange={(event) =>
               setNewBooking({ ...newBooking, title: event.target.value })
@@ -168,11 +163,13 @@ const BookingModal: FC<BookingModalProps> = ({
                 value={start}
                 handleChange={(value) =>
                   handleSelectDate(
-                    value,
-                    newBooking,
-                    setNewBooking,
-                    startTime,
-                    endTime
+                    {
+                      value,
+                      booking: newBooking,
+                      setBooking: setNewBooking,
+                      startTime,
+                      endTime
+                    }
                   )
                 }
                 startTime={startTime}
@@ -193,19 +190,27 @@ const BookingModal: FC<BookingModalProps> = ({
             )}
           </Box>
 
-          <SelectInput
-            handleChange={(event: SelectChangeEvent<any>) => {
-              setNewBooking({ ...newBooking, resourceId: event.target.value });
-            }}
-            data={rooms}
-            defaultValue={resourceId}
-            value={resourceId}
-            note="There are available rooms"
-          />
+          {availableRooms.length > 0 &&
+            <SelectInput
+              handleChange={(event: SelectChangeEvent<any>) => {
+                setNewBooking({ ...newBooking, resourceId: event.target.value });
+              }}
+              data={availableRooms}
+              defaultValue={resourceId}
+              value={resourceId}
+              note={availableRoomsNote}
+            />
+          }
+
+          {availableRooms.length === 0 && (
+            <Typography className={spanError} variant="body2">
+              There is no available room for the selected time or the selected time is invalid.
+            </Typography>
+          )}
           <Box className={buttonWrapper}>
             <Button onClick={closeBookingModal}>Cancel</Button>
             <Button
-              disabled={isPastBooking || isBookingOverlapping}
+              disabled={isPastBooking || isBookingOverlapping || !isValidTime}
               variant="contained"
               onClick={handleSubmitBooking}
             >
