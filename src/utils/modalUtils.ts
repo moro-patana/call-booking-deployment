@@ -1,12 +1,12 @@
 import { areIntervalsOverlapping } from "date-fns";
 import { changeDateTime, getValidTime } from "./dateUtils";
-import { IEvent, newBookingType, RoomType } from "./types";
+import { HandleSelectDatePropsType, IEvent, RoomType } from "./types";
 
 export const getAvailableRoomsNote = (roomsCount: number | null) => {
   if (roomsCount === 1) {
-    return `There is ${roomsCount} available room`
+    return `There is ${roomsCount} available room`;
   } else {
-    return `There are ${roomsCount} available rooms`
+    return `There are ${roomsCount} available rooms`;
   }
 }
 
@@ -32,7 +32,9 @@ export const getAvailableRooms = ({ events, selectedRoom, start, newStartDate, n
 
     const bookedRoomsId = bookingOnTheSameTimeSlot.map((booking: IEvent) => booking?.resourceId);
 
-    return rooms?.filter((room: RoomType) => selectedRoom === room?.id || !bookedRoomsId.includes(room?.id));
+    const availableRooms = rooms?.filter((room: RoomType) => selectedRoom === room?.id || !bookedRoomsId.includes(room?.id));
+
+    return availableRooms;
   }
   return [];
 }
@@ -44,13 +46,7 @@ export const handleSelectDate = (
     setBooking,
     startTime,
     endTime
-  }: {
-    value: any,
-    booking: IEvent | newBookingType,
-    setBooking: (value: IEvent | newBookingType) => void,
-    startTime: string,
-    endTime: string
-  }
+  }: HandleSelectDatePropsType
 ) => {
   changeDateTime(new Date(value), startTime);
   setBooking({

@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { roomsData } from "../../redux/reducers/roomsSlice";
 import { setBookings } from "../../redux/reducers/bookingsSlice";
 import { dateStringConverter, getCurrentDay, getEndingDay, isTimeOverlapping } from "../../utils/dateUtils";
-import { Booking, IEvent, IResource, newBookingType, RoomType, UserType } from "../../utils/types";
+import { Booking, IEvent, IResource, NewBookingType, RoomType, UserType } from "../../utils/types";
 
 import { LOGIN } from "../../constants/path";
 
@@ -65,7 +65,7 @@ const CalendarPage = () => {
 
   // Add new booking modal states
   const [openBookingModal, setOpenBookingModal] = useState(false);
-  const [newBooking, setNewBooking] = useState<newBookingType>({
+  const [newBooking, setNewBooking] = useState<NewBookingType>({
     id: "",
     title: "",
     start: selectedDate,
