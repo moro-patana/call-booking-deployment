@@ -1,5 +1,5 @@
 import { areIntervalsOverlapping, endOfWeek, startOfWeek } from "date-fns";
-import { IEvent, newBookingType } from "./types";
+import { IEvent, NewBookingType } from "./types";
 
 export const timeConverter = (time: number) => {
   return time < 10 ? `0${time}` : time;
@@ -45,7 +45,7 @@ export const getValidTime = (startDate: Date, endDate: Date) =>
   startDate.getTime() < endDate.getTime() && startDate.getTime() !== endDate.getTime();
 
 export const isTimeOverlapping = (
-  booking: IEvent | newBookingType,
+  booking: IEvent | NewBookingType,
   startTime: Date,
   endTime: Date,
   events: IEvent[]

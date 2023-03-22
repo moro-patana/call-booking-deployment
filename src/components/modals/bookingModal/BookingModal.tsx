@@ -13,7 +13,7 @@ import { isBefore } from "date-fns";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { setBookings } from "../../../redux/reducers/bookingsSlice";
 import { setErrorMessage } from "../../../redux/reducers/errorMessage";
-import { IEvent, newBookingType } from "../../../utils/types";
+import { IEvent, NewBookingType } from "../../../utils/types";
 import {
   getValidTime,
   isTimeOverlapping,
@@ -33,8 +33,8 @@ interface BookingModalProps {
   openBookingModal: boolean;
   closeBookingModal: () => void;
   position: { x: number; y: number };
-  newBooking: newBookingType;
-  setNewBooking: (value: newBookingType) => void;
+  newBooking: NewBookingType;
+  setNewBooking: (value: NewBookingType) => void;
   events: IEvent[];
 }
 
@@ -204,7 +204,7 @@ const BookingModal: FC<BookingModalProps> = ({
 
           {availableRooms.length === 0 && (
             <Typography className={spanError} variant="body2">
-              No room is available at selected time or the selected time is invalid.
+              There is no available room for the selected time or the selected time is invalid.
             </Typography>
           )}
           <Box className={buttonWrapper}>

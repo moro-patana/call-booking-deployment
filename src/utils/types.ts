@@ -61,7 +61,7 @@ export interface Booking {
   participants: string[];
 }
 
-export interface newBookingType {
+export interface NewBookingType {
   id: string | number;
   title: string;
   start: Date;
@@ -72,7 +72,15 @@ export interface newBookingType {
 
 export interface SelectDatePropsType {
   value: Date | string;
-  setBooking: (value: IEvent | newBookingType) => void;
+  setBooking: (value: IEvent | NewBookingType) => void;
+  startTime: string;
+  endTime: string;
+}
+
+export interface HandleSelectDatePropsType {
+  value: any;
+  booking: IEvent | NewBookingType;
+  setBooking: (value: IEvent | NewBookingType) => void;
   startTime: string;
   endTime: string;
 }
