@@ -37,6 +37,7 @@ const DatePicker: FC<DatePickerProps> = ({
         <Box className={`${wrapper} ${datePickerWrapper}`}>
           <DesktopDatePicker
             disablePast={true}
+            disableMaskedInput={true}
             label="date"
             inputFormat="EEEE, MMMM dd"
             value={value}

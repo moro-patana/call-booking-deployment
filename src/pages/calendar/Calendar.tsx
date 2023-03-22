@@ -11,7 +11,7 @@ import { fetchRooms } from "../../redux/actions/rooms";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { roomsData } from "../../redux/reducers/roomsSlice";
 import { setBookings } from "../../redux/reducers/bookingsSlice";
-import { changeDateTime, dateStringConverter, getCurrentDay, getEndingDay, isTimeOverlapping } from "../../utils/dateUtils";
+import { dateStringConverter, getCurrentDay, getEndingDay, isTimeOverlapping } from "../../utils/dateUtils";
 import { Booking, IEvent, IResource, newBookingType, RoomType, UserType } from "../../utils/types";
 
 import { LOGIN } from "../../constants/path";
@@ -165,7 +165,7 @@ const CalendarPage = () => {
 
       const bookings = events.filter((booking: IEvent) => booking.id !== event.id);
 
-      const isBookingOverlapping = isTimeOverlapping(selectedEvent, start, end, bookings)
+      const isBookingOverlapping = isTimeOverlapping(selectedEvent, start, end, bookings);
 
       if (!isBookingOverlapping && !isPastBooking) {
         dispatch(
@@ -189,12 +189,14 @@ const CalendarPage = () => {
   const resizeEvent = useCallback(
     async ({ event, start, end }: { event: IEvent; start: any; end: any }) => {
       const { id, title, resourceId } = event;
-      
-      const bookings = events.filter((booking: IEvent) => booking.id !== event.id);
-      
-      const isBookingOverlapping = !isTimeOverlapping(event, start, end, bookings);
 
-      if (!isBookingOverlapping) {
+      const bookings = events.filter((booking: IEvent) => booking.id !== event.id);
+
+      const isPastBooking = isBefore(start, new Date()) && isBefore(end, new Date());
+
+      const isBookingOverlapping = isTimeOverlapping(event, start, end, bookings);
+
+      if (!isBookingOverlapping && !isPastBooking) {
         dispatch(
           updateSelectedBooking(
             id,
@@ -219,39 +221,18 @@ const CalendarPage = () => {
   };
 
   const openEditModal = (booking: IEvent, event: any) => {
-    const { start, end, resourceId, title, id, participants } = booking;
+    const { participants } = booking;
     const screenWidth = window.screen.width;
     const x = Math.floor((event.pageX / screenWidth) * 100);
     const y = event.pageY;
 
-    setSelectedBooking({
-      ...booking,
-      id,
-      title,
-      start,
-      end,
-      resourceId,
-    });
-    if(participants[0] !== currentUser?.login?.id) {
+    setSelectedBooking(booking);
+
+    if (participants[0] !== currentUser?.login?.id) {
       getCurrentBookingParticipant(participants);
     };
     setShowEditBookingModal(true);
     setPosition({ x, y });
-  };
-
-  const handleSelectDate = (
-    value: any,
-    booking: IEvent | newBookingType,
-    setBooking: (value: IEvent | newBookingType) => void,
-    startTime: string,
-    endTime: string
-  ) => {
-    changeDateTime(new Date(value), startTime);
-    setBooking({
-      ...booking,
-      start: changeDateTime(new Date(value), startTime),
-      end: changeDateTime(new Date(value), endTime),
-    });
   };
 
   const eventStyleGetter = (event: IEvent) => {
@@ -308,7 +289,6 @@ const CalendarPage = () => {
           position={position}
           selectedBooking={selectedBooking}
           setSelectedBooking={setSelectedBooking}
-          handleSelectDate={handleSelectDate}
           events={events}
           bookingOwner={currentBookingParticipant}
         />
@@ -316,13 +296,11 @@ const CalendarPage = () => {
 
       {openBookingModal && (
         <BookingModal
-          rooms={rooms}
           openBookingModal
           closeBookingModal={() => setOpenBookingModal(false)}
           position={position}
           newBooking={newBooking}
           setNewBooking={setNewBooking}
-          handleSelectDate={handleSelectDate}
           events={events}
         />
       )}

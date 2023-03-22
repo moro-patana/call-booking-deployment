@@ -43,8 +43,8 @@ export const changeDateTime = (date: Date, time: string) => {
   return new Date(modifiedHour.setMinutes(Number(timeElement[1])));
 };
 
-export const isValidTime = (startDate: Date, endDate: Date) =>
-  startDate.getTime() < endDate.getTime();
+export const getValidTime = (startDate: Date, endDate: Date) =>
+  startDate.getTime() < endDate.getTime() && startDate.getTime() !== endDate.getTime();
 
 export const isTimeOverlapping = (
   booking: IEvent | newBookingType,
@@ -63,7 +63,7 @@ export const isTimeOverlapping = (
     );
   });
 
-  if (isValidTime(startTime, endTime)) {
+  if (getValidTime(startTime, endTime)) {
     const bookingOnTheSameHour = bookingOnTheSelectedDay.filter(
       (booking: IEvent) =>
         areIntervalsOverlapping(
