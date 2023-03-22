@@ -1,7 +1,6 @@
-const GraphQLSchema = require("graphql").GraphQLSchema;
-const GraphQLObjectType = require("graphql").GraphQLObjectType;
 const queryType = require("./queries/bookingQuery").BookingQuery;
 const bookingMutations = require("./mutations/bookingMutations");
+const { GraphQLObjectType, GraphQLSchema } = require('graphql');
 
 exports.BookingSchema = new GraphQLSchema({
   query: queryType,

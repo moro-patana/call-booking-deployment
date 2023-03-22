@@ -31,7 +31,8 @@
 
 .button {
     border-color: #9d9898;
-    padding: 0px
+    padding: 0px;
+    display: none;
 }
 
 .iconStyle {

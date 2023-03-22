@@ -29,17 +29,8 @@ interface EditModalProps {
 }
 
 const {
-  modal,
-  box,
-  typography,
-  backdrop,
-  datePickerWrapper,
-  buttonWrapper,
-  textField,
-  buttonContainer,
-  deleteButton,
-  spanError,
-  cancelButtonWrapper
+  modal, box, typography, backdrop, datePickerWrapper, buttonWrapper,
+  textField, buttonContainer, deleteButton, spanError, cancelButtonWrapper
 } = styles;
 
 const EditBookingModal: FC<EditModalProps> = ({
@@ -186,7 +177,7 @@ const EditBookingModal: FC<EditModalProps> = ({
               {isMyBooking ? "Edit booking" : "Booking details"}
             </Typography>
             <TextField
-              label="label"
+              label="Title"
               className={textField}
               defaultValue={title}
               onChange={(event) =>

@@ -9,7 +9,7 @@ type FetchUserLoginError = {
 };
 
 interface UsersState {
-  users: [],
+  users: [];
   currentUser: {
     username: string;
     email?: string;

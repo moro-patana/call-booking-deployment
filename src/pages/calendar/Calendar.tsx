@@ -22,6 +22,8 @@ import ExpendableMenu from "../../components/menu/ExpendableMenu";
 import styles from "./calendar.module.css";
 import { getUserById, sendQuery } from "../../graphqlHelper";
 
+const { container } = styles;
+
 const DragAndDropCalendar = withDragAndDrop<IEvent, IResource>(Calendar);
 
 const locales = { "en-US": enUS };
@@ -41,8 +43,6 @@ const calendarStyle = () => {
     },
   };
 };
-
-const { container } = styles;
 
 const CalendarPage = () => {
   const rooms = useAppSelector(roomsData);
@@ -262,7 +262,7 @@ const CalendarPage = () => {
         events={events}
         defaultDate={defaultDate}
         defaultView={Views.DAY}
-        style={{ height: "100vh" }}
+        style={{ height: "90vh", padding: '1rem' }}
         selectable
         onSelectSlot={(e) => handleSelectEvent(e)}
         resources={resources}

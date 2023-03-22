@@ -39,14 +39,8 @@ interface BookingModalProps {
 }
 
 const {
-  modal,
-  box,
-  typography,
-  backdrop,
-  datePickerWrapper,
-  buttonWrapper,
-  textField,
-  spanError,
+  modal, box, typography, backdrop, datePickerWrapper,
+  buttonWrapper, textField, spanError,
 } = styles;
 
 
@@ -151,9 +145,8 @@ const BookingModal: FC<BookingModalProps> = ({
           >
             Book a room
           </Typography>
-
           <TextField
-            label="label"
+            label="Title"
             className={textField}
             onChange={(event) =>
               setNewBooking({ ...newBooking, title: event.target.value })

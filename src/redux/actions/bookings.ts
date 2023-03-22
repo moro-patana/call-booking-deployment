@@ -1,15 +1,6 @@
-import {
-  getBookingsByUser,
-  sendAuthorizedQuery,
-  sendQuery,
-  updateBooking,
-  getBookings,
-} from "../../graphqlHelper";
+import { getBookingsByUser, sendAuthorizedQuery, sendQuery, updateBooking, getBookings } from "../../graphqlHelper";
 import { FetchBookingsByUserAction } from "../actionTypes";
-import {
-  setBookings,
-  getBookingsByUserAction,
-} from "../reducers/bookingsSlice";
+import { setBookings, getBookingsByUserAction } from "../reducers/bookingsSlice";
 import { setErrorMessage } from "../reducers/errorMessage";
 
 export const fetchAllBookings = () => {
@@ -52,7 +43,6 @@ export const updateSelectedBooking = (
           updateBooking(id, resourceId, title, start, end, userId),
           access_token
         );
-
         return response.data.data;
       }
     } catch (error) {

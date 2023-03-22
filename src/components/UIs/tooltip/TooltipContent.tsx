@@ -1,20 +1,13 @@
 import React, { FC } from "react";
-import {
-    Stack,
-    styled as materialStyle,
-    Tooltip,
-    tooltipClasses,
-    TooltipProps,
-    Typography,
-} from "@mui/material";
+import { Stack, styled as materialStyle, Tooltip, tooltipClasses, TooltipProps, Typography } from "@mui/material";
 import styles from './TooltipContent.module.css';
 
 interface TooltipContentProps {
-    room: string;
-    startTime: string;
-    endTime: string;
-    user: string;
-    description: string;
+  room: string;
+  startTime: string;
+  endTime: string;
+  user: string;
+  description: string;
 }
 
 export const HtmlTooltip = materialStyle(
@@ -36,22 +29,22 @@ export const HtmlTooltip = materialStyle(
 const { wrapper, heading, smallText, span } = styles;
 
 const TooltipContent: FC<TooltipContentProps> = ({
-    room,
-    startTime,
-    endTime,
-    user,
-    description,
+  room,
+  startTime,
+  endTime,
+  user,
+  description,
 }) => {
 
-    return (
-        <Stack className={wrapper}>
-            <Typography variant="body1" className={heading}>{room}</Typography>
-            <Typography variant="subtitle1">{`${startTime} - ${endTime}`}</Typography>
-            <Typography variant="body2">{description}</Typography>
-            <small className={smallText}>Does not repeat</small>
-            <Typography component='span' variant="subtitle2" className={span}>{user}</Typography>
-        </Stack>
-    );
+  return (
+    <Stack className={wrapper}>
+      <Typography variant="body1" className={heading}>{room}</Typography>
+      <Typography variant="subtitle1">{`${startTime} - ${endTime}`}</Typography>
+      <Typography variant="body2">{description}</Typography>
+      <small className={smallText}>Does not repeat</small>
+      <Typography component='span' variant="subtitle2" className={span}>{user}</Typography>
+    </Stack>
+  );
 };
 
 export default TooltipContent;

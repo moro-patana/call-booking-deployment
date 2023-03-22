@@ -14,14 +14,7 @@ interface DatePickerProps {
   endTime: string;
 }
 
-const {
-  form,
-  wrapper,
-  datePickerWrapper,
-  datePicker,
-  time,
-  timePickerWrapper,
-} = styles;
+const { form, wrapper, datePickerWrapper, datePicker, time, timePickerWrapper } = styles;
 
 const DatePicker: FC<DatePickerProps> = ({
   value,

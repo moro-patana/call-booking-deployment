@@ -1,7 +1,6 @@
-const GraphQLSchema = require("graphql").GraphQLSchema;
-const GraphQLObjectType = require("graphql").GraphQLObjectType;
 const queryType = require("./queries/roomQuery").RoomQuery;
 const mutations = require("./mutations/roomMutations");
+const { GraphQLObjectType, GraphQLSchema } = require('graphql');
 
 exports.RoomSchema = new GraphQLSchema({
   query: queryType,
