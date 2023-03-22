@@ -1,5 +1,5 @@
 import { areIntervalsOverlapping, endOfWeek, startOfWeek } from "date-fns";
-import { IEvent, newBookingType } from "./types";
+import { IEvent, NewBookingType } from "./types";
 
 export const timeConverter = (time: number) => {
   return time < 10 ? `0${time}` : time;
@@ -41,11 +41,11 @@ export const changeDateTime = (date: Date, time: string) => {
   return new Date(modifiedHour.setMinutes(Number(timeElement[1])));
 };
 
-export const isValidTime = (startDate: Date, endDate: Date) =>
-  startDate.getTime() < endDate.getTime();
+export const getValidTime = (startDate: Date, endDate: Date) =>
+  startDate.getTime() < endDate.getTime() && startDate.getTime() !== endDate.getTime();
 
 export const isTimeOverlapping = (
-  booking: IEvent | newBookingType,
+  booking: IEvent | NewBookingType,
   startTime: Date,
   endTime: Date,
   events: IEvent[]
@@ -61,12 +61,13 @@ export const isTimeOverlapping = (
     );
   });
 
-  if (isValidTime(startTime, endTime)) {
-    const bookingOnTheSameHour = bookingOnTheSelectedDay.filter((booking: IEvent) => (
-      areIntervalsOverlapping(
-        { start: startTime, end: endTime },
-        { start: booking.start, end: booking.end }
-      ))
+  if (getValidTime(startTime, endTime)) {
+    const bookingOnTheSameHour = bookingOnTheSelectedDay.filter(
+      (booking: IEvent) =>
+        areIntervalsOverlapping(
+          { start: startTime, end: endTime },
+          { start: booking.start, end: booking.end }
+        )
     );
     return bookingOnTheSameHour.length > 0;
   }
