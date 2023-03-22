@@ -1,3 +1,28 @@
 body {
   overflow: hidden;
 }
+
+.rbc-time-view .rbc-allday-cell {
+    display: none;
+}
+
+#button:focus {
+  color: black;
+}
+
+.rbc-header {
+  padding-block: 10px;
+  border-bottom: none;
+}
+
+.rbc-time-header-content > .rbc-row.rbc-row-resource {
+  border-bottom: none; 
+}
+
+.rbc-time-content { 
+  border-top: 1px solid #ddd;
+}
+
+.rbc-label {
+  line-height: 37px;
+}

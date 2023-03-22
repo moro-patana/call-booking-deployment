@@ -21,10 +21,17 @@ import BookingModal from "../../components/modals/bookingModal/BookingModal";
 import ExpendableMenu from "../../components/menu/ExpendableMenu";
 import styles from "./calendar.module.css";
 import { getUserById, sendQuery } from "../../graphqlHelper";
+import CustomToolbar from "./CustomToolBar";
 
 const { container } = styles;
 
 const DragAndDropCalendar = withDragAndDrop<IEvent, IResource>(Calendar);
+
+interface ComponentsProps {
+  components: any;
+  defaultDate: Date;
+  scrollToTime: Date;
+}
 
 const locales = { "en-US": enUS };
 
@@ -127,8 +134,6 @@ const CalendarPage = () => {
     setNewBooking({ ...newBooking, resourceId, start, end });
     setOpenBookingModal(!openBookingModal);
   };
-
-  const { defaultDate, scrollToTime } = useMemo(() => ({ defaultDate: new Date(), scrollToTime: new Date() }), []);
 
   const updateBooking = useCallback(
     (
@@ -266,22 +271,24 @@ const CalendarPage = () => {
     return { style };
   };
 
-  return (
-    <Box className={container}>
-      <ExpendableMenu
-        currentDay={currentDay}
-        endingDay={endingDay}
-        setCurrentDay={setCurrentDay}
-        setEndingDay={setEndingDay}
-        setWeek={() => null} // Still needs to be implemented
-      />
+  function Components() {
+    const { components, defaultDate, scrollToTime }: ComponentsProps = useMemo(
+      () => ({
+        components: {
+          toolbar: CustomToolbar,
+        },
+        defaultDate: new Date(),
+        scrollToTime: new Date()
+      }), [])
 
+    return (
       <DragAndDropCalendar
         localizer={localizer}
         events={events}
         defaultDate={defaultDate}
         defaultView={Views.DAY}
-        style={{ height: "100vh" }}
+        toolbar={true}
+        style={{ height: "100vh", display: 'block', paddingInline: 27 }}
         selectable
         onSelectSlot={(e) => handleSelectEvent(e)}
         resources={resources}
@@ -299,8 +306,21 @@ const CalendarPage = () => {
         }}
         eventPropGetter={eventStyleGetter}
         draggableAccessor={(event) => isUserBooking(event)}
+        components={components}
       />
+    )
+  }
 
+  return (
+    <Box className={container}>
+      <ExpendableMenu
+        currentDay={currentDay}
+        endingDay={endingDay}
+        setCurrentDay={setCurrentDay}
+        setEndingDay={setEndingDay}
+        setWeek={() => null} // Still needs to be implemented
+      />
+      {Components()}
       {showEditBookingModal && (
         <EditBookingModal
           showEditBookingModal
