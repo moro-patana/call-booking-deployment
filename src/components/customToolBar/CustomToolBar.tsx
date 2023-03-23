@@ -1,5 +1,7 @@
-import clsx from 'clsx'
-import { navigate } from '../../constants'
+import { useState } from "react";
+import { Box, Button, ButtonGroup, Typography } from "@mui/material";
+import clsx from "clsx";
+import { navigate } from "../../constants";
 import styles from "./customToolBar.module.css";
 
 interface Message {
@@ -25,62 +27,72 @@ interface CustomToolbarProps {
     view: string;
 }
 
-const { rbcBtnGroup } = styles;
+const { rbcBtnGroup, button } = styles;
 
 const ViewNamesGroup = ({ view, onView, name }: ViewNamesGroup) => {
 
     return (
-        <button
+        <Button
             type="button"
-            id={name === view ? 'button' : ''}
+            id={name === view ? "button" : ""}
             onClick={() => onView(view)}
+            className={button}
         >
             {view}
-        </button>
+        </Button>
     )
 }
 
-export default function CustomToolbar({
+const CustomToolbar = ({
     label,
     localizer: messages,
     onNavigate,
     onView,
     views,
     view
-}: CustomToolbarProps) {
+}: CustomToolbarProps) => {
+    const [todayButtonId, setTodayButtonId] = useState('active-btn');
 
-    const currentDate = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const handleOnClick = (path: string) => {
+        onNavigate(path);
+        
+        if(path !== navigate.TODAY) {
+            setTodayButtonId('');
+        }
+    }
 
     return (
-        <div className="rbc-toolbar">
-            <span className={clsx('rbc-btn-group', 'examples--custom-toolbar')}>
-                <button
-                    type="button"
-                    onClick={() => onNavigate(navigate.PREVIOUS)}
+        <Box className="rbc-toolbar">
+            <ButtonGroup className={clsx("rbc-btn-group", "examples--custom-toolbar")}>
+                <Button
+                    onClick={() => handleOnClick(navigate.PREVIOUS)}
                     aria-label={messages.previous}
+                    className={button}
                 >
-                    {view === 'week' ? 'Previuos' : "Yesterday"}
-                </button>
-                <button
-                    type="button"
-                    id={label.includes(currentDate) ? 'active-btn' : ''}
-                    onClick={() => onNavigate(navigate.TODAY)}
+                    Previous 
+                </Button>
+                <Button
+                    id={todayButtonId}
+                    onClick={() => handleOnClick(navigate.TODAY)}
                     aria-label={messages.today}
+                    className={button}
                 >
-                    { view === 'week' ? 'This week' : "Today"}
-                </button>
-                <button
-                    type="button"
-                    onClick={() => onNavigate(navigate.NEXT)}
+                    Today
+                </Button>
+                <Button
+                    onClick={() => handleOnClick(navigate.NEXT)}
                     aria-label={messages.next}
+                    className={button}
                 >
-                    {view === 'week' ? 'Next' : "Tomorrow"}
-                </button>
-            </span>
-            <span className={rbcBtnGroup}>
+                    Next
+                </Button>
+            </ButtonGroup>
+            <Box className={rbcBtnGroup}>
                 {views.map(item => <ViewNamesGroup key={item} name={view} view={item} onView={onView} />)}
-            </span>
-            <span className="rbc-toolbar-label">{label}</span>
-        </div>
+            </Box>
+            <Typography className="rbc-toolbar-label">{label}</Typography>
+        </Box>
     )
 }
+
+export default CustomToolbar

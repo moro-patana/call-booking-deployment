@@ -252,14 +252,13 @@ const CalendarPage = () => {
     return { style };
   };
 
-  const { components, defaultDate, scrollToTime }: ComponentsProps = useMemo(
-    () => ({
-      components: {
-        toolbar: CustomToolbar,
-      },
-      defaultDate: new Date(),
-      scrollToTime: new Date()
-    }), [])
+  const { components, defaultDate, scrollToTime }: ComponentsProps = useMemo(() => ({
+    components: {
+      toolbar: CustomToolbar,
+    },
+    defaultDate: new Date(),
+    scrollToTime: new Date()
+  }), [])
 
   return (
     <Box className={container}>

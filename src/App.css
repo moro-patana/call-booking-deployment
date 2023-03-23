@@ -6,6 +6,14 @@ body {
     display: none;
 }
 
+.rbc-toolbar button {
+  border-radius: 0;
+}
+
+.rbc-toolbar button:focus {
+  color: black;
+}
+
 #button, #active-btn {
   color: black;
   background-color: #e6e6e6;
