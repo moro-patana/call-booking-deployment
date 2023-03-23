@@ -2,49 +2,51 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 
-import { 
-  AppBar, Container, Box, Toolbar, IconButton, 
-  Typography, Menu, Avatar, MenuItem, Tooltip 
+import {
+  AppBar, Container, Box, Toolbar, IconButton,
+  Typography, Menu, Avatar, MenuItem, Tooltip
 } from '@mui/material';
 
 import { HOME, LOGOUT } from '../../constants/path';
-
 import onjaLogo from '../../icons/onja-logo.svg';
 import { setCurrentUser } from '../../redux/reducers/usersSlice';
 import { useAppDispatch } from '../../redux/hooks';
-
 import styles from './Header.module.css';
 
 const basePath = HOME;
 
 const menu = [
-  { name: 'Login', url: 'login' },
-  { name: 'Logout', url: 'logout' }
+  { name: "Login", url: "login" },
+  { name: "Logout", url: "logout" }
 ];
 
 const { headerBar, container, title, avatar, avatarBatton } = styles;
 
 const Header = () => {
   const dispatch = useAppDispatch();
-  const [cookies, addCookie, removeCookie] = useCookies(['currentUser', 'isLoggedOut']);
+  const [cookies, addCookie, removeCookie] = useCookies(["currentUser", "isLoggedOut"]);
   const { currentUser } = cookies;
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const navigate = useNavigate();
 
   const changePath = (path: string) => {
     navigate(`${basePath}${path}`)
-    if(path === 'logout') logOut();
+    if (path === "logout") logOut();
     setAnchorElUser(null);
   };
 
   const logOut = async () => {
-    removeCookie('currentUser', { path: HOME });
-    addCookie('isLoggedOut', true, { path: HOME });
-    navigate(LOGOUT);
+    if (cookies?.currentUser?.login) {
+      removeCookie("currentUser", { path: HOME });
+      addCookie("isLoggedOut", true, { path: HOME });
+      navigate(LOGOUT);
+
+    } else navigate(LOGOUT);
+
   };
 
   useEffect(() => {
-    if(cookies?.currentUser?.login) {
+    if (cookies?.currentUser?.login) {
       const { login } = cookies?.currentUser;
       dispatch(setCurrentUser({ isLogin: true, login }));
     }
@@ -62,9 +64,9 @@ const Header = () => {
         <Menu
           id="menu-appbar"
           anchorEl={anchorElUser}
-          anchorOrigin={{ vertical: 38, horizontal: 'center' }}
+          anchorOrigin={{ vertical: 38, horizontal: "center" }}
           keepMounted
-          transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+          transformOrigin={{ vertical: "top", horizontal: "center" }}
           open={Boolean(anchorElUser)}
           onClose={() => setAnchorElUser(null)}
         >
