@@ -20,7 +20,7 @@ import {
   newDateGenerator,
   timeConverter,
 } from "../../../utils/dateUtils";
-import { getAvailableRooms, getAvailableRoomsNote, handleSelectDate } from "../../../utils/modalUtils";
+import { getAvailableRooms, handleSelectDate } from "../../../utils/modalUtils";
 import { bookingMutation, sendAuthorizedQuery } from "../../../graphqlHelper";
 
 import SelectInput from "../../UIs/Select/SelectInput";
@@ -70,8 +70,6 @@ const BookingModal: FC<BookingModalProps> = ({
   };
 
   const availableRooms = getAvailableRooms({ events, selectedRoom: resourceId, start, newStartDate, newEndDate, rooms });
-
-  const availableRoomsNote = getAvailableRoomsNote(availableRooms?.length);
 
   const isValidTime = getValidTime(newStartDate, newEndDate);
 
@@ -198,7 +196,6 @@ const BookingModal: FC<BookingModalProps> = ({
               data={availableRooms}
               defaultValue={resourceId}
               value={resourceId}
-              note={availableRoomsNote}
             />
           }
 

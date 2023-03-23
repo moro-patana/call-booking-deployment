@@ -10,7 +10,7 @@ import { setErrorMessage } from "../../../redux/reducers/errorMessage";
 import { setBookings } from "../../../redux/reducers/bookingsSlice";
 import { isTimeOverlapping, getValidTime, newDateGenerator, timeConverter } from "../../../utils/dateUtils";
 import { Booking, IEvent, RoomType, UserType } from "../../../utils/types";
-import { getAvailableRooms, getAvailableRoomsNote, handleSelectDate } from "../../../utils/modalUtils";
+import { getAvailableRooms, handleSelectDate } from "../../../utils/modalUtils";
 import { deleteBooking, sendAuthorizedQuery } from "../../../graphqlHelper";
 
 import SelectInput from "../../UIs/Select/SelectInput";
@@ -93,8 +93,6 @@ const EditBookingModal: FC<EditModalProps> = ({
   const isValidTime = getValidTime(newStartDate, newEndDate);
 
   const availableRooms = getAvailableRooms({ events, selectedRoom: resourceId, start, newStartDate, newEndDate, rooms });
-
-  const availableRoomsNote = getAvailableRoomsNote(availableRooms.length);
 
   const isMyBooking = participants?.includes(userId);
 
@@ -237,7 +235,6 @@ const EditBookingModal: FC<EditModalProps> = ({
                 data={availableRooms}
                 defaultValue={resourceId}
                 value={resourceId}
-                note={availableRoomsNote}
               />
             }
             {availableRooms.length === 0 && (

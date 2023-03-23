@@ -2,14 +2,6 @@ import { areIntervalsOverlapping } from "date-fns";
 import { changeDateTime, getValidTime } from "./dateUtils";
 import { HandleSelectDatePropsType, IEvent, RoomType } from "./types";
 
-export const getAvailableRoomsNote = (roomsCount: number | null) => {
-  if (roomsCount === 1) {
-    return `There is ${roomsCount} available room`;
-  } else {
-    return `There are ${roomsCount} available rooms`;
-  }
-}
-
 export const getAvailableRooms = ({ events, selectedRoom, start, newStartDate, newEndDate, rooms }:
   { events: IEvent[], selectedRoom: string, start: Date, newStartDate: Date, newEndDate: Date, rooms: RoomType[] }) => {
   const selectedTimeSlotBooking = events.filter((booking: IEvent) => {
