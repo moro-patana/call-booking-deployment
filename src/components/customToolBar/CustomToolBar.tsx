@@ -10,7 +10,7 @@ interface Message {
     next: string;
 }
 
-interface ViewNamesGroup {
+interface ViewNamesGroupProps {
     onView: (name: string) => void;
     view: string;
     name: string;
@@ -29,7 +29,7 @@ interface CustomToolbarProps {
 
 const { rbcBtnGroup, button } = styles;
 
-const ViewNamesGroup = ({ view, onView, name }: ViewNamesGroup) => {
+const ViewNamesGroup = ({ view, onView, name }: ViewNamesGroupProps) => {
 
     return (
         <Button

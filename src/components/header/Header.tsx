@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 
-import { 
-  AppBar, Container, Box, Toolbar, IconButton, 
-  Typography, Menu, Avatar, MenuItem, Tooltip 
+import {
+  AppBar, Container, Box, Toolbar, IconButton,
+  Typography, Menu, Avatar, MenuItem, Tooltip
 } from '@mui/material';
 
 import { HOME, LOGOUT } from '../../constants/path';
@@ -33,18 +33,22 @@ const Header = () => {
 
   const changePath = (path: string) => {
     navigate(`${basePath}${path}`)
-    if(path === 'logout') logOut();
+    if (path === 'logout') logOut();
     setAnchorElUser(null);
   };
 
   const logOut = async () => {
-    removeCookie('currentUser', { path: HOME });
-    addCookie('isLoggedOut', true, { path: HOME });
-    navigate(LOGOUT);
+    if (cookies?.currentUser?.login) {
+      removeCookie('currentUser', { path: HOME });
+      addCookie('isLoggedOut', true, { path: HOME });
+      navigate(LOGOUT);
+
+    }else navigate(LOGOUT);
+
   };
 
   useEffect(() => {
-    if(cookies?.currentUser?.login) {
+    if (cookies?.currentUser?.login) {
       const { login } = cookies?.currentUser;
       dispatch(setCurrentUser({ isLogin: true, login }));
     }
