@@ -1,3 +1,43 @@
 body {
   overflow: hidden;
 }
+
+.rbc-time-view .rbc-allday-cell {
+  display: none;
+}
+
+.rbc-toolbar button {
+  border-radius: 0;
+}
+
+.rbc-toolbar button:focus {
+  color: black;
+}
+
+#button,
+#active-btn {
+  color: black;
+  background-color: #e6e6e6;
+}
+
+.rbc-header {
+  padding-block: 10px;
+  border-bottom: none;
+}
+
+.rbc-time-header-content>.rbc-row.rbc-row-resource {
+  border-bottom: none;
+}
+
+.rbc-time-content {
+  border-top: 1px solid #ddd;
+}
+
+.rbc-label {
+  line-height: 37px;
+}
+
+.rbc-time-content {
+  overflow-y: scroll;
+  max-height: 100vh;
+}
