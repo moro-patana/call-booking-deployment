@@ -3,7 +3,7 @@ body {
 }
 
 .rbc-time-view .rbc-allday-cell {
-    display: none;
+  display: none;
 }
 
 .rbc-toolbar button {
@@ -14,13 +14,10 @@ body {
   color: black;
 }
 
-#button, #active-btn {
+#button,
+#active-btn {
   color: black;
   background-color: #e6e6e6;
-}
-
-.rbc-toolbar {
-  margin-block-start: 70px;
 }
 
 .rbc-header {
@@ -28,11 +25,11 @@ body {
   border-bottom: none;
 }
 
-.rbc-time-header-content > .rbc-row.rbc-row-resource {
-  border-bottom: none; 
+.rbc-time-header-content>.rbc-row.rbc-row-resource {
+  border-bottom: none;
 }
 
-.rbc-time-content { 
+.rbc-time-content {
   border-top: 1px solid #ddd;
 }
 
