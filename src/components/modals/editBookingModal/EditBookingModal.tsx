@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { Box, Button, Modal, SelectChangeEvent, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Modal, SelectChangeEvent, TextField, Typography } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { format, isBefore } from "date-fns";
 
@@ -29,8 +29,8 @@ interface EditModalProps {
 }
 
 const {
-  modal, box, typography, backdrop, datePickerWrapper, buttonWrapper,
-  textField, buttonContainer, deleteButton, spanError, cancelButtonWrapper
+  modal, box, typography, backdrop, datePickerWrapper, buttonWrapper, textField,
+  buttonContainer, deleteButton, spanError, cancelButtonWrapper, alert
 } = styles;
 
 const EditBookingModal: FC<EditModalProps> = ({
@@ -171,6 +171,11 @@ const EditBookingModal: FC<EditModalProps> = ({
       >
         {isMyBooking ? (
           <Box className={box} sx={boxPosition}>
+            {isPastBooking && (
+            <Alert severity="error" className={alert}>
+              The default selected time below is already in the past. Feel free to modify that and save your booking!
+            </Alert>
+          )}
             <Typography variant="h3" className={typography}>
               {isMyBooking ? "Edit booking" : "Booking details"}
             </Typography>
@@ -212,15 +217,10 @@ const EditBookingModal: FC<EditModalProps> = ({
                 />
               </Box>
               <Box className={buttonContainer}>
-                {isPastBooking && !isBookingEdited && (
-                  <Typography className={spanError} variant="body2">
-                    Booking for a past time slot is not allowed.
-                  </Typography>
-                )}
                 {isBookingOverlapping && (
-                  <Typography className={spanError} variant="body2">
-                    Someone has booked this room for the time you selected.
-                  </Typography>
+                  <Alert severity="error" className={alert}>
+                    This room is already booked for the time you selected.
+                  </Alert>
                 )}
               </Box>
             </Box>

@@ -1,5 +1,6 @@
 import React, { FC, useState } from "react";
 import {
+  Alert,
   Box,
   Button,
   Modal,
@@ -40,7 +41,7 @@ interface BookingModalProps {
 
 const {
   modal, box, typography, backdrop, datePickerWrapper,
-  buttonWrapper, textField, spanError,
+  buttonWrapper, textField, spanError, alert
 } = styles;
 
 
@@ -136,6 +137,11 @@ const BookingModal: FC<BookingModalProps> = ({
         slotProps={{ backdrop: { className: backdrop } }}
       >
         <Box className={box} sx={boxPosition}>
+          {isPastBooking && (
+            <Alert severity="error" className={alert}>
+              The default selected time below is already in the past. Feel free to modify that and save your booking!
+            </Alert>
+          )}
           <Typography
             variant="h3"
             className={typography}
@@ -176,15 +182,10 @@ const BookingModal: FC<BookingModalProps> = ({
                 endTimeOnChange={handleEndTimeEvent}
               />
             </Box>
-            {isPastBooking && (
-              <Typography className={spanError} variant="body2">
-                Booking for a past time slot is not allowed.
-              </Typography>
-            )}
             {isBookingOverlapping && (
-              <Typography className={spanError} variant="body2">
-                Someone has booked this room for the time you selected.
-              </Typography>
+              <Alert severity="error" className={alert}>
+                This room is already booked for the time you selected.
+              </Alert>
             )}
           </Box>
 
