@@ -31,6 +31,7 @@ body {
 
 .rbc-time-content {
   border-top: 1px solid #ddd;
+  overflow: auto;
 }
 
 .rbc-label {
