@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { isBefore } from "date-fns";
+import { addMinutes, isBefore } from "date-fns";
 
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { setBookings } from "../../../redux/reducers/bookingsSlice";
@@ -61,10 +61,9 @@ const BookingModal: FC<BookingModalProps> = ({
   const startDate = new Date(start);
   const endDate = new Date(end);
   const [startTime, setStartTime] = useState(`${timeConverter(start.getHours())}:${timeConverter(start.getMinutes())}`);
-  const [endTime, setEndTime] = useState(`${timeConverter(end.getHours())}:${timeConverter(end.getMinutes())}`);
+  const [endTime, setEndTime] = useState(`${timeConverter(end.getHours())}:${timeConverter(addMinutes(end, 15).getMinutes())}`);
   const newStartDate = newDateGenerator(startDate, startTime);
   const newEndDate = newDateGenerator(endDate, endTime);
-
   const boxPosition = {
     left: position.x > 70 ? "70%" : `${position.x}%`,
     top: position.y > 518 ? 518 : position.y > 18 ? position.y : 18,
