@@ -33,6 +33,7 @@ export interface UserType {
 }
 
 export interface IEvent {
+  [x: string]: any;
   id: number | string;
   title: string;
   start: Date;

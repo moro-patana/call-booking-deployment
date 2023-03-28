@@ -1,7 +1,7 @@
 import { FC, useState } from "react";
 import { Alert, Box, Button, Modal, SelectChangeEvent, TextField, Typography } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { format, isBefore } from "date-fns";
+import { isBefore } from "date-fns";
 
 import { roomsData } from "../../../redux/reducers/roomsSlice";
 import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
@@ -9,7 +9,7 @@ import { updateSelectedBooking } from "../../../redux/actions/bookings";
 import { setErrorMessage } from "../../../redux/reducers/errorMessage";
 import { setBookings } from "../../../redux/reducers/bookingsSlice";
 import { isTimeOverlapping, getValidTime, newDateGenerator, timeConverter } from "../../../utils/dateUtils";
-import { Booking, IEvent, RoomType, UserType } from "../../../utils/types";
+import { Booking, IEvent, RoomType } from "../../../utils/types";
 import { getAvailableRooms, handleSelectDate } from "../../../utils/modalUtils";
 import { deleteBooking, sendAuthorizedQuery } from "../../../graphqlHelper";
 
@@ -25,18 +25,16 @@ interface EditModalProps {
   setShowEditBookingModal: (value: boolean) => void;
   setSelectedBooking: (value: IEvent) => void;
   events: IEvent[];
-  bookingOwner: UserType | null;
 }
 
 const {
   modal, box, typography, backdrop, datePickerWrapper, buttonWrapper, textField,
-  buttonContainer, deleteButton, spanError, cancelButtonWrapper, alert
+  buttonContainer, deleteButton, alert
 } = styles;
 
 const EditBookingModal: FC<EditModalProps> = ({
   events,
   position,
-  bookingOwner,
   selectedBooking,
   showEditBookingModal,
   setSelectedBooking,
@@ -47,7 +45,7 @@ const EditBookingModal: FC<EditModalProps> = ({
     top: position.y > 518 ? 518 : position.y > 18 ? position.y : 18,
   };
 
-  const { title, start, end, resourceId, id, participants } = selectedBooking;
+  const { title, start, end, resourceId, id } = selectedBooking;
   const dispatch = useAppDispatch();
 
   const { allBookings } = useAppSelector((state) => state.bookings);
@@ -94,8 +92,6 @@ const EditBookingModal: FC<EditModalProps> = ({
 
   const availableRooms = getAvailableRooms({ events, selectedRoom: resourceId, start, newStartDate, newEndDate, rooms });
 
-  const isMyBooking = participants?.includes(userId);
-
   const handleEditBooking = () => {
     dispatch(
       updateSelectedBooking(
@@ -140,136 +136,106 @@ const EditBookingModal: FC<EditModalProps> = ({
     }
   };
 
-  const renderBookingDetails = () => {
-    const roomName = rooms.find((room) => room?.id === resourceId)?.name;
-
-    return (
-      <Box className={box} sx={boxPosition}>
-        <Typography variant="h3" className={typography}>
-          Booking details
-        </Typography>
-        <Typography variant="body2">Booking by {bookingOwner?.username}</Typography>
-        <Typography variant="body2">Date: {format(start, "dd/MM/yyyy")} {`from ${startTime} to ${endTime}`} </Typography>
-        <Typography variant="body2">Room: {roomName}</Typography>
-        <Typography variant="body2">Reason: {title ? title : 'Not precised'}</Typography>
-        <Box className={cancelButtonWrapper}>
-          <Button onClick={() => setShowEditBookingModal(false)}>
-            Close
-          </Button>
-        </Box>
-      </Box>
-    );
-  };
-
   return (
-    <div>
+    <Box>
       <Modal
         open={showEditBookingModal}
         onClose={() => setShowEditBookingModal(false)}
         className={modal}
         slotProps={{ backdrop: { className: backdrop } }}
       >
-        {isMyBooking ? (
-          <Box className={box} sx={boxPosition}>
-            {isPastBooking && (
+        <Box className={box} sx={boxPosition}>
+          {isPastBooking && (
             <Alert severity="error" className={alert}>
               The default selected time below is already in the past. Feel free to modify that and save your booking!
             </Alert>
           )}
-            <Typography variant="h3" className={typography}>
-              {isMyBooking ? "Edit booking" : "Booking details"}
-            </Typography>
-            <TextField
-              label="Title"
-              className={textField}
-              defaultValue={title}
-              onChange={(event) =>
-                setSelectedBooking({
-                  ...selectedBooking,
-                  title: event.target.value,
-                })
-              }
-              InputLabelProps={{
-                shrink: true,
-              }}
-              size="small"
-            />
-            <Box>
-              <Box className={datePickerWrapper}>
-                <AccessTimeIcon />
-                <DatePicker
-                  value={start}
-                  handleChange={(value) =>
-                    handleSelectDate(
-                      {
-                        value,
-                        booking: selectedBooking,
-                        setBooking: setSelectedBooking,
-                        startTime,
-                        endTime
-                      }
-                    )
-                  }
-                  startTime={startTime}
-                  endTime={endTime}
-                  startTimeOnChange={(event) => setStartTime(event.target.value)}
-                  endTimeOnChange={(event) => setEndTime(event.target.value)}
-                />
-              </Box>
-              <Box className={buttonContainer}>
-                {isBookingOverlapping && (
-                  <Alert severity="error" className={alert}>
-                    This room is already booked for the time you selected.
-                  </Alert>
-                )}
-              </Box>
-            </Box>
-            {availableRooms.length > 0 &&
-              <SelectInput
-                handleChange={(event: SelectChangeEvent<any>) => {
-                  setSelectedBooking({
-                    ...selectedBooking,
-                    resourceId: event.target.value,
-                  });
-                }}
-                data={availableRooms}
-                defaultValue={resourceId}
-                value={resourceId}
-              />
+          <Typography variant="h3" className={typography}>
+            Edit booking
+          </Typography>
+          <TextField
+            label="Title"
+            className={textField}
+            defaultValue={title}
+            onChange={(event) =>
+              setSelectedBooking({
+                ...selectedBooking,
+                title: event.target.value,
+              })
             }
-            {availableRooms.length === 0 && (
-              <Typography className={spanError} variant="body2">
-                There is no available room for the selected time or the selected time is invalid.
-              </Typography>
-            )}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            size="small"
+          />
+          <Box>
+            <Box className={datePickerWrapper}>
+              <AccessTimeIcon />
+              <DatePicker
+                value={start}
+                handleChange={(value) =>
+                  handleSelectDate(
+                    {
+                      value,
+                      booking: selectedBooking,
+                      setBooking: setSelectedBooking,
+                      startTime,
+                      endTime
+                    }
+                  )
+                }
+                startTime={startTime}
+                endTime={endTime}
+                startTimeOnChange={(event) => setStartTime(event.target.value)}
+                endTimeOnChange={(event) => setEndTime(event.target.value)}
+              />
+            </Box>
             <Box className={buttonContainer}>
-              <Button
-                className={deleteButton}
-                onClick={() => isDeletionConfirmed ? onDeleteEvent() : setIsDeletionConfirmed(true)}
-              >
-                {!isDeletionConfirmed ? "Delete" : "Confirm deletion"}
-              </Button>
-              <Box className={buttonWrapper}>
-                <Button onClick={() => setShowEditBookingModal(false)}>
-                  Cancel
-                </Button>
-                <Button
-                  disabled={
-                    isPastBooking || isBookingEdited || isBookingOverlapping || !isValidTime
-                  }
-                  variant="contained"
-                  onClick={handleEditBooking}
-                >
-                  Save
-                </Button>
-              </Box>
+              {isBookingOverlapping && (
+                <Alert severity="error" className={alert}>
+                  This room is already booked for the time you selected.
+                </Alert>
+              )}
             </Box>
           </Box>
-        ) :
-          renderBookingDetails()
-        }
+          {availableRooms.length > 0 &&
+            <SelectInput
+              handleChange={(event: SelectChangeEvent<any>) => {
+                setSelectedBooking({
+                  ...selectedBooking,
+                  resourceId: event.target.value,
+                });
+              }}
+              data={availableRooms}
+              defaultValue={resourceId}
+              value={resourceId}
+            />
+          }
+          <Box className={buttonContainer}>
+            <Button
+              className={deleteButton}
+              onClick={() => isDeletionConfirmed ? onDeleteEvent() : setIsDeletionConfirmed(true)}
+            >
+              {!isDeletionConfirmed ? "Delete" : "Confirm deletion"}
+            </Button>
+            <Box className={buttonWrapper}>
+              <Button onClick={() => setShowEditBookingModal(false)}>
+                Cancel
+              </Button>
+              <Button
+                disabled={
+                  isPastBooking || isBookingEdited || isBookingOverlapping || !isValidTime
+                }
+                variant="contained"
+                onClick={handleEditBooking}
+              >
+                Save
+              </Button>
+            </Box>
+          </Box>
+        </Box>
       </Modal>
-    </div>
+    </Box>
   );
 };
 

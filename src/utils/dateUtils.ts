@@ -1,4 +1,4 @@
-import { areIntervalsOverlapping, endOfWeek, startOfWeek } from "date-fns";
+import { areIntervalsOverlapping, endOfWeek, format, startOfWeek } from "date-fns";
 import { IEvent, NewBookingType } from "./types";
 
 export const timeConverter = (time: number) => {
@@ -9,7 +9,7 @@ export const dateStringConverter = (date: string) => {
   return new Date(Date.parse(date));
 };
 
-export const covertToNormalDate = (date: any) => {
+export const covertToNormalDate = (date: Date) => {
   const newDate = new Date(date);
   return `${newDate.getDate()}/${newDate.getMonth() + 1}/${newDate.getFullYear()}`;
 };
@@ -71,4 +71,18 @@ export const isTimeOverlapping = (
     );
     return bookingOnTheSameHour.length > 0;
   }
+};
+
+export const formatTime = (date: Date) => {
+  const time = date && format(date, "h:mm a");
+  const newTime = time.split(" ");
+  const formatedTime = newTime.includes("AM") ? newTime.map(t => {
+    if (t !== "AM") {
+      const morningTime = t.split(":");
+      const amTime = `${morningTime[0] === "12" ? "00" : morningTime[0]}:${morningTime[1]}`;
+      return amTime;
+    }
+    return t;
+  }) : newTime;
+  return formatedTime.join(" ");
 };

@@ -22,6 +22,7 @@ import ExpendableMenu from "../../components/menu/ExpendableMenu";
 import styles from "./calendar.module.css";
 import { getUserById, sendQuery } from "../../graphqlHelper";
 import CustomToolbar from "../../components/customToolBar/CustomToolBar";
+import BookingDetails from "../../components/bookingDetails/BookingDetails";
 
 const { container } = styles;
 
@@ -32,6 +33,8 @@ interface ComponentsProps {
   defaultDate: Date;
   scrollToTime: Date;
 }
+
+interface EventWrapper { event: IEvent, children: JSX.Element}
 
 const locales = { "en-US": enUS };
 
@@ -69,6 +72,8 @@ const CalendarPage = () => {
   const [currentDay, setCurrentDay] = useState<Date>(startDay);
   const [endingDay, setEndingDay] = useState<Date>(endDay);
   const [currentBookingParticipant, setCurrentBookingParticipant] = useState<UserType | null>(null);
+  const [isHovered, setIsHovered] = useState<boolean>(false);
+  const [hoveredEvent, setHoveredEvent] = useState<IEvent | null>(null);
 
   // Add new booking modal states
   const [openBookingModal, setOpenBookingModal] = useState(false);
@@ -240,7 +245,7 @@ const CalendarPage = () => {
     setPosition({ x, y });
   };
 
-  const eventStyleGetter = (event: IEvent) => {
+  const eventStyleGetter = useCallback((event: IEvent) => {
     const isMyEvent = event.participants.includes(currentUser?.login?.id);
     const backgroundColor = isMyEvent ? "#fcb900" : "#56b3d8";
     const style = {
@@ -250,15 +255,43 @@ const CalendarPage = () => {
       display: "block",
     };
     return { style };
+    // eslint-disable-next-line
+  }, []);
+
+
+  const handleOnMouseHover = (booking: IEvent, event: any) => {
+    getCurrentBookingParticipant(booking?.participants);
+    setIsHovered(true);
+    setHoveredEvent(booking);
+
+    setPosition({
+      x: event.pageX,
+      y: event.pageY,
+    });
+  };
+
+  const handleOnMouseOut = () => {
+    setIsHovered(false);
+    setHoveredEvent(null);
   };
 
   const { components, defaultDate, scrollToTime }: ComponentsProps = useMemo(() => ({
     components: {
       toolbar: CustomToolbar,
-    },
+      eventWrapper: ({ event, children }: EventWrapper) => {
+        return (
+          <Box
+            onMouseOver={(e) => handleOnMouseHover(event, e)}
+            onMouseOut={() => handleOnMouseOut()}
+          >
+            {children}
+          </Box>
+        )
+    }},
     defaultDate: new Date(),
     scrollToTime: new Date()
-  }), [])
+    // eslint-disable-next-line
+  }), []);
 
   return (
     <Box className={container}>
@@ -289,10 +322,11 @@ const CalendarPage = () => {
         dayPropGetter={calendarStyle}
         step={15}
         onSelectEvent={(event, booking) => {
-          openEditModal(event, booking)
+          openEditModal(event, booking);
         }}
         eventPropGetter={eventStyleGetter}
         draggableAccessor={(event) => isUserBooking(event)}
+        tooltipAccessor={(event: IEvent) => ""}
         components={components}
       />
       {showEditBookingModal && (
@@ -303,7 +337,6 @@ const CalendarPage = () => {
           selectedBooking={selectedBooking}
           setSelectedBooking={setSelectedBooking}
           events={events}
-          bookingOwner={currentBookingParticipant}
         />
       )}
 
@@ -315,6 +348,15 @@ const CalendarPage = () => {
           newBooking={newBooking}
           setNewBooking={setNewBooking}
           events={events}
+        />
+      )}
+
+      {isHovered && hoveredEvent && (
+        <BookingDetails
+          event={hoveredEvent}
+          position={position}
+          rooms={rooms}
+          bookingOwner={currentBookingParticipant}
         />
       )}
     </Box>
