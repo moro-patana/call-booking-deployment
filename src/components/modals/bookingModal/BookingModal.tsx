@@ -34,29 +34,37 @@ interface BookingModalProps {
   openBookingModal: boolean;
   closeBookingModal: () => void;
   position: { x: number; y: number };
-  newBooking: NewBookingType;
-  setNewBooking: (value: NewBookingType) => void;
+  selectedSlot: {
+    start: Date;
+    end: Date;
+    resourceId: string;
+  };
   events: IEvent[];
 }
 
 const {
   modal, box, typography, backdrop, datePickerWrapper,
-  buttonWrapper, textField, spanError, alert
+  buttonWrapper, textField, alert
 } = styles;
 
 
 const BookingModal: FC<BookingModalProps> = ({
   events,
   position,
-  newBooking,
+  selectedSlot,
   openBookingModal,
-  setNewBooking,
   closeBookingModal,
 }) => {
   const dispatch = useAppDispatch();
   const rooms = useAppSelector(roomsData);
   const { currentUser } = useAppSelector((state) => state.users);
   const { allBookings } = useAppSelector((state) => state.bookings);
+  const [newBooking, setNewBooking] = useState<NewBookingType>({
+    ...selectedSlot,
+    id: "",
+    title: "",
+    participants: [],
+  });
   const { resourceId, start, end, title } = newBooking;
   const startDate = new Date(start);
   const endDate = new Date(end);
@@ -108,15 +116,17 @@ const BookingModal: FC<BookingModalProps> = ({
             ),
             access_token
           );
-          closeBookingModal();
+
           const { data } = response.data;
+
+          closeBookingModal();
 
           dispatch(
             setBookings([
               ...allBookings,
               {
                 ...newBooking,
-                id: data?.createBooking?.id,
+                id: data.createBooking.id,
                 start: String(newStartDate),
                 end: String(newEndDate),
                 participants: [id],

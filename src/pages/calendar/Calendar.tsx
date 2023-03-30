@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { roomsData } from "../../redux/reducers/roomsSlice";
 import { setBookings } from "../../redux/reducers/bookingsSlice";
 import { dateStringConverter, getCurrentDay, getEndingDay, isTimeOverlapping } from "../../utils/dateUtils";
-import { Booking, IEvent, IResource, NewBookingType, RoomType, UserType } from "../../utils/types";
+import { Booking, IEvent, IResource, RoomType, UserType } from "../../utils/types";
 
 import { LOGIN } from "../../constants/path";
 
@@ -34,7 +34,7 @@ interface ComponentsProps {
   scrollToTime: Date;
 }
 
-interface EventWrapper { event: IEvent, children: JSX.Element}
+interface EventWrapper { event: IEvent, children: JSX.Element }
 
 const locales = { "en-US": enUS };
 
@@ -74,21 +74,13 @@ const CalendarPage = () => {
   const [currentBookingParticipant, setCurrentBookingParticipant] = useState<UserType | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [hoveredEvent, setHoveredEvent] = useState<IEvent | null>(null);
-
-  // Add new booking modal states
-  const [openBookingModal, setOpenBookingModal] = useState(false);
-  const [newBooking, setNewBooking] = useState<NewBookingType>({
-    id: "",
-    title: "",
-    start: selectedDate,
-    end: selectedDate,
-    resourceId: "",
-    participants: [],
+  const [selectedSlot, setSelectedSlot] = useState({
+    start: new Date(),
+    end: new Date(),
+    resourceId: ""
   });
 
-  // Edit modal states
-  const [showEditBookingModal, setShowEditBookingModal] = useState(false);
-  const [selectedBooking, setSelectedBooking] = useState<IEvent>({
+  const [selectedEvent, setSelectedEvent] = useState<IEvent>({
     id: "",
     title: "",
     start: new Date(),
@@ -96,6 +88,12 @@ const CalendarPage = () => {
     resourceId: "",
     participants: [],
   });
+
+  // Add new booking modal states
+  const [openBookingModal, setOpenBookingModal] = useState(false);
+
+  // Edit modal states
+  const [openEditBookingModal, setOpenEditBookingModal] = useState(false);
 
   const resources = rooms?.map((room: RoomType) => {
     return {
@@ -136,7 +134,7 @@ const CalendarPage = () => {
       x: xPercentage,
       y: box.y,
     });
-    setNewBooking({ ...newBooking, resourceId, start, end });
+    setSelectedSlot({ resourceId, start, end });
     setOpenBookingModal(!openBookingModal);
   };
 
@@ -236,12 +234,12 @@ const CalendarPage = () => {
     const x = Math.floor((event.pageX / screenWidth) * 100);
     const y = event.pageY;
 
-    setSelectedBooking(booking);
+    setSelectedEvent(booking);
 
     if (participants[0] !== currentUser?.login?.id) {
       getCurrentBookingParticipant(participants);
     };
-    setShowEditBookingModal(true);
+    setOpenEditBookingModal(true);
     setPosition({ x, y });
   };
 
@@ -257,7 +255,6 @@ const CalendarPage = () => {
     return { style };
     // eslint-disable-next-line
   }, []);
-
 
   const handleOnMouseHover = (booking: IEvent, event: any) => {
     getCurrentBookingParticipant(booking?.participants);
@@ -287,7 +284,8 @@ const CalendarPage = () => {
             {children}
           </Box>
         )
-    }},
+      }
+    },
     defaultDate: new Date(),
     scrollToTime: new Date()
     // eslint-disable-next-line
@@ -329,13 +327,12 @@ const CalendarPage = () => {
         tooltipAccessor={(event: IEvent) => ""}
         components={components}
       />
-      {showEditBookingModal && (
+      {openEditBookingModal && (
         <EditBookingModal
-          showEditBookingModal
-          setShowEditBookingModal={setShowEditBookingModal}
+          openEditBookingModal
+          setOpenEditBookingModal={setOpenEditBookingModal}
           position={position}
-          selectedBooking={selectedBooking}
-          setSelectedBooking={setSelectedBooking}
+          selectedEvent={selectedEvent}
           events={events}
         />
       )}
@@ -345,8 +342,7 @@ const CalendarPage = () => {
           openBookingModal
           closeBookingModal={() => setOpenBookingModal(false)}
           position={position}
-          newBooking={newBooking}
-          setNewBooking={setNewBooking}
+          selectedSlot={selectedSlot}
           events={events}
         />
       )}
