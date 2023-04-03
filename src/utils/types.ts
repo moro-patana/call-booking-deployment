@@ -34,14 +34,13 @@ export interface UserType {
 
 export interface IEvent {
   [x: string]: any;
-  id: number | string;
+  id: string;
   title: string;
   start: Date;
   end: Date;
   resourceId: string;
   participants: string[];
 }
-
 export interface IResource {
   id: string | number;
   title: string;
@@ -49,7 +48,7 @@ export interface IResource {
 }
 
 export interface Booking {
-  id: string | number;
+  id: string;
   roomId: string;
   title: string;
   label: string;
@@ -63,7 +62,7 @@ export interface Booking {
 }
 
 export interface NewBookingType {
-  id: string | number;
+  id: string;
   title: string;
   start: Date;
   end: Date;

@@ -20,10 +20,9 @@ import styles from "./editBookingModal.module.css";
 
 interface EditModalProps {
   position: { x: number; y: number };
-  showEditBookingModal: boolean;
-  selectedBooking: IEvent;
-  setShowEditBookingModal: (value: boolean) => void;
-  setSelectedBooking: (value: IEvent) => void;
+  openEditBookingModal: boolean;
+  selectedEvent: IEvent;
+  setOpenEditBookingModal: (value: boolean) => void;
   events: IEvent[];
 }
 
@@ -35,29 +34,25 @@ const {
 const EditBookingModal: FC<EditModalProps> = ({
   events,
   position,
-  selectedBooking,
-  showEditBookingModal,
-  setSelectedBooking,
-  setShowEditBookingModal,
+  selectedEvent,
+  openEditBookingModal,
+  setOpenEditBookingModal,
 }) => {
   const boxPosition = {
     left: position.x > 70 ? "70%" : `${position.x}%`,
     top: position.y > 518 ? 518 : position.y > 18 ? position.y : 18,
   };
 
-  const { title, start, end, resourceId, id } = selectedBooking;
   const dispatch = useAppDispatch();
-
   const { allBookings } = useAppSelector((state) => state.bookings);
   const { currentUser } = useAppSelector((state) => state.users);
   const userId = currentUser?.login?.id;
   const { access_token } = currentUser?.login;
-
   const rooms: RoomType[] = useAppSelector(roomsData);
-
+  const [bookingToUpdate, setBookingToUpdate] = useState<IEvent>({ ...selectedEvent });
+  const { title, start, end, resourceId, id } = bookingToUpdate;
   const savedBooking = events.find((event: IEvent) => event.id === id);
   const bookings = events.filter((booking: IEvent) => booking.id !== id);
-
   const [isDeletionConfirmed, setIsDeletionConfirmed] = useState(false);
 
   // Date and Time utilities and States
@@ -75,7 +70,7 @@ const EditBookingModal: FC<EditModalProps> = ({
     JSON.stringify(newEndDate) !== JSON.stringify(savedBooking?.end);
 
   const isBookingOverlapping = isTimeOverlapping(
-    selectedBooking,
+    bookingToUpdate,
     newStartDate,
     newEndDate,
     bookings
@@ -119,14 +114,14 @@ const EditBookingModal: FC<EditModalProps> = ({
     });
 
     dispatch(setBookings(updatedBookings));
-    setShowEditBookingModal(false);
+    setOpenEditBookingModal(false);
   };
 
   const onDeleteEvent = async () => {
     try {
       if (id) {
         const response = await sendAuthorizedQuery(deleteBooking(id), access_token);
-        setShowEditBookingModal(false);
+        setOpenEditBookingModal(false);
         const bookings = allBookings.filter((booking: Booking) => booking.id !== id);
         dispatch(setBookings(bookings));
         return response.data.data;
@@ -139,8 +134,8 @@ const EditBookingModal: FC<EditModalProps> = ({
   return (
     <Box>
       <Modal
-        open={showEditBookingModal}
-        onClose={() => setShowEditBookingModal(false)}
+        open={openEditBookingModal}
+        onClose={() => setOpenEditBookingModal(false)}
         className={modal}
         slotProps={{ backdrop: { className: backdrop } }}
       >
@@ -158,8 +153,8 @@ const EditBookingModal: FC<EditModalProps> = ({
             className={textField}
             defaultValue={title}
             onChange={(event) =>
-              setSelectedBooking({
-                ...selectedBooking,
+              setBookingToUpdate({
+                ...bookingToUpdate,
                 title: event.target.value,
               })
             }
@@ -177,8 +172,8 @@ const EditBookingModal: FC<EditModalProps> = ({
                   handleSelectDate(
                     {
                       value,
-                      booking: selectedBooking,
-                      setBooking: setSelectedBooking,
+                      booking: bookingToUpdate,
+                      setBooking: setBookingToUpdate,
                       startTime,
                       endTime
                     }
@@ -201,8 +196,8 @@ const EditBookingModal: FC<EditModalProps> = ({
           {availableRooms.length > 0 &&
             <SelectInput
               handleChange={(event: SelectChangeEvent<any>) => {
-                setSelectedBooking({
-                  ...selectedBooking,
+                setBookingToUpdate({
+                  ...bookingToUpdate,
                   resourceId: event.target.value,
                 });
               }}
@@ -219,7 +214,7 @@ const EditBookingModal: FC<EditModalProps> = ({
               {!isDeletionConfirmed ? "Delete" : "Confirm deletion"}
             </Button>
             <Box className={buttonWrapper}>
-              <Button onClick={() => setShowEditBookingModal(false)}>
+              <Button onClick={() => setOpenEditBookingModal(false)}>
                 Cancel
               </Button>
               <Button
