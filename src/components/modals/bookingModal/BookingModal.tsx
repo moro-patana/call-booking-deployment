@@ -60,9 +60,9 @@ const BookingModal: FC<BookingModalProps> = ({
   const { resourceId, start, end, title } = newBooking;
   const startDate = new Date(start);
   const endDate = new Date(end);
-  const endTimeAdded = addMinutes(end, 15);
+  const defaultEndTime = addMinutes(end, 15);
   const [startTime, setStartTime] = useState(`${timeConverter(start.getHours())}:${timeConverter(start.getMinutes())}`);
-  const [endTime, setEndTime] = useState(`${timeConverter(endTimeAdded.getHours())}:${timeConverter(endTimeAdded.getMinutes())}`);
+  const [endTime, setEndTime] = useState(`${timeConverter(defaultEndTime.getHours())}:${timeConverter(defaultEndTime.getMinutes())}`);
   const newStartDate = newDateGenerator(startDate, startTime);
   const newEndDate = newDateGenerator(endDate, endTime);
   const boxPosition = {
@@ -109,18 +109,21 @@ const BookingModal: FC<BookingModalProps> = ({
             access_token
           );
           closeBookingModal();
+          const { data } = response.data;
+
           dispatch(
             setBookings([
               ...allBookings,
               {
                 ...newBooking,
+                id: data?.createBooking?.id,
                 start: String(newStartDate),
                 end: String(newEndDate),
                 participants: [id],
               },
             ])
           );
-          return response.data.data;
+          return data;
         }
       } catch (error) {
         dispatch(setErrorMessage(error));
@@ -201,9 +204,9 @@ const BookingModal: FC<BookingModalProps> = ({
           }
 
           {availableRooms.length === 0 && (
-            <Typography className={spanError} variant="body2">
+            <Alert className={alert} severity='error'>
               There is no available room for the selected time or the selected time is invalid.
-            </Typography>
+            </Alert>
           )}
           <Box className={buttonWrapper}>
             <Button onClick={closeBookingModal}>Cancel</Button>
