@@ -2,7 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 
-import { HOME, LOGIN, LOGOUT } from './constants/path';
+import { HOME, LOGIN, LOGOUT } from './constants/paths';
 
 import Login from './pages/login/Login';
 import Calendar from './pages/calendar/Calendar';

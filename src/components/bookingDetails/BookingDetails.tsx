@@ -1,8 +1,9 @@
 import { FC } from "react";
 import { Box, styled as materialStyle, Tooltip, tooltipClasses, TooltipProps, Typography } from "@mui/material";
+import { format } from "date-fns";
 import { IEvent, RoomType, UserType } from "../../utils/types";
 import styles from "./bookingDetails.module.css"
-import { covertToNormalDate, formatTime } from "../../utils/dateUtils";
+import { formatTime } from "../../utils/dateUtils";
 
 interface BookingDetailsProps {
   event: IEvent;
@@ -55,7 +56,7 @@ const BookingDetails: FC<BookingDetailsProps> = ({
       </Typography>
       <Typography variant="body2" className={detail}>Booking by {bookingOwner?.username}</Typography>
       <Typography variant="body2" className={detail}>
-        Date: {covertToNormalDate(event?.start)} from {startTime} to {endTime}
+        Date: {format(event?.start, 'dd/MM/yyyy')} from {startTime} to {endTime}
       </Typography>
       <Typography variant="body2" className={detail}>Room: {room && room?.name}</Typography>
       <Typography variant="body2" className={detail}>Reason: {event?.title ? event?.title : 'Not precised'}</Typography>

@@ -1,13 +1,5 @@
 import React, { FC, useState } from "react";
-import {
-  Alert,
-  Box,
-  Button,
-  Modal,
-  SelectChangeEvent,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Alert, Box, Button, Modal, SelectChangeEvent, TextField, Typography } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import { addMinutes, isBefore } from "date-fns";
 
@@ -15,12 +7,7 @@ import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { setBookings } from "../../../redux/reducers/bookingsSlice";
 import { setErrorMessage } from "../../../redux/reducers/errorMessage";
 import { IEvent, NewBookingType } from "../../../utils/types";
-import {
-  getValidTime,
-  isTimeOverlapping,
-  newDateGenerator,
-  timeConverter,
-} from "../../../utils/dateUtils";
+import { getValidTime, isTimeOverlapping, newDateGenerator, timeConverter } from "../../../utils/dateUtils";
 import { getAvailableRooms, handleSelectDate } from "../../../utils/modalUtils";
 import { bookingMutation, sendAuthorizedQuery } from "../../../graphqlHelper";
 
@@ -43,8 +30,7 @@ interface BookingModalProps {
 }
 
 const {
-  modal, box, typography, backdrop, datePickerWrapper,
-  buttonWrapper, textField, alert
+  modal, box, typography, backdrop, datePickerWrapper, buttonWrapper, textField, alert
 } = styles;
 
 
@@ -82,24 +68,11 @@ const BookingModal: FC<BookingModalProps> = ({
 
   const isValidTime = getValidTime(newStartDate, newEndDate);
 
-  const isBookingOverlapping = isTimeOverlapping(
-    newBooking,
-    newStartDate,
-    newEndDate,
-    events
-  );
+  const isBookingOverlapping = isTimeOverlapping(newBooking, newStartDate, newEndDate, events);
 
   const isPastBooking =
     isBefore(newDateGenerator(start, startTime), new Date()) &&
     isBefore(newDateGenerator(end, endTime), new Date());
-
-  const handleStartTimeEvent = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setStartTime(event.target.value);
-  };
-
-  const handleEndTimeEvent = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEndTime(event.target.value);
-  };
 
   const handleSubmitBooking = async () => {
     const { id, access_token } = currentUser.login;
@@ -139,7 +112,7 @@ const BookingModal: FC<BookingModalProps> = ({
         dispatch(setErrorMessage(error));
       }
     }
-  };
+  }
 
   return (
     <div>
@@ -191,8 +164,8 @@ const BookingModal: FC<BookingModalProps> = ({
                 }
                 startTime={startTime}
                 endTime={endTime}
-                startTimeOnChange={handleStartTimeEvent}
-                endTimeOnChange={handleEndTimeEvent}
+                startTimeOnChange={(event) => setStartTime(event.target.value)}
+                endTimeOnChange={(event) => setEndTime(event.target.value)}
               />
             </Box>
             {isBookingOverlapping && (

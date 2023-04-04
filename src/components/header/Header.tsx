@@ -7,7 +7,7 @@ import {
   Typography, Menu, Avatar, MenuItem, Tooltip
 } from '@mui/material';
 
-import { HOME, LOGOUT } from '../../constants/path';
+import { HOME, LOGOUT } from '../../constants/paths';
 import onjaLogo from '../../icons/onja-logo.svg';
 import { setCurrentUser } from '../../redux/reducers/usersSlice';
 import { useAppDispatch } from '../../redux/hooks';

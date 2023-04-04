@@ -1,28 +1,29 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
+import { format, getDay, isBefore, parse, startOfWeek } from "date-fns";
+import { enUS } from "date-fns/locale";
 import { Calendar, dateFnsLocalizer, Views } from "react-big-calendar";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
-import { format, getDay, isBefore, parse, startOfWeek } from "date-fns";
 import { useCookies } from "react-cookie";
-import { enUS } from "date-fns/locale";
+
+import { LOGIN } from "../../constants/paths";
+import { getUserById, sendQuery } from "../../graphqlHelper";
 import { fetchAllBookings, updateSelectedBooking } from "../../redux/actions/bookings";
 import { fetchRooms } from "../../redux/actions/rooms";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
-import { roomsData } from "../../redux/reducers/roomsSlice";
 import { setBookings } from "../../redux/reducers/bookingsSlice";
+import { roomsData } from "../../redux/reducers/roomsSlice";
 import { dateStringConverter, getCurrentDay, getEndingDay, isTimeOverlapping } from "../../utils/dateUtils";
 import { Booking, IEvent, IResource, RoomType, UserType } from "../../utils/types";
 
-import { LOGIN } from "../../constants/path";
-
-import EditBookingModal from "../../components/modals/editBookingModal/EditBookingModal";
-import BookingModal from "../../components/modals/bookingModal/BookingModal";
-import ExpendableMenu from "../../components/menu/ExpendableMenu";
-import styles from "./calendar.module.css";
-import { getUserById, sendQuery } from "../../graphqlHelper";
-import CustomToolbar from "../../components/customToolBar/CustomToolBar";
 import BookingDetails from "../../components/bookingDetails/BookingDetails";
+import CustomToolbar from "../../components/customToolBar/CustomToolBar";
+import ExpendableMenu from "../../components/menu/ExpendableMenu";
+import BookingModal from "../../components/modals/bookingModal/BookingModal";
+import EditBookingModal from "../../components/modals/editBookingModal/EditBookingModal";
+
+import styles from "./calendar.module.css";
 
 const { container } = styles;
 
@@ -54,6 +55,21 @@ const calendarStyle = () => {
   };
 };
 
+const selectedEventInitialValue = {
+  id: "",
+  title: "",
+  start: new Date(),
+  end: new Date(),
+  resourceId: "",
+  participants: [],
+}
+
+const selectedSlotInitialValue = {
+  start: new Date(),
+  end: new Date(),
+  resourceId: ""
+}
+
 const CalendarPage = () => {
   const rooms = useAppSelector(roomsData);
   const { allBookings } = useAppSelector((state) => state.bookings);
@@ -74,25 +90,9 @@ const CalendarPage = () => {
   const [currentBookingParticipant, setCurrentBookingParticipant] = useState<UserType | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [hoveredEvent, setHoveredEvent] = useState<IEvent | null>(null);
-  const [selectedSlot, setSelectedSlot] = useState({
-    start: new Date(),
-    end: new Date(),
-    resourceId: ""
-  });
-
-  const [selectedEvent, setSelectedEvent] = useState<IEvent>({
-    id: "",
-    title: "",
-    start: new Date(),
-    end: new Date(),
-    resourceId: "",
-    participants: [],
-  });
-
-  // Add new booking modal states
+  const [selectedSlot, setSelectedSlot] = useState(selectedSlotInitialValue);
+  const [selectedEvent, setSelectedEvent] = useState<IEvent>(selectedEventInitialValue);
   const [openBookingModal, setOpenBookingModal] = useState(false);
-
-  // Edit modal states
   const [openEditBookingModal, setOpenEditBookingModal] = useState(false);
 
   const resources = rooms?.map((room: RoomType) => {
@@ -122,7 +122,7 @@ const CalendarPage = () => {
 
   useEffect(() => {
     if (!currentUser?.login) navigate(LOGIN);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line
   }, [currentUser, navigate]);
 
   const handleSelectEvent = (slot: any) => {
@@ -190,7 +190,7 @@ const CalendarPage = () => {
         updateBooking(id, resourceId, start, end, title);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line
     [access_token, userId, events]
   );
 
@@ -219,7 +219,7 @@ const CalendarPage = () => {
         updateBooking(id, resourceId, start, end, title);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line
     [access_token, userId, events]
   );
 
@@ -324,7 +324,7 @@ const CalendarPage = () => {
         }}
         eventPropGetter={eventStyleGetter}
         draggableAccessor={(event) => isUserBooking(event)}
-        tooltipAccessor={(event: IEvent) => ""}
+        tooltipAccessor={() => ""}
         components={components}
       />
       {openEditBookingModal && (

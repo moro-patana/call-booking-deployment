@@ -9,11 +9,6 @@ export const dateStringConverter = (date: string) => {
   return new Date(Date.parse(date));
 };
 
-export const covertToNormalDate = (date: Date) => {
-  const newDate = new Date(date);
-  return `${newDate.getDate()}/${newDate.getMonth() + 1}/${newDate.getFullYear()}`;
-};
-
 export const getSelectedTimeMinutes = (date: Date, params: number) => {
   return timeConverter(new Date(date?.setMinutes(params)).getMinutes());
 };

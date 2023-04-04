@@ -12,12 +12,12 @@ const bookingsSlice = createSlice({
     setBookings: (state, action) => {
       state.allBookings = action.payload;
     },
-    getBookingsByUserAction: (state, action) => {
+    getAllBookingsByUser: (state, action) => {
       state.userBookings = action.payload;
     },
   },
 });
 
-export const { getBookingsByUserAction, setBookings } = bookingsSlice.actions;
+export const { getAllBookingsByUser, setBookings } = bookingsSlice.actions;
 
 export default bookingsSlice.reducer;

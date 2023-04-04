@@ -1,13 +1,10 @@
 import React, { FC, useState } from 'react';
-import { eachDayOfInterval } from "date-fns";
-import Button from '@mui/material/Button';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import MenuIcon from "../../icons/menu-icon.png"
-import ArrowUpIcon from "../../icons/up.svg"
-import ArrowDownIcon from "../../icons/down.svg"
-import LogoutIcon from "../../icons/logout.svg"
-import { covertToNormalDate } from '../../utils/dateUtils';
+import { eachDayOfInterval, format } from "date-fns";
+import { Button, Menu, MenuItem } from '@mui/material';
+import MenuIcon from "../../icons/menu-icon.png";
+import ArrowUpIcon from "../../icons/up.svg";
+import ArrowDownIcon from "../../icons/down.svg";
+import LogoutIcon from "../../icons/logout.svg";
 import styles from '../menu/expendablemenu.module.css';
 
 interface MenuProps {
@@ -18,16 +15,9 @@ interface MenuProps {
   setWeek: (value: Date[]) => void;
 }
 
-const {
-  container,
-  wrapper,
-  button,
-  buttonFlex,
-  buttonFlexContainer,
-  iconStyle,
-  selectButton,
-  menuItem,
-  menu
+const { 
+  container, wrapper, button, buttonFlex, buttonFlexContainer, 
+  iconStyle, selectButton, menuItem, menu
 } = styles;
 
 const ExpendableMenu: FC<MenuProps> = ({
@@ -40,36 +30,25 @@ const ExpendableMenu: FC<MenuProps> = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
   const handleUpArrow = () => {
-    const startDay = new Date(currentDay.setDate(currentDay.getDate() - 7))
-    const endDay = new Date(endingDay.setDate(endingDay.getDate() - 7))
-    setCurrentDay(startDay)
-    setEndingDay(endDay)
+    const startDay = new Date(currentDay.setDate(currentDay.getDate() - 7));
+    const endDay = new Date(endingDay.setDate(endingDay.getDate() - 7));
+    setCurrentDay(startDay);
+    setEndingDay(endDay);
   }
 
   const handleDownArrow = () => {
-    const startDay = new Date(currentDay.setDate(currentDay.getDate() + 7))
-    const endDay = new Date(endingDay.setDate(endingDay.getDate() + 7))
-    setCurrentDay(startDay)
-    setEndingDay(endDay)
+    const startDay = new Date(currentDay.setDate(currentDay.getDate() + 7));
+    const endDay = new Date(endingDay.setDate(endingDay.getDate() + 7));
+    setCurrentDay(startDay);
+    setEndingDay(endDay);
   }
 
   const handleSelectWeek = () => {
-    const days = eachDayOfInterval({ start: currentDay, end: endingDay })
+    const days = eachDayOfInterval({ start: currentDay, end: endingDay });
     setWeek(days);
     setAnchorEl(null);
-  };
-
-  const handleLogout = () => {
-    // The logout should be handle with redux
-  };
+  }
 
   return (
     <div className={container}>
@@ -79,7 +58,7 @@ const ExpendableMenu: FC<MenuProps> = ({
         aria-controls={open ? 'demo-positioned-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
-        onClick={handleClick}
+        onClick={(event) => setAnchorEl(event.currentTarget)}
         className={button}
       >
         <img src={MenuIcon} alt="Menu" />
@@ -89,7 +68,7 @@ const ExpendableMenu: FC<MenuProps> = ({
         aria-labelledby="demo-positioned-button"
         anchorEl={anchorEl}
         open={open}
-        onClose={handleClose}
+        onClose={() =>  setAnchorEl(null)}
         anchorOrigin={{
           vertical: 'top',
           horizontal: 'left',
@@ -110,13 +89,10 @@ const ExpendableMenu: FC<MenuProps> = ({
               className={selectButton}
               onClick={handleSelectWeek}
             >
-              {covertToNormalDate(currentDay)} - {covertToNormalDate(endingDay)}
+              {format(currentDay, 'dd/MM/yyyy')} - {format(endingDay, 'dd/MM/yyyy')}
             </Button>
           </div>
-          <MenuItem
-            onClick={handleLogout}
-            className={menuItem}
-          >
+          <MenuItem onClick={() => null} className={menuItem}>
             <img src={LogoutIcon} alt="Log out" />
           </MenuItem>
         </div>

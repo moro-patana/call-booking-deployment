@@ -9,13 +9,13 @@ const roomsSlice = createSlice({
   name: "rooms",
   initialState,
   reducers: {
-    getRoomsAction: (state, action) => {
+    getAllRooms: (state, action) => {
       state.rooms = action.payload;
     },
   },
 });
 
-export const { getRoomsAction } = roomsSlice.actions;
+export const { getAllRooms } = roomsSlice.actions;
 
 export const roomsData = (state: RootState) => state?.rooms?.rooms;
 

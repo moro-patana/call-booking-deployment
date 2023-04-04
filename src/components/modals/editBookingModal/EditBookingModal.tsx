@@ -168,17 +168,16 @@ const EditBookingModal: FC<EditModalProps> = ({
               <AccessTimeIcon />
               <DatePicker
                 value={start}
-                handleChange={(value) =>
-                  handleSelectDate(
-                    {
-                      value,
-                      booking: bookingToUpdate,
-                      setBooking: setBookingToUpdate,
-                      startTime,
-                      endTime
-                    }
-                  )
-                }
+                handleChange={(value) => {
+                  const selectedDate = {
+                    value,
+                    booking: bookingToUpdate,
+                    setBooking: setBookingToUpdate,
+                    startTime,
+                    endTime
+                  }
+                  handleSelectDate(selectedDate);
+                }}
                 startTime={startTime}
                 endTime={endTime}
                 startTimeOnChange={(event) => setStartTime(event.target.value)}

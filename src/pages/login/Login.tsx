@@ -5,7 +5,7 @@ import GoogleIcon from '@mui/icons-material/Google';
 import { useCookies } from 'react-cookie';
 import { add } from 'date-fns';
 
-import { HOME, LOGIN } from '../../constants/path';
+import { HOME, LOGIN } from '../../constants/paths';
 
 import { loginMutation, sendQuery } from "../../graphqlHelper";
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
@@ -38,7 +38,7 @@ const Login = () => {
           removeCookie('isLoggedOut', { path: HOME });
           navigate(HOME);
         } else {
-          dispatch(setErrorMessage('Email domain not allowed. You must be under onja.org domain in order to log in. Please try again!'));
+          dispatch(setErrorMessage('Email domain not allowed. You must be under onja.org domain in order to log in.'));
         }
       }
     } catch (error) {

@@ -1,6 +1,6 @@
 import { getBookingsByUser, sendAuthorizedQuery, sendQuery, updateBooking, getBookings } from "../../graphqlHelper";
 import { FetchBookingsByUserAction } from "../actionTypes";
-import { setBookings, getBookingsByUserAction } from "../reducers/bookingsSlice";
+import { setBookings, getAllBookingsByUser } from "../reducers/bookingsSlice";
 import { setErrorMessage } from "../reducers/errorMessage";
 
 export const fetchAllBookings = () => {
@@ -20,7 +20,7 @@ export const fetchBookingsByUser = (userId: string) => {
     try {
       const response = await sendQuery(getBookingsByUser(userId));
       const resData = response?.data?.data?.getBookingsByUser;
-      dispatch(getBookingsByUserAction(resData));
+      dispatch(getAllBookingsByUser(resData));
     } catch (error) {
       dispatch(setErrorMessage(error));
     }
