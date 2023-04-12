@@ -235,12 +235,16 @@ const CalendarPage = () => {
     const y = event.pageY;
 
     setSelectedEvent(booking);
+    setIsHovered(false);
+    setPosition({ x, y });
 
     if (participants[0] !== currentUser?.login?.id) {
       getCurrentBookingParticipant(participants);
+      setOpenEditBookingModal(false);
+    }
+    else {
+      setOpenEditBookingModal(true);
     };
-    setOpenEditBookingModal(true);
-    setPosition({ x, y });
   };
 
   const eventStyleGetter = useCallback((event: IEvent) => {
