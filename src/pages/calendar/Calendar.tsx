@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
 import { format, getDay, isBefore, parse, startOfWeek } from "date-fns";
@@ -15,7 +15,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setBookings } from "../../redux/reducers/bookingsSlice";
 import { roomsData } from "../../redux/reducers/roomsSlice";
 import { dateStringConverter, getCurrentDay, getEndingDay, isTimeOverlapping } from "../../utils/dateUtils";
-import { Booking, IEvent, IResource, RoomType, UserType } from "../../utils/types";
+import { Booking, IEvent, IResource, RoomType, UserBookingType } from "../../utils/types";
 
 import BookingDetails from "../../components/bookingDetails/BookingDetails";
 import CustomToolbar from "../../components/customToolBar/CustomToolBar";
@@ -71,6 +71,8 @@ const selectedSlotInitialValue = {
 }
 
 const CalendarPage = () => {
+  const userRef: any = useRef({ bookingUsers: [] });
+  const { bookingUsers } = userRef.current;
   const rooms = useAppSelector(roomsData);
   const { allBookings } = useAppSelector((state) => state.bookings);
   const [cookies] = useCookies(["currentUser"]);
@@ -87,7 +89,7 @@ const CalendarPage = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [currentDay, setCurrentDay] = useState<Date>(startDay);
   const [endingDay, setEndingDay] = useState<Date>(endDay);
-  const [currentBookingParticipant, setCurrentBookingParticipant] = useState<UserType | null>(null);
+  const [currentBookingParticipant, setCurrentBookingParticipant] = useState<UserBookingType | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [hoveredEvent, setHoveredEvent] = useState<IEvent | null>(null);
   const [selectedSlot, setSelectedSlot] = useState(selectedSlotInitialValue);
@@ -223,9 +225,17 @@ const CalendarPage = () => {
     [access_token, userId, events]
   );
 
+
   const getCurrentBookingParticipant = async (participants: string[]) => {
-    const user = await sendQuery(getUserById(participants[0]));
-    setCurrentBookingParticipant(user.data.data.getUserById);
+    const bookingOwnersIds = bookingUsers.map((user: UserBookingType) => user.id);
+
+    if (!bookingOwnersIds.includes(participants[0])) {
+      const user = await sendQuery(getUserById(participants[0]));
+      bookingUsers.push(user.data.data.getUserById);
+    }
+
+    const bookingOwner = bookingUsers.find((user: UserBookingType) => user.id === participants[0]);
+    setCurrentBookingParticipant(bookingOwner)
   };
 
   const openEditModal = (booking: IEvent, event: any) => {
@@ -239,7 +249,6 @@ const CalendarPage = () => {
     setPosition({ x, y });
 
     if (participants[0] !== currentUser?.login?.id) {
-      getCurrentBookingParticipant(participants);
       setOpenEditBookingModal(false);
     }
     else {
@@ -261,7 +270,9 @@ const CalendarPage = () => {
   }, []);
 
   const handleOnMouseHover = (booking: IEvent, event: any) => {
+
     getCurrentBookingParticipant(booking?.participants);
+
     setIsHovered(true);
     setHoveredEvent(booking);
 

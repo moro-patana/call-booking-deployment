@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Box, styled as materialStyle, Tooltip, tooltipClasses, TooltipProps, Typography } from "@mui/material";
 import { format } from "date-fns";
-import { IEvent, RoomType, UserType } from "../../utils/types";
+import { IEvent, RoomType, UserBookingType } from "../../utils/types";
 import styles from "./bookingDetails.module.css"
 import { formatTime } from "../../utils/dateUtils";
 
@@ -9,7 +9,7 @@ interface BookingDetailsProps {
   event: IEvent;
   position: { x: number, y: number };
   rooms: RoomType[];
-  bookingOwner: UserType | null;
+  bookingOwner: UserBookingType | null;
 }
 
 export const HtmlTooltip = materialStyle(
@@ -38,10 +38,10 @@ const BookingDetails: FC<BookingDetailsProps> = ({
 }) => {
 
   const screenWidth = window.screen.width;
-  const xInPercentage = (position.x / screenWidth ) * 100;
+  const xInPercentage = (position.x / screenWidth) * 100;
 
   const boxPosition = {
-    left: `${xInPercentage > 75 ? (xInPercentage - 20) : xInPercentage > 60 ? (xInPercentage - 22) :xInPercentage}%`,
+    left: `${xInPercentage > 75 ? (xInPercentage - 20) : xInPercentage > 60 ? (xInPercentage - 22) : xInPercentage}%`,
     top: position.y > 518 ? 640 : position.y > 18 ? (position.y - 50) : 18,
   };
 
