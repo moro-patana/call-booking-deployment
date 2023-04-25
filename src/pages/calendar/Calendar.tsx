@@ -417,7 +417,7 @@ const CalendarPage = () => {
           )}
         </Box>
       ) : (
-        <Spinner />
+        <Spinner action="Loading"/>
       )}
     </>
   );

@@ -9,6 +9,7 @@ interface SpinnerProp {
 const { wrapper } = styles;
 
 const Spinner: FC<SpinnerProp> = ({ action }) => {
+  console.log('action::::::',action);
   return (
     <Box className={wrapper}>
       <div>{action}...</div>
