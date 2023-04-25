@@ -2,7 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   allBookings: [],
-  userBookings: []
+  userBookings: [],
+  isLoading: true,
 };
 
 const bookingsSlice = createSlice({
@@ -15,9 +16,12 @@ const bookingsSlice = createSlice({
     getAllBookingsByUser: (state, action) => {
       state.userBookings = action.payload;
     },
+    setIsLoading: (state, action) => {
+      state.isLoading = action.payload
+    }
   },
 });
 
-export const { getAllBookingsByUser, setBookings } = bookingsSlice.actions;
+export const { getAllBookingsByUser, setBookings, setIsLoading } = bookingsSlice.actions;
 
 export default bookingsSlice.reducer;

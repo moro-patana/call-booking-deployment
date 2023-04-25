@@ -1,6 +1,6 @@
 import { getBookingsByUser, sendAuthorizedQuery, sendQuery, updateBooking, getBookings } from "../../graphqlHelper";
 import { FetchBookingsByUserAction } from "../actionTypes";
-import { setBookings, getAllBookingsByUser } from "../reducers/bookingsSlice";
+import { setBookings, getAllBookingsByUser, setIsLoading } from "../reducers/bookingsSlice";
 import { setErrorMessage } from "../reducers/errorMessage";
 
 export const fetchAllBookings = () => {
@@ -9,8 +9,10 @@ export const fetchAllBookings = () => {
       const response = await sendQuery(getBookings());
       const resData = response?.data?.data?.getBookings;
       dispatch(setBookings(resData));
+      dispatch(setIsLoading(false));
     } catch (error) {
       dispatch(setErrorMessage(error));
+      dispatch(setIsLoading(false));
     }
   };
 };
