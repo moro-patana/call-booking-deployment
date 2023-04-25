@@ -9,13 +9,27 @@ import { useCookies } from "react-cookie";
 
 import { LOGIN } from "../../constants/paths";
 import { getUserById, sendQuery } from "../../graphqlHelper";
-import { fetchAllBookings, updateSelectedBooking } from "../../redux/actions/bookings";
+import {
+  fetchAllBookings,
+  updateSelectedBooking,
+} from "../../redux/actions/bookings";
 import { fetchRooms } from "../../redux/actions/rooms";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setBookings } from "../../redux/reducers/bookingsSlice";
 import { roomsData } from "../../redux/reducers/roomsSlice";
-import { dateStringConverter, getCurrentDay, getEndingDay, isTimeOverlapping } from "../../utils/dateUtils";
-import { Booking, IEvent, IResource, RoomType, UserBookingType } from "../../utils/types";
+import {
+  dateStringConverter,
+  getCurrentDay,
+  getEndingDay,
+  isTimeOverlapping,
+} from "../../utils/dateUtils";
+import {
+  Booking,
+  IEvent,
+  IResource,
+  RoomType,
+  UserBookingType,
+} from "../../utils/types";
 
 import BookingDetails from "../../components/bookingDetails/BookingDetails";
 import CustomToolbar from "../../components/customToolBar/CustomToolBar";
@@ -24,6 +38,7 @@ import BookingModal from "../../components/modals/bookingModal/BookingModal";
 import EditBookingModal from "../../components/modals/editBookingModal/EditBookingModal";
 
 import styles from "./calendar.module.css";
+import Spinner from "../../components/UIs/spinner/Spinner";
 
 const { container } = styles;
 
@@ -35,7 +50,10 @@ interface ComponentsProps {
   scrollToTime: Date;
 }
 
-interface EventWrapper { event: IEvent, children: JSX.Element }
+interface EventWrapper {
+  event: IEvent;
+  children: JSX.Element;
+}
 
 const locales = { "en-US": enUS };
 
@@ -62,19 +80,20 @@ const selectedEventInitialValue = {
   end: new Date(),
   resourceId: "",
   participants: [],
-}
+};
 
 const selectedSlotInitialValue = {
   start: new Date(),
   end: new Date(),
-  resourceId: ""
-}
+  resourceId: "",
+};
 
 const CalendarPage = () => {
   const userRef: any = useRef({ bookingUsers: [] });
   const { bookingUsers } = userRef.current;
   const rooms = useAppSelector(roomsData);
   const { allBookings } = useAppSelector((state) => state.bookings);
+  const { isLoading } = useAppSelector((state) => state.bookings);
   const [cookies] = useCookies(["currentUser"]);
   const { currentUser } = cookies;
   const access_token = currentUser?.login?.access_token;
@@ -89,14 +108,16 @@ const CalendarPage = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [currentDay, setCurrentDay] = useState<Date>(startDay);
   const [endingDay, setEndingDay] = useState<Date>(endDay);
-  const [currentBookingParticipant, setCurrentBookingParticipant] = useState<UserBookingType | null>(null);
+  const [currentBookingParticipant, setCurrentBookingParticipant] =
+    useState<UserBookingType | null>(null);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [hoveredEvent, setHoveredEvent] = useState<IEvent | null>(null);
   const [selectedSlot, setSelectedSlot] = useState(selectedSlotInitialValue);
-  const [selectedEvent, setSelectedEvent] = useState<IEvent>(selectedEventInitialValue);
+  const [selectedEvent, setSelectedEvent] = useState<IEvent>(
+    selectedEventInitialValue
+  );
   const [openBookingModal, setOpenBookingModal] = useState(false);
   const [openEditBookingModal, setOpenEditBookingModal] = useState(false);
-
   const resources = rooms?.map((room: RoomType) => {
     return {
       id: room?.id,
@@ -105,13 +126,15 @@ const CalendarPage = () => {
     };
   });
 
-  const events = useMemo(() => allBookings?.map((booking: Booking) => {
-    return {
-      ...booking,
-      start: dateStringConverter(booking?.start),
-      end: dateStringConverter(booking?.end),
-    };
-  }),
+  const events = useMemo(
+    () =>
+      allBookings?.map((booking: Booking) => {
+        return {
+          ...booking,
+          start: dateStringConverter(booking?.start),
+          end: dateStringConverter(booking?.end),
+        };
+      }),
     [allBookings]
   );
 
@@ -171,11 +194,19 @@ const CalendarPage = () => {
 
       const { id, title } = event;
 
-      const isPastBooking = isBefore(start, new Date()) && isBefore(end, new Date());
+      const isPastBooking =
+        isBefore(start, new Date()) && isBefore(end, new Date());
 
-      const bookings = events.filter((booking: IEvent) => booking.id !== event.id);
+      const bookings = events.filter(
+        (booking: IEvent) => booking.id !== event.id
+      );
 
-      const isBookingOverlapping = isTimeOverlapping(selectedEvent, start, end, bookings);
+      const isBookingOverlapping = isTimeOverlapping(
+        selectedEvent,
+        start,
+        end,
+        bookings
+      );
 
       if (!isBookingOverlapping && !isPastBooking) {
         dispatch(
@@ -200,11 +231,19 @@ const CalendarPage = () => {
     async ({ event, start, end }: { event: IEvent; start: any; end: any }) => {
       const { id, title, resourceId } = event;
 
-      const bookings = events.filter((booking: IEvent) => booking.id !== event.id);
+      const bookings = events.filter(
+        (booking: IEvent) => booking.id !== event.id
+      );
 
-      const isPastBooking = isBefore(start, new Date()) && isBefore(end, new Date());
+      const isPastBooking =
+        isBefore(start, new Date()) && isBefore(end, new Date());
 
-      const isBookingOverlapping = isTimeOverlapping(event, start, end, bookings);
+      const isBookingOverlapping = isTimeOverlapping(
+        event,
+        start,
+        end,
+        bookings
+      );
 
       if (!isBookingOverlapping && !isPastBooking) {
         dispatch(
@@ -225,17 +264,20 @@ const CalendarPage = () => {
     [access_token, userId, events]
   );
 
-
   const getCurrentBookingParticipant = async (participants: string[]) => {
-    const bookingOwnersIds = bookingUsers.map((user: UserBookingType) => user.id);
+    const bookingOwnersIds = bookingUsers.map(
+      (user: UserBookingType) => user.id
+    );
 
     if (!bookingOwnersIds.includes(participants[0])) {
       const user = await sendQuery(getUserById(participants[0]));
       bookingUsers.push(user.data.data.getUserById);
     }
 
-    const bookingOwner = bookingUsers.find((user: UserBookingType) => user.id === participants[0]);
-    setCurrentBookingParticipant(bookingOwner)
+    const bookingOwner = bookingUsers.find(
+      (user: UserBookingType) => user.id === participants[0]
+    );
+    setCurrentBookingParticipant(bookingOwner);
   };
 
   const openEditModal = (booking: IEvent, event: any) => {
@@ -250,10 +292,9 @@ const CalendarPage = () => {
 
     if (participants[0] !== currentUser?.login?.id) {
       setOpenEditBookingModal(false);
-    }
-    else {
+    } else {
       setOpenEditBookingModal(true);
-    };
+    }
   };
 
   const eventStyleGetter = useCallback((event: IEvent) => {
@@ -270,7 +311,6 @@ const CalendarPage = () => {
   }, []);
 
   const handleOnMouseHover = (booking: IEvent, event: any) => {
-
     getCurrentBookingParticipant(booking?.participants);
 
     setIsHovered(true);
@@ -287,90 +327,99 @@ const CalendarPage = () => {
     setHoveredEvent(null);
   };
 
-  const { components, defaultDate, scrollToTime }: ComponentsProps = useMemo(() => ({
-    components: {
-      toolbar: CustomToolbar,
-      eventWrapper: ({ event, children }: EventWrapper) => {
-        return (
-          <Box
-            onMouseOver={(e) => handleOnMouseHover(event, e)}
-            onMouseOut={() => handleOnMouseOut()}
-          >
-            {children}
-          </Box>
-        )
-      }
-    },
-    defaultDate: new Date(),
-    scrollToTime: new Date()
-    // eslint-disable-next-line
-  }), []);
+  const { components, defaultDate, scrollToTime }: ComponentsProps = useMemo(
+    () => ({
+      components: {
+        toolbar: CustomToolbar,
+        eventWrapper: ({ event, children }: EventWrapper) => {
+          return (
+            <Box
+              onMouseOver={(e) => handleOnMouseHover(event, e)}
+              onMouseOut={handleOnMouseOut}
+            >
+              {children}
+            </Box>
+          );
+        },
+      },
+      defaultDate: new Date(),
+      scrollToTime: new Date(),
+      // eslint-disable-next-line
+    }),
+    []
+  );
 
   return (
-    <Box className={container}>
-      <ExpendableMenu
-        currentDay={currentDay}
-        endingDay={endingDay}
-        setCurrentDay={setCurrentDay}
-        setEndingDay={setEndingDay}
-        setWeek={() => null} // Still needs to be implemented
-      />
-      <DragAndDropCalendar
-        localizer={localizer}
-        events={events}
-        defaultDate={defaultDate}
-        defaultView={Views.DAY}
-        toolbar={true}
-        style={{ height: "90vh", padding: '1rem' }}
-        selectable
-        onSelectSlot={(e) => handleSelectEvent(e)}
-        resources={resources}
-        resourceIdAccessor="id"
-        resourceTitleAccessor="title"
-        onEventDrop={moveEvent}
-        onEventResize={resizeEvent}
-        resizable
-        scrollToTime={scrollToTime}
-        views={[Views.WEEK, Views.DAY]}
-        dayPropGetter={calendarStyle}
-        step={15}
-        onSelectEvent={(event, booking) => {
-          openEditModal(event, booking);
-        }}
-        eventPropGetter={eventStyleGetter}
-        draggableAccessor={(event) => isUserBooking(event)}
-        tooltipAccessor={() => ""}
-        components={components}
-      />
-      {openEditBookingModal && (
-        <EditBookingModal
-          openEditBookingModal
-          setOpenEditBookingModal={setOpenEditBookingModal}
-          position={position}
-          selectedEvent={selectedEvent}
-          events={events}
-        />
-      )}
+    <>
+      {!isLoading ? (
+        <Box className={container}>
+          <ExpendableMenu
+            currentDay={currentDay}
+            endingDay={endingDay}
+            setCurrentDay={setCurrentDay}
+            setEndingDay={setEndingDay}
+            setWeek={() => null} // Still needs to be implemented
+          />
+          <DragAndDropCalendar
+            localizer={localizer}
+            events={events}
+            defaultDate={defaultDate}
+            defaultView={Views.DAY}
+            toolbar={true}
+            style={{ height: "90vh", padding: "1rem" }}
+            selectable
+            onSelectSlot={(e) => handleSelectEvent(e)}
+            resources={resources}
+            resourceIdAccessor="id"
+            resourceTitleAccessor="title"
+            onEventDrop={moveEvent}
+            onEventResize={resizeEvent}
+            resizable
+            scrollToTime={scrollToTime}
+            views={[Views.WEEK, Views.DAY]}
+            dayPropGetter={calendarStyle}
+            step={15}
+            onSelectEvent={(event, booking) => {
+              openEditModal(event, booking);
+            }}
+            eventPropGetter={eventStyleGetter}
+            draggableAccessor={(event) => isUserBooking(event)}
+            tooltipAccessor={() => ""}
+            components={components}
+          />
+          {openEditBookingModal && (
+            <EditBookingModal
+              openEditBookingModal
+              setOpenEditBookingModal={setOpenEditBookingModal}
+              position={position}
+              selectedEvent={selectedEvent}
+              events={events}
+            />
+          )}
 
-      {openBookingModal && (
-        <BookingModal
-          openBookingModal
-          closeBookingModal={() => setOpenBookingModal(false)}
-          position={position}
-          selectedSlot={selectedSlot}
-          events={events}
-        />
-      )}
+          {openBookingModal && (
+            <BookingModal
+              openBookingModal
+              closeBookingModal={() => setOpenBookingModal(false)}
+              position={position}
+              selectedSlot={selectedSlot}
+              events={events}
+            />
+          )}
 
-      {isHovered && hoveredEvent && (
-        <BookingDetails
-          event={hoveredEvent}
-          position={position}
-          rooms={rooms}
-          bookingOwner={currentBookingParticipant}
-        />
+          {isHovered && hoveredEvent && (
+            <BookingDetails
+              event={hoveredEvent}
+              position={position}
+              rooms={rooms}
+              bookingOwner={currentBookingParticipant}
+            />
+          )}
+        </Box>
+      ) : (
+        <Spinner action="Loading"/>
       )}
-    </Box>
+    </>
   );
 };
 
