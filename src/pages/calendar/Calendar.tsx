@@ -335,7 +335,7 @@ const CalendarPage = () => {
           return (
             <Box
               onMouseOver={(e) => handleOnMouseHover(event, e)}
-              onMouseOut={() => handleOnMouseOut()}
+              onMouseOut={handleOnMouseOut}
             >
               {children}
             </Box>
