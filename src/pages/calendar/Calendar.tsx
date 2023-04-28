@@ -143,7 +143,8 @@ const CalendarPage = () => {
       dispatch(fetchRooms());
       dispatch(fetchAllBookings());
     }
-  }, [currentUser, dispatch, userId]);
+    // eslint-disable-next-line
+  }, [currentUser, userId]);
 
   useEffect(() => {
     if (!currentUser?.login) navigate(LOGIN);
@@ -185,7 +186,8 @@ const CalendarPage = () => {
       });
       dispatch(setBookings(updatedBookings));
     },
-    [allBookings, dispatch]
+    // eslint-disable-next-line
+    [allBookings]
   );
 
   const moveEvent = useCallback(
@@ -327,27 +329,24 @@ const CalendarPage = () => {
     setHoveredEvent(null);
   };
 
-  const { components, defaultDate, scrollToTime }: ComponentsProps = useMemo(
-    () => ({
-      components: {
-        toolbar: CustomToolbar,
-        eventWrapper: ({ event, children }: EventWrapper) => {
-          return (
-            <Box
-              onMouseOver={(e) => handleOnMouseHover(event, e)}
-              onMouseOut={handleOnMouseOut}
-            >
-              {children}
-            </Box>
-          );
-        },
+  const { components, defaultDate, scrollToTime }: ComponentsProps = useMemo(() => ({
+    components: {
+      toolbar: CustomToolbar,
+      eventWrapper: ({ event, children }: EventWrapper) => {
+        return (
+          <Box
+            onMouseOver={(e) => handleOnMouseHover(event, e)}
+            onMouseOut={handleOnMouseOut}
+          >
+            {children}
+          </Box>
+        );
       },
-      defaultDate: new Date(),
-      scrollToTime: new Date(),
-      // eslint-disable-next-line
-    }),
-    []
-  );
+    },
+    defaultDate: new Date(),
+    scrollToTime: new Date(),
+    // eslint-disable-next-line
+  }), []);
 
   return (
     <>
@@ -417,7 +416,7 @@ const CalendarPage = () => {
           )}
         </Box>
       ) : (
-        <Spinner action="Loading"/>
+        <Spinner action="Loading" />
       )}
     </>
   );
